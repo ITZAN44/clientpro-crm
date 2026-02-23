@@ -5,6 +5,7 @@ Sistema de gestión de clientes (CRM) construido con tecnologías modernas.
 ## 📦 Stack Tecnológico
 
 ### Frontend
+
 - **Next.js 16.1.1** (App Router)
 - **TypeScript**
 - **Tailwind CSS**
@@ -13,12 +14,14 @@ Sistema de gestión de clientes (CRM) construido con tecnologías modernas.
 - **Zod** (Validación)
 
 ### Backend
+
 - **NestJS**
 - **Prisma ORM**
 - **PostgreSQL**
 - **Socket.io** (Real-time)
 
 ### DevOps & MCPs
+
 - **Docker** (Containerización)
 - **Next.js MCP** (next-devtools-mcp) ✅ Configurado
 - **PostgreSQL MCP** (Contexto para Copilot)
@@ -88,18 +91,21 @@ npm run start:dev
 ```
 
 La app estará en:
+
 - **Frontend**: http://localhost:3000
 - **Backend**: http://localhost:4000
 
 ## 📝 Scripts Disponibles
 
 ### Frontend
+
 - `npm run dev` - Modo desarrollo
 - `npm run build` - Build producción
 - `npm run start` - Servidor producción
 - `npm run lint` - Linter
 
 ### Backend
+
 - `npm run start:dev` - Modo desarrollo
 - `npm run build` - Build producción
 - `npm run start:prod` - Servidor producción
@@ -111,31 +117,38 @@ La app estará en:
 ## � MCPs Configurados
 
 ### ✅ Next.js MCP (Activo)
+
 **Archivo**: `.mcp.json` en la raíz del proyecto
 
 **Capacidades**:
+
 - Detección de errores en tiempo real
 - Estado del dev server
 - Inspección de rutas y Server Actions
 - Logs de desarrollo
 
 **Uso**:
+
 ```bash
 cd frontend
 npm run dev
 ```
+
 Luego pregunta en Copilot: "¿Qué errores tiene mi app?"
 
 ### ✅ Semgrep MCP (Activo)
+
 **Archivo**: `.mcp.json` + `.semgrep/backend-rules.yaml`
 
 **Capacidades**:
+
 - Análisis estático de código backend
 - 9 reglas personalizadas (calidad, consistencia, seguridad)
 - Detección de console.log, magic numbers, secrets hardcodeados
 - Validación de patrones NestJS (decoradores @ApiTags, return types)
 
 **Uso**:
+
 ```bash
 npm run scan              # Análisis rápido
 npm run scan:detailed     # Con información verbose
@@ -145,6 +158,7 @@ npm run scan:json         # Exportar resultados
 Ver [docs/workflows/STATIC_ANALYSIS.md](docs/workflows/STATIC_ANALYSIS.md) para guía completa.
 
 ### ⏳ PostgreSQL MCP (Pendiente)
+
 Ver [GUIA_MCPS.md](docs/GUIA_MCPS.md) para instrucciones de instalación.
 
 ---
@@ -161,6 +175,7 @@ Ver [GUIA_MCPS.md](docs/GUIA_MCPS.md) para instrucciones de instalación.
    - User: `postgres`
 
 ### Tablas principales
+
 - `teams` - Equipos de trabajo
 - `users` - Usuarios del sistema
 - `clients` - Clientes/Contactos
@@ -172,63 +187,60 @@ Ver [GUIA_MCPS.md](docs/GUIA_MCPS.md) para instrucciones de instalación.
 
 Ver más en [database/README.md](./database/README.md)
 
+## 🤝 Desarrollo Colaborativo
+
+Este proyecto usa **Git Flow** con protección de ramas y hooks automáticos.
+
+### Branches
+
+- `master` → Producción (protegida, requiere PR)
+- `staging` → Pre-producción (requiere PR desde develop)
+- `develop` → Desarrollo activo (rama por defecto)
+- `feature/*` → Nuevas funcionalidades
+- `bugfix/*` → Corrección de bugs
+- `hotfix/*` → Fixes críticos para producción
+
+### Git Hooks (Husky)
+
+**Pre-commit**:
+
+- ✅ ESLint auto-fix en archivos modificados
+- ✅ Prettier formatea código
+- ✅ Valida solo archivos staged (lint-staged)
+
+**Commit-msg**:
+
+- ✅ Valida Conventional Commits: `type(scope): message`
+- ✅ Tipos: feat, fix, docs, refactor, test, chore, etc.
+
+**Pre-push**:
+
+- ✅ Bloquea push directo a `master`
+- ✅ Verifica TypeScript en backend y frontend
+- ✅ Ejecuta build completo
+
+### Convenciones de Commits
+
+```bash
+feat(clientes): add advanced filter functionality
+fix(auth): resolve token expiration issue
+docs(readme): update installation instructions
+refactor(negocios): extract Kanban logic to hook
+```
+
+**Documentación completa**: [docs/GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md)
+
+---
+
 ## 📚 Documentación
-
-**📖 Documentos principales** (empezar por aquí):
-- **[🎯 Contexto del Proyecto](./docs/CONTEXTO_PROYECTO.md)** - ⭐ **Lee esto primero en cada chat**
-- **[🔌 Guía de MCPs](./docs/GUIA_MCPS.md)** - Cómo conectar PostgreSQL, GitHub MCPs
-- **[📋 Setup Completado](./docs/SETUP_COMPLETADO.md)** - Resumen de lo instalado
-- **[🚀 Próximos Pasos](./docs/PROXIMOS_PASOS.md)** - Plan de desarrollo
-- **[🎨 Wireframes](./docs/wireframe.md)** - Todas las pantallas diseñadas
-
-**📁 Documentación técnica**:
-- [Base de Datos](./database/README.md)
-- [API Backend](./backend/BACKEND_README.md)
-- [Frontend](./frontend/README.md)
-
-## 🎨 Paleta de Colores
-
-```css
---primary: #4F7396     /* Azul suave profesional */
---success: #5A9F7E     /* Verde jade */
---warning: #D4A373     /* Amarillo mostaza suave */
---danger: #C77272      /* Rojo coral suave */
-```
-
-## 🔐 Credenciales de Desarrollo
-
-Usuario de prueba (seed data):
-- Email: `admin@clientpro.com`
-- Password: `password123`
-
-## 🛠️ Troubleshooting
-
-### Puerto en uso
-```bash
-# Windows
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
-```
-
-### Problemas con Prisma
-```bash
-cd backend
-npx prisma generate
-npx prisma db push
-```
-
-### Reset de base de datos
-```bash
-psql -U postgres -d clientpro_crm -f database/seed.sql
-```
-
-## � Documentación
 
 Ver la carpeta `docs/` para documentación completa:
 
 - **[CONTEXTO_PROYECTO.md](docs/CONTEXTO_PROYECTO.md)** - 🎯 **Lee esto primero** - Stack, tablas, MCPs, pendientes
 - **[PROXIMOS_PASOS.md](docs/PROXIMOS_PASOS.md)** - 🚀 Roadmap y checklist de desarrollo
 - **[wireframe.md](docs/wireframe.md)** - 🎨 Diseños UI de todas las pantallas
+- **[GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md)** - 🔀 Estrategia de branching y convenciones Git
+- **[GIT_HOOKS.md](docs/GIT_HOOKS.md)** - 🪝 Hooks automáticos con Husky
 
 ## �📄 Licencia
 
