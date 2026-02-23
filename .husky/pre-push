@@ -1,0 +1,37 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running pre-push checks..."
+
+# Check if we're pushing to protected branches
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$branch" = "master" ]; then
+  echo "❌ Direct push to master is not allowed!"
+  echo "Please create a Pull Request instead."
+  exit 1
+fi
+
+# TypeScript type check (backend)
+echo "🔍 Checking TypeScript types (backend)..."
+cd backend && npm run build 2>/dev/null
+if [ $? -ne 0 ]; then
+  echo "❌ Backend TypeScript errors found!"
+  echo "Fix TypeScript errors before pushing."
+  cd ..
+  exit 1
+fi
+cd ..
+
+# TypeScript type check (frontend)
+echo "🔍 Checking TypeScript types (frontend)..."
+cd frontend && npm run build 2>/dev/null
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend TypeScript errors found!"
+  echo "Fix TypeScript errors before pushing."
+  cd ..
+  exit 1
+fi
+cd ..
+
+echo "✅ All pre-push checks passed!"
