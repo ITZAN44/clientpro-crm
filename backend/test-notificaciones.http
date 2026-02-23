@@ -1,0 +1,75 @@
+### ===================================
+### TESTS DE NOTIFICACIONES - ClientPro CRM
+### Backend: http://localhost:4000
+### ===================================
+
+### Variables de entorno
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5ZjI2NTk5Ny04MmE5LTQ4ZjMtYWQ2YS0xODk1Zjg3MzQxMzkiLCJlbWFpbCI6ImFkbWluQGNsaWVudHByby5jb20iLCJyb2wiOiJBRE1JTiIsImlhdCI6MTczNzY2NTg3MSwiZXhwIjoxNzM4MjcwNjcxfQ.2GgKwp8VEF0PUkLW2aZLw-23jl2qLz_O2mHm0_i1uSM
+
+### ===================================
+### 1. GET /notificaciones - Listar todas las notificaciones
+### ===================================
+GET {{baseUrl}}/notificaciones
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ===================================
+### 2. GET /notificaciones?leida=false - Listar no leídas
+### ===================================
+GET {{baseUrl}}/notificaciones?leida=false&pagina=1&limite=10
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ===================================
+### 3. GET /notificaciones/no-leidas/count - Contador de no leídas
+### ===================================
+GET {{baseUrl}}/notificaciones/no-leidas/count
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ===================================
+### 4. PATCH /notificaciones/:id/marcar-leida - Marcar como leída
+### ===================================
+@notificacionId = REPLACE_WITH_REAL_ID
+PATCH {{baseUrl}}/notificaciones/{{notificacionId}}/marcar-leida
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ===================================
+### 5. PATCH /notificaciones/marcar-todas-leidas - Marcar todas
+### ===================================
+PATCH {{baseUrl}}/notificaciones/marcar-todas-leidas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ===================================
+### 6. GET /notificaciones/:id - Obtener una notificación específica
+### ===================================
+GET {{baseUrl}}/notificaciones/{{notificacionId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ===================================
+### 7. SIN AUTENTICACIÓN - Debe retornar 401
+### ===================================
+GET {{baseUrl}}/notificaciones
+Content-Type: application/json
+
+### ===================================
+### NOTA: Para probar WebSockets, usar un cliente como:
+### - Postman (WebSocket support)
+### - wscat: npm install -g wscat
+### - Código cliente JavaScript
+###
+### Conexión WebSocket:
+### ws://localhost:4000/notificaciones
+### 
+### Eventos a escuchar:
+### - conectado
+### - nuevaNotificacion
+### - negocioActualizado
+### - actividadVencida
+### - notificacionLeida
+### - contadorNoLeidas
+### ===================================

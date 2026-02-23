@@ -1,0 +1,21 @@
+### Variables
+@baseUrl = http://localhost:4000
+@token = {{login.response.body.accessToken}}
+
+### 1. Login para obtener token
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@clientpro.com",
+  "password": "Password123!"
+}
+
+### 2. GET /stats/general - Obtener estadísticas generales del dashboard
+GET {{baseUrl}}/stats/general
+Authorization: Bearer {{token}}
+
+### 3. GET /stats/distribucion-etapas - Obtener distribución de negocios por etapa
+GET {{baseUrl}}/stats/distribucion-etapas
+Authorization: Bearer {{token}}

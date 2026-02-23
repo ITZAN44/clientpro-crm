@@ -1,0 +1,11 @@
+# Configuración principal de Semgrep para ClientPro CRM
+# Scope: Solo Backend (NestJS + Prisma)
+# Prioridad: Calidad General + Consistencia
+
+# Incluir reglas personalizadas del proyecto
+rules:
+  - id: include-backend-rules
+    languages: [typescript]
+    severity: INFO
+    message: "Placeholder - las reglas reales están en backend-rules.yaml"
+    pattern: "this_will_never_match_12345"

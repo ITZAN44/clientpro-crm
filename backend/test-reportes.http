@@ -1,0 +1,52 @@
+### Variables
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYWFhYWFhYS1hYWFhLWFhYWEtYWFhYS1hYWFhYWFhYWFhYWEiLCJlbWFpbCI6ImFkbWluQGNsaWVudHByby5jb20iLCJyb2wiOiJBRE1JTiIsImlhdCI6MTc2ODg2MzYzOSwiZXhwIjoxNzY5NDY4NDM5fQ.h6yirlygS9qJrDZGAWK_CWye-ef9lQcKlStqX5NVNQQ
+
+###
+# 1. Obtener métricas de conversión del pipeline (sin filtros)
+GET {{baseUrl}}/reportes/conversion
+Authorization: Bearer {{token}}
+
+###
+# 2. Obtener métricas de conversión con rango de fechas
+GET {{baseUrl}}/reportes/conversion?fechaInicio=2025-01-01&fechaFin=2026-12-31
+Authorization: Bearer {{token}}
+
+###
+# 3. Obtener métricas de conversión del último mes
+GET {{baseUrl}}/reportes/conversion?fechaInicio=2025-12-01&fechaFin=2025-12-31
+Authorization: Bearer {{token}}
+
+###
+# 4. Obtener comparativas mes actual vs mes anterior
+GET {{baseUrl}}/reportes/comparativas
+Authorization: Bearer {{token}}
+
+###
+# 5. Obtener rendimiento de usuarios (todos los tiempos)
+GET {{baseUrl}}/reportes/rendimiento-usuarios
+Authorization: Bearer {{token}}
+
+###
+# 6. Obtener rendimiento de usuarios en rango de fechas
+GET {{baseUrl}}/reportes/rendimiento-usuarios?fechaInicio=2025-01-01&fechaFin=2026-12-31
+Authorization: Bearer {{token}}
+
+###
+# 7. Obtener rendimiento del último trimestre
+GET {{baseUrl}}/reportes/rendimiento-usuarios?fechaInicio=2025-10-01&fechaFin=2025-12-31
+Authorization: Bearer {{token}}
+
+###
+# 8. Validar endpoint sin autenticación (debe dar 401)
+GET {{baseUrl}}/reportes/conversion
+
+###
+# 9. Validar fecha inválida (debe dar error de validación)
+GET {{baseUrl}}/reportes/conversion?fechaInicio=fecha-invalida
+Authorization: Bearer {{token}}
+
+###
+# 10. Validar solo fechaFin sin fechaInicio
+GET {{baseUrl}}/reportes/conversion?fechaFin=2026-01-31
+Authorization: Bearer {{token}}

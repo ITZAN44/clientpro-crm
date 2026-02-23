@@ -1,0 +1,128 @@
+rules:
+  # ===================================
+  # CATEGORIA 1: CALIDAD DE CODIGO
+  # ===================================
+  
+  # Regla 1.1: Detectar console.log olvidados
+  - id: no-console-log-backend
+    pattern: console.log(...)
+    message: "console.log detectado - debe eliminarse (usar Logger de NestJS)"
+    languages: [typescript]
+    severity: WARNING
+    paths:
+      include:
+        - "*.ts"
+      exclude:
+        - "*.spec.ts"
+        - test/**
+  
+  # Regla 1.2: Detectar console.error/warn
+  - id: no-console-error-backend
+    pattern-either:
+      - pattern: console.error(...)
+      - pattern: console.warn(...)
+    message: "console.error/warn detectado - usar Logger de NestJS"
+    languages: [typescript]
+    severity: WARNING
+    paths:
+      include:
+        - "*.ts"
+      exclude:
+        - "*.spec.ts"
+  
+  # Regla 1.3: Magic numbers en configuracion
+  - id: magic-numbers-config
+    pattern: |
+      expiresIn: '$TIME'
+    message: "Magic number detectado - considerar constante con nombre (ej: JWT_EXPIRATION)"
+    languages: [typescript]
+    severity: INFO
+
+  # ===================================
+  # CATEGORIA 2: CONSISTENCIA (NestJS)
+  # ===================================
+  
+  # Regla 2.1: Controllers sin decorador @ApiTags (Swagger)
+  - id: controller-missing-api-tags
+    pattern: |
+      @Controller(...)
+      export class $CONTROLLER {
+        ...
+      }
+    message: "Controller sin @ApiTags - agregar para documentacion Swagger"
+    languages: [typescript]
+    severity: INFO
+    paths:
+      include:
+        - "*.controller.ts"
+
+  # ===================================
+  # CATEGORIA 3: SEGURIDAD
+  # ===================================
+  
+  # Regla 3.1: Secretos/passwords hardcodeados
+  - id: hardcoded-secrets
+    pattern-either:
+      - pattern: password = "..."
+      - pattern: secret = "..."
+      - pattern: apiKey = "..."
+      - pattern: token = "..."
+    message: "CRITICO: Secreto hardcodeado - usar variables de entorno (.env)"
+    languages: [typescript]
+    severity: ERROR
+    paths:
+      exclude:
+        - "*.spec.ts"
+        - prisma/seed.ts
+  
+  # Regla 3.2: Queries SQL raw sin sanitizacion
+  - id: sql-injection-risk
+    pattern: |
+      prisma.$queryRaw`...${$VAR}...`
+    message: "Riesgo de SQL injection - usar Prisma.$queryRaw con parametros seguros"
+    languages: [typescript]
+    severity: ERROR
+    paths:
+      include:
+        - "*.service.ts"
+  
+  # Regla 3.3: JWT sin validacion de expiracion
+  - id: jwt-missing-expiration
+    pattern: |
+      this.jwtService.sign(...)
+    message: "JWT sin expiresIn - siempre configurar expiracion"
+    languages: [typescript]
+    severity: WARNING
+
+  # ===================================
+  # CATEGORIA 4: BEST PRACTICES (Prisma)
+  # ===================================
+  
+  # Regla 4.1: findUnique sin validacion de null
+  - id: prisma-findunique-no-null-check
+    pattern: |
+      const $VAR = await this.prisma.$MODEL.findUnique(...)
+    message: "findUnique sin validacion - puede retornar null (lanzar NotFoundException)"
+    languages: [typescript]
+    severity: WARNING
+    paths:
+      include:
+        - "*.service.ts"
+
+  # ===================================
+  # CATEGORIA 5: ESTRUCTURA (Convenciones)
+  # ===================================
+  
+  # Regla 5.1: Metodos async sin tipo de retorno Promise<>
+  - id: async-method-missing-promise-return
+    pattern: |
+      async $FUNC(...) {
+        ...
+      }
+    message: "Metodo async sin tipo Promise<T> explicito (ver AGENTS.md linea 195)"
+    languages: [typescript]
+    severity: INFO
+    paths:
+      include:
+        - "*.service.ts"
+        - "*.controller.ts"

@@ -1,0 +1,108 @@
+### Variables
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhNzI4ZGIzZC0wNGNlLTRiNDMtODhhMy05MmU0ZjgzYmU3NWUiLCJlbWFpbCI6ImFkbWluQGNsaWVudHByby5jb20iLCJyb2wiOiJBRE1JTiIsImlhdCI6MTczNjc5MTcwOCwiZXhwIjoxNzM3Mzk2NTA4fQ.yCnoGMb_5QlCa1WGl-y5L6dD5k1pVPiE9XckqivE3ig
+
+### 1. Crear un nuevo negocio
+POST {{baseUrl}}/negocios
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titulo": "Implementación de CRM Empresarial",
+  "descripcion": "Venta de solución CRM completa para empresa mediana",
+  "valor": 150000,
+  "moneda": "MXN",
+  "etapa": "PROSPECTO",
+  "probabilidad": 20,
+  "fechaCierreEsperada": "2026-03-15",
+  "clienteId": "c1111111-1111-1111-1111-111111111111"
+}
+
+### 2. Listar todos los negocios (con paginación)
+GET {{baseUrl}}/negocios?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 3. Buscar negocios por texto (cliente, título o descripción)
+GET {{baseUrl}}/negocios?search=CRM
+Authorization: Bearer {{token}}
+
+### 4. Filtrar negocios por etapa
+GET {{baseUrl}}/negocios?etapa=PROSPECTO
+Authorization: Bearer {{token}}
+
+### 5. Filtrar negocios por propietario
+GET {{baseUrl}}/negocios?propietarioId=a728db3d-04ce-4b43-88a3-92e4f83be75e
+Authorization: Bearer {{token}}
+
+### 6. Combinar filtros (etapa + búsqueda)
+GET {{baseUrl}}/negocios?etapa=PROPUESTA&search=tech
+Authorization: Bearer {{token}}
+
+### 7. Obtener un negocio específico por ID
+@negocioId = d1111111-1111-1111-1111-111111111111
+GET {{baseUrl}}/negocios/{{negocioId}}
+Authorization: Bearer {{token}}
+
+### 8. Actualizar un negocio
+PATCH {{baseUrl}}/negocios/{{negocioId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titulo": "Implementación de CRM Empresarial - Actualizado",
+  "valor": 180000,
+  "probabilidad": 50,
+  "etapa": "PROPUESTA"
+}
+
+### 9. Cambiar etapa de un negocio (endpoint específico)
+PATCH {{baseUrl}}/negocios/{{negocioId}}/etapa
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "etapa": "NEGOCIACION"
+}
+
+### 10. Marcar negocio como GANADO
+PATCH {{baseUrl}}/negocios/{{negocioId}}/etapa
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "etapa": "GANADO"
+}
+
+### 11. Eliminar un negocio
+DELETE {{baseUrl}}/negocios/{{negocioId}}
+Authorization: Bearer {{token}}
+
+### 12. Probar validaciones - Negocio sin título (debe fallar)
+POST {{baseUrl}}/negocios
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "valor": 50000,
+  "clienteId": "c1111111-1111-1111-1111-111111111111"
+}
+
+### 13. Probar validaciones - Cliente inexistente (debe fallar)
+POST {{baseUrl}}/negocios
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titulo": "Negocio de prueba",
+  "clienteId": "00000000-0000-0000-0000-000000000000"
+}
+
+### 14. Crear negocio con valores mínimos
+POST {{baseUrl}}/negocios
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "titulo": "Negocio básico",
+  "clienteId": "c2222222-2222-2222-2222-222222222222"
+}

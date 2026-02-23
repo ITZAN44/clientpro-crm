@@ -1,0 +1,14 @@
+### Variables
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYWFhYWFhYS1hYWFhLWFhYWEtYWFhYS1hYWFhYWFhYWFhYWEiLCJlbWFpbCI6ImFkbWluQGNsaWVudHByby5jb20iLCJyb2wiOiJBRE1JTiIsImlhdCI6MTc2ODg2MzYzOSwiZXhwIjoxNzY5NDY4NDM5fQ.h6yirlygS9qJrDZGAWK_CWye-ef9lQcKlStqX5NVNQQ
+@negocioId = d3333333-3333-3333-3333-333333333333
+
+###
+# Test: Cambiar etapa del negocio
+PATCH {{baseUrl}}/negocios/{{negocioId}}/etapa
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "etapa": "GANADO"
+}

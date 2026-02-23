@@ -1,0 +1,194 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  --radius: 0.5rem;
+  
+  /* Paleta ClientPro CRM - Diseño profesional */
+  --background: 250 40% 98%;          /* #FAFAF9 - Fondo cálido */
+  --foreground: 20 6% 16%;            /* #292524 - Gris oscuro dominante */
+  
+  --card: 0 0% 100%;                  /* Blanco puro */
+  --card-foreground: 20 6% 16%;       /* #292524 */
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 6% 16%;
+  
+  /* Primary - Naranja vibrante (#EA580C) */
+  --primary: 18 95% 48%;              /* #EA580C - Color primario */
+  --primary-foreground: 0 0% 100%;    /* Blanco */
+  
+  /* Secondary - Gris dominante */
+  --secondary: 20 6% 25%;             /* Variante más clara de #292524 */
+  --secondary-foreground: 0 0% 100%;
+  
+  --muted: 20 5% 96%;                 /* Gris muy claro */
+  --muted-foreground: 20 4% 46%;      /* Gris medio */
+  
+  /* Accent - Verde lima (#84CC16) */
+  --accent: 82 84% 45%;               /* #84CC16 - Color acento */
+  --accent-foreground: 20 6% 16%;     /* #292524 */
+  
+  /* Success - Verde lima */
+  --success: 82 84% 45%;              /* #84CC16 */
+  --success-foreground: 20 6% 16%;
+  
+  /* Warning - Naranja */
+  --warning: 18 95% 48%;              /* #EA580C */
+  --warning-foreground: 0 0% 100%;
+  
+  /* Destructive - Rojo */
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  
+  /* Bordes */
+  --border: 20 5% 90%;                /* Bordes sutiles */
+  --input: 20 5% 90%;
+  --ring: 18 95% 48%;                 /* Matching primary */
+  
+  /* Charts - Pipeline de ventas */
+  --chart-1: 20 6% 16%;               /* PROSPECTO - Gris oscuro */
+  --chart-2: 18 95% 48%;              /* CONTACTO - Naranja */
+  --chart-3: 82 84% 45%;              /* PROPUESTA - Verde lima */
+  --chart-4: 18 85% 55%;              /* NEGOCIACIÓN - Naranja claro */
+  --chart-5: 82 75% 55%;              /* GANADO - Verde claro */
+  
+  /* Sidebar */
+  --sidebar: oklch(0.985 0.002 240);
+  --sidebar-foreground: oklch(0.25 0.01 240);
+  --sidebar-primary: oklch(0.52 0.08 235);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.95 0.01 240);
+  --sidebar-accent-foreground: oklch(0.25 0.01 240);
+  --sidebar-border: oklch(0.90 0.005 240);
+  --sidebar-ring: oklch(0.52 0.08 235);
+}
+
+.dark {
+  /* Dark Mode SOFT - Paleta ClientPro CRM más clara y suave */
+  --background: 20 8% 18%;             /* #2E2A27 - Fondo gris cálido suave (más claro) */
+  --foreground: 20 5% 95%;             /* #F5F5F4 - Texto claro pero no blanco puro */
+  
+  --card: 20 8% 22%;                   /* #3A3632 - Cards grises suaves (más claros) */
+  --card-foreground: 20 5% 95%;
+  
+  --popover: 20 8% 22%;
+  --popover-foreground: 20 5% 95%;
+  
+  /* Primary - Naranja brillante pero suave */
+  --primary: 18 92% 58%;               /* Naranja más claro y suave */
+  --primary-foreground: 20 6% 10%;
+  
+  /* Secondary - Gris medio suave */
+  --secondary: 20 8% 28%;              /* Más claro y suave */
+  --secondary-foreground: 20 5% 95%;
+  
+  --muted: 20 8% 25%;                  /* Gris muted más claro */
+  --muted-foreground: 20 5% 70%;       /* Texto muted más claro */
+  
+  /* Accent - Verde lima suave */
+  --accent: 82 75% 55%;                /* Verde lima más claro y suave */
+  --accent-foreground: 20 6% 10%;
+  
+  /* Success - Verde lima suave */
+  --success: 82 75% 55%;
+  --success-foreground: 20 6% 10%;
+  
+  /* Warning - Naranja suave */
+  --warning: 18 92% 58%;
+  --warning-foreground: 20 6% 10%;
+  
+  /* Destructive - Rojo suave */
+  --destructive: 0 65% 65%;            /* Rojo más suave */
+  --destructive-foreground: 0 0% 100%;
+  
+  /* Bordes sutiles en dark */
+  --border: 20 8% 32%;                 /* Bordes más claros y visibles */
+  --input: 20 8% 32%;
+  --ring: 18 92% 58%;
+  
+  /* Charts adaptados para dark mode suave */
+  --chart-1: 20 6% 75%;                /* Gris claro */
+  --chart-2: 18 92% 58%;               /* Naranja suave */
+  --chart-3: 82 75% 55%;               /* Verde lima suave */
+  --chart-4: 18 85% 68%;               /* Naranja muy claro */
+  --chart-5: 82 70% 68%;               /* Verde muy claro */
+  
+  /* Sidebar dark suave */
+  --sidebar: 20 8% 20%;
+  --sidebar-foreground: 20 5% 95%;
+  --sidebar-primary: 18 92% 58%;
+  --sidebar-primary-foreground: 20 6% 10%;
+  --sidebar-accent: 20 8% 26%;
+  --sidebar-accent-foreground: 20 5% 95%;
+  --sidebar-border: 20 8% 32%;
+  --sidebar-ring: 18 92% 58%;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Smooth transitions para el cambio de tema */
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+  
+  /* Excepciones: elementos que no deben tener transición */
+  [data-no-transition],
+  [data-no-transition] * {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,255 @@
+# 📘 Resumen Ejecutivo - ClientPro CRM
+
+> **Descripción General del Proyecto**
+
+**Última actualización**: 4 Febrero 2026  
+**Estado actual**: ✅ **DARK MODE IMPLEMENTADO** - UI completa con soporte dark mode + Testing Backend/Frontend UI (65%)
+
+---
+
+## 🎯 ¿Qué es ClientPro CRM?
+
+**ClientPro CRM** es un sistema de gestión de relaciones con clientes (CRM) diseñado para empresas que necesitan:
+- Gestionar contactos y clientes
+- Visualizar su pipeline de ventas
+- Hacer seguimiento de actividades comerciales
+- Generar reportes de rendimiento
+- Recibir notificaciones en tiempo real
+
+**Inspirado en**: HubSpot, Salesforce, Pipedrive (versión simplificada y enfocada)
+
+---
+
+## ✨ Funcionalidades Principales
+
+### **1. Gestión de Clientes** ✅
+- CRUD completo de clientes y contactos
+- DataTable profesional con paginación
+- Búsqueda en tiempo real (nombre, email, empresa)
+- Información completa: nombre, email, teléfono, empresa, cargo, sitio web
+
+### **2. Pipeline Visual de Ventas (Kanban)** ✅
+- Drag & drop entre 6 etapas del ciclo de ventas:
+  - 📋 Prospecto
+  - 🔍 Calificación
+  - 📝 Propuesta
+  - 💬 Negociación
+  - ✅ Cerrado Ganado
+  - ❌ Cerrado Perdido
+- Cards visuales con información de negocios
+- Estadísticas por etapa
+- Auto-timestamps en cambios de etapa
+- Notificaciones en tiempo real al mover negocios
+
+### **3. Dashboard con Métricas Reales** ✅
+- 4 tarjetas de estadísticas:
+  - Total de clientes
+  - Total de negocios activos
+  - Valor total del pipeline
+  - Tasa de conversión
+- Actividades recientes con timeline
+- Auto-refresh con TanStack Query
+- Panel de acciones rápidas
+
+### **4. Gestión de Actividades** ✅
+- 5 tipos de actividades:
+  - 📞 Llamada
+  - 📧 Email
+  - 🤝 Reunión
+  - ✅ Tarea
+  - 📝 Nota
+- Marcado de completadas con timestamps
+- Filtros por tipo, estado y cliente
+- Card-based layout con iconos
+
+### **5. Reportes Avanzados** ✅
+- **3 tipos de reportes**:
+  1. **Conversión**: Tasa de conversión por etapa
+  2. **Comparativas**: Negocios ganados vs perdidos
+  3. **Rendimiento**: Actividades por usuario
+- 5 gráficas interactivas con Recharts:
+  - Gráfica de barras
+  - Gráfica de líneas
+  - Gráfica de pastel
+  - Gráfica de área
+  - Gráfica combinada
+- Filtros de fecha con date range picker dual
+- **Exportación a PDF** con multipáginas automáticas
+
+### **6. Notificaciones en Tiempo Real** ✅
+- WebSocket con Socket.io 4.8
+- Sistema dual de notificaciones:
+  - **Persistentes** (guardadas en DB)
+  - **Efímeras** (solo WebSocket)
+- NotificationBadge con contador de no leídas
+- NotificationDropdown con lista de notificaciones
+- Auto-actualización del dashboard
+- Indicador de conexión WebSocket
+
+### **7. Sistema de Permisos y Roles** ✅ NUEVO
+- **3 roles con permisos diferenciados**:
+  - **ADMIN**: Acceso total + gestión de usuarios
+  - **MANAGER**: Ver todo, editar, no eliminar
+  - **VENDEDOR**: Solo sus propios registros
+- RolesGuard y decoradores en backend
+- UI condicional basada en roles en frontend
+- Página de administración de usuarios (solo ADMIN)
+- Protección de rutas con HOC ProtectedRoute
+
+### **8. Autenticación Completa** ✅
+- Login con JWT
+- Protección de rutas con NextAuth.js
+- Sesiones persistentes
+- Usuarios con roles (ADMIN, MANAGER, VENDEDOR)
+
+### **9. Dark Mode Completo** ✅ NUEVO
+- Soporte dark mode en todas las páginas
+- Toggle manual en header
+- Diseño consistente con Tailwind dark: classes
+- Todos los componentes optimizados:
+  - Forms, inputs, selects, calendarios
+  - Tablas, cards, modals, dropdowns
+  - Charts con CSS variables dinámicas
+  - Badges, botones con variantes dark
+
+---
+
+## 📊 Estado del Proyecto
+
+### **Fase 1: Autenticación y Base** ✅ COMPLETADA
+- Backend: AuthModule con JWT
+- Frontend: Login profesional + Dashboard
+- Base de datos: PostgreSQL con Prisma
+
+### **Fase 2: Módulos CRUD** ✅ COMPLETADA
+- Módulo de Clientes (CRUD completo)
+- Módulo de Negocios (Kanban + CRUD)
+- Módulo de Actividades (5 tipos)
+
+### **Fase 3: Reportes y Métricas** ✅ COMPLETADA
+- Dashboard con estadísticas reales
+- 3 tipos de reportes con gráficas
+- Exportación a PDF
+
+### **Fase 4: Notificaciones Real-Time** ✅ COMPLETADA
+- WebSocket Gateway con Socket.io
+- Sistema de notificaciones duales
+- UI completa (Badge + Dropdown)
+- Auto-actualización
+
+### **Fase 4.5: Sistema de Permisos y Roles** ✅ COMPLETADA
+- RolesGuard y decoradores backend
+- useAuth hook y componentes frontend
+- Permisos aplicados en módulo Clientes
+- Página de administración de usuarios
+- Tests unitarios: 7/7 pasando
+
+### **Fase 5: Testing y Calidad** 🔄 65% COMPLETADA
+- ✅ **Backend Testing** (100%): 96 tests, 96.25% coverage
+  - Infraestructura: prisma.mock.ts factory
+  - AuthService: 12 tests
+  - ClientesService: 19 tests
+  - NegociosService: 19 tests
+  - ActividadesService: 21 tests
+  - NotificacionesService: 18 tests
+  - RolesGuard: 7 tests
+- ✅ **Frontend Testing UI Básicos** (100%): 144 tests, 93.75% coverage
+  - Badge: 13 tests
+  - Button: 37 tests
+  - Card: 29 tests
+  - Input: 40 tests
+  - Label: 25 tests
+- ✅ **Dark Mode UI** (100%): 11 archivos, 4 módulos completos
+  - Design system establecido (stone-800/900)
+  - Forms, inputs, selects con dark mode
+  - Tables, charts, modals optimizados
+- ⏳ **Pendiente** (opcional):
+  - Componentes UI complejos (Select, Dialog, Tabs, Table)
+  - Páginas (/dashboard, /clientes, /negocios)
+  - Tests E2E con Playwright
+
+### **Fase 6: Producción y Deploy** ⏳ FUTURO
+- Deployment a Vercel + Railway
+- CI/CD con GitHub Actions
+- Monitoreo con Sentry
+
+---
+
+## 🎯 Objetivo del Proyecto
+
+**Crear un CRM completo y funcional** que permita a equipos de ventas:
+1. Centralizar información de clientes
+2. Visualizar el pipeline de ventas de forma intuitiva
+3. Hacer seguimiento de actividades comerciales
+4. Tomar decisiones basadas en datos (reportes)
+5. Mantenerse notificados de cambios importantes en tiempo real
+
+**Diferenciador clave**: 
+- Interfaz moderna y profesional (Tailwind v4 + shadcn/ui)
+- **Dark mode completo en toda la aplicación** ✨ NUEVO
+- Notificaciones en tiempo real (WebSocket)
+- Reportes visuales con gráficas interactivas
+- Drag & drop intuitivo en el Kanban
+- **Sistema de permisos granular por roles** ✨ NUEVO
+
+---
+
+## 📈 Progreso General
+
+**MVP**: ~97% completado  
+**Módulos Backend**: 8/8 (100%) - Agregado UsuariosModule  
+**Páginas Frontend**: 7/7 (100%) - Agregado /admin/usuarios  
+**Endpoints REST**: 36 totales (+2 usuarios)  
+**WebSocket Events**: 5 totales  
+**Componentes UI**: 16 de shadcn/ui  
+**Tests**: 240/240 pasando ✅
+- Backend: 96 tests (96.25% coverage)
+- Frontend: 144 tests (93.75% coverage en UI básicos)
+
+---
+
+## 👥 Usuarios del Sistema
+
+**3 Roles**:
+1. **ADMIN**: Acceso completo (gestión de equipos, usuarios, configuración)
+2. **MANAGER**: Gestión de negocios y reportes de su equipo
+3. **VENDEDOR**: Gestión de sus clientes y negocios asignados
+
+**Usuarios de prueba**: 7 usuarios con diferentes roles (ver DATABASE.md)
+
+---
+
+## 🚀 ¿Cómo usar este proyecto?
+
+### **Iniciar aplicación**:
+```bash
+npm run dev          # Inicia backend (4000) + frontend (3000)
+```
+
+### **Acceder al sistema**:
+1. Abrir navegador en `http://localhost:3000`
+2. Usar credenciales de prueba (ver DATABASE.md)
+3. Navegar por las 6 páginas del CRM
+
+### **Documentación adicional**:
+- **Stack Tecnológico**: Ver `STACK.md`
+- **Base de Datos**: Ver `DATABASE.md`
+- **Arquitectura**: Ver `ARCHITECTURE.md`
+- **Integraciones**: Ver `INTEGRATIONS.md`
+
+---
+
+## 🔗 Enlaces Rápidos
+
+- **Documentación completa**: `docs/`
+- **Guía de desarrollo**: `AGENTS.md`
+- **Próximos pasos**: `docs/roadmap/`
+- **Sesiones de trabajo**: `docs/sessions/`
+- **Decisiones técnicas**: `docs/decisions/`
+
+---
+
+**Última revisión**: 4 Febrero 2026  
+**Versión del proyecto**: 0.6.0  
+**Estado Testing**: Backend ✅ 96.25% | Frontend UI ✅ 93.75%  
+**Dark Mode**: ✅ Completo en 4 módulos (11 archivos)

@@ -1,0 +1,273 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// ENUMS (Español - coinciden con la base de datos)
+// ============================================
+
+enum RolUsuario {
+  ADMIN
+  MANAGER
+  VENDEDOR
+
+  @@map("rol_usuario")
+}
+
+enum EtapaNegocio {
+  PROSPECTO
+  CONTACTO_REALIZADO
+  PROPUESTA
+  NEGOCIACION
+  GANADO
+  PERDIDO
+
+  @@map("etapa_negocio")
+}
+
+enum TipoActividad {
+  LLAMADA
+  EMAIL
+  REUNION
+  TAREA
+
+  @@map("tipo_actividad")
+}
+
+enum TipoNotificacion {
+  NEGOCIO_ASIGNADO
+  TAREA_VENCIMIENTO
+  NEGOCIO_GANADO
+  NEGOCIO_PERDIDO
+  CLIENTE_ASIGNADO
+  MENCION
+  ACTIVIDAD_ASIGNADA
+  NEGOCIO_ACTUALIZADO
+  ACTIVIDAD_VENCIDA
+  ACTIVIDAD_COMPLETADA
+  CLIENTE_NUEVO
+  SISTEMA
+
+  @@map("tipo_notificacion")
+}
+
+enum TipoMoneda {
+  MXN
+  USD
+  EUR
+
+  @@map("tipo_moneda")
+}
+
+// ============================================
+// MODELS (Español - coinciden con la base de datos)
+// ============================================
+
+model Equipo {
+  id          String   @id @default(uuid())
+  nombre      String
+  descripcion String?
+  creadoEn    DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  usuarios Usuario[]
+
+  @@index([nombre])
+  @@map("equipos")
+}
+
+model Usuario {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String      @map("password_hash")
+  nombre       String
+  avatarUrl    String?     @map("avatar_url")
+  rol          RolUsuario  @default(VENDEDOR)
+  estaActivo   Boolean     @default(true) @map("esta_activo")
+  ultimoLogin  DateTime?   @map("ultimo_login")
+  equipoId     String?     @map("equipo_id")
+  creadoEn     DateTime    @default(now()) @map("creado_en")
+  actualizadoEn DateTime   @updatedAt @map("actualizado_en")
+
+  equipo Equipo? @relation(fields: [equipoId], references: [id], onDelete: SetNull)
+
+  clientes             Cliente[]
+  negocios             Negocio[]
+  actividadesAsignadas Actividad[] @relation("ActividadesAsignadas")
+  actividadesCreadas   Actividad[] @relation("ActividadesCreadas")
+  emails               Email[]
+  notas                Nota[]
+  notificaciones       Notificacion[]
+
+  @@index([email])
+  @@index([equipoId])
+  @@index([rol])
+  @@map("usuarios")
+}
+
+model Cliente {
+  id            String   @id @default(uuid())
+  nombre        String
+  email         String?
+  telefono      String?
+  empresa       String?
+  puesto        String?
+  direccion     String?
+  ciudad        String?
+  pais          String?
+  sitioWeb      String?  @map("sitio_web")
+  notas         String?
+  propietarioId String   @map("propietario_id")
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  propietario      Usuario        @relation(fields: [propietarioId], references: [id], onDelete: Restrict)
+  negocios         Negocio[]
+  actividades      Actividad[]
+  emails           Email[]
+  notasCliente     Nota[]
+  notificaciones   Notificacion[]
+
+  @@index([propietarioId])
+  @@index([email])
+  @@index([empresa])
+  @@index([nombre])
+  @@map("clientes")
+}
+
+model Negocio {
+  id                   String        @id @default(uuid())
+  titulo               String
+  descripcion          String?
+  valor                Decimal       @default(0) @db.Decimal(15, 2)
+  moneda               TipoMoneda    @default(MXN)
+  etapa                EtapaNegocio  @default(PROSPECTO)
+  probabilidad         Int           @default(0)
+  fechaCierreEsperada  DateTime?     @map("fecha_cierre_esperada") @db.Date
+  fechaCierreReal      DateTime?     @map("fecha_cierre_real") @db.Date
+  clienteId            String        @map("cliente_id")
+  propietarioId        String        @map("propietario_id")
+  creadoEn             DateTime      @default(now()) @map("creado_en")
+  actualizadoEn        DateTime      @updatedAt @map("actualizado_en")
+  cerradoEn            DateTime?     @map("cerrado_en")
+
+  cliente        Cliente        @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  propietario    Usuario        @relation(fields: [propietarioId], references: [id], onDelete: Restrict)
+  actividades    Actividad[]
+  emails         Email[]
+  notas          Nota[]
+  notificaciones Notificacion[]
+
+  @@index([clienteId])
+  @@index([propietarioId])
+  @@index([etapa])
+  @@index([fechaCierreEsperada])
+  @@index([creadoEn])
+  @@map("negocios")
+}
+
+model Actividad {
+  id                String         @id @default(uuid())
+  tipo              TipoActividad
+  titulo            String
+  descripcion       String?
+  fechaVencimiento  DateTime?      @map("fecha_vencimiento")
+  completada        Boolean        @default(false)
+  completadaEn      DateTime?      @map("completada_en")
+  negocioId         String?        @map("negocio_id")
+  clienteId         String?        @map("cliente_id")
+  asignadoA         String         @map("asignado_a")
+  creadoPor         String         @map("creado_por")
+  creadoEn          DateTime       @default(now()) @map("creado_en")
+  actualizadoEn     DateTime       @updatedAt @map("actualizado_en")
+
+  negocio           Negocio?       @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  cliente           Cliente?       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  usuarioAsignado   Usuario        @relation("ActividadesAsignadas", fields: [asignadoA], references: [id], onDelete: Restrict)
+  usuarioCreador    Usuario        @relation("ActividadesCreadas", fields: [creadoPor], references: [id], onDelete: Restrict)
+  notificaciones    Notificacion[]
+
+  @@index([asignadoA])
+  @@index([fechaVencimiento])
+  @@index([completada])
+  @@index([negocioId])
+  @@index([clienteId])
+  @@index([tipo])
+  @@map("actividades")
+}
+
+model Email {
+  id           String   @id @default(uuid())
+  asunto       String
+  cuerpo       String
+  emailOrigen  String   @map("email_origen")
+  emailDestino String   @map("email_destino")
+  emailsCc     String[] @map("emails_cc")
+  enviadoEn    DateTime @default(now()) @map("enviado_en")
+  clienteId    String   @map("cliente_id")
+  negocioId    String?  @map("negocio_id")
+  usuarioId    String   @map("usuario_id")
+  creadoEn     DateTime @default(now()) @map("creado_en")
+
+  cliente  Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  negocio  Negocio? @relation(fields: [negocioId], references: [id], onDelete: SetNull)
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Restrict)
+
+  @@index([clienteId])
+  @@index([negocioId])
+  @@index([usuarioId])
+  @@index([enviadoEn])
+  @@map("emails")
+}
+
+model Nota {
+  id            String   @id @default(uuid())
+  contenido     String
+  fijada        Boolean  @default(false)
+  clienteId     String?  @map("cliente_id")
+  negocioId     String?  @map("negocio_id")
+  autorId       String   @map("autor_id")
+  creadoEn      DateTime @default(now()) @map("creado_en")
+  actualizadoEn DateTime @updatedAt @map("actualizado_en")
+
+  cliente Cliente? @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  negocio Negocio? @relation(fields: [negocioId], references: [id], onDelete: Cascade)
+  autor   Usuario  @relation(fields: [autorId], references: [id], onDelete: Restrict)
+
+  @@index([clienteId])
+  @@index([negocioId])
+  @@index([autorId])
+  @@index([creadoEn(sort: Desc)])
+  @@map("notas")
+}
+
+model Notificacion {
+  id                    String            @id @default(uuid())
+  tipo                  TipoNotificacion
+  titulo                String
+  mensaje               String?
+  leida                 Boolean           @default(false)
+  usuarioId             String            @map("usuario_id")
+  negocioRelacionadoId  String?           @map("negocio_relacionado_id")
+  clienteRelacionadoId  String?           @map("cliente_relacionado_id")
+  actividadRelacionadaId String?          @map("actividad_relacionada_id")
+  urlAccion             String?           @map("url_accion")
+  creadoEn              DateTime          @default(now()) @map("creado_en")
+
+  usuario              Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  negocioRelacionado   Negocio?   @relation(fields: [negocioRelacionadoId], references: [id], onDelete: Cascade)
+  clienteRelacionado   Cliente?   @relation(fields: [clienteRelacionadoId], references: [id], onDelete: Cascade)
+  actividadRelacionada Actividad? @relation(fields: [actividadRelacionadaId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId])
+  @@index([leida])
+  @@index([creadoEn(sort: Desc)])
+  @@map("notificaciones")
+}

@@ -1,0 +1,79 @@
+### Variables
+@baseUrl = http://localhost:4000
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFhYWFhYWFhLWFhYWEtYWFhYS1hYWFhLWFhYWFhYWFhYWFhYSIsImVtYWlsIjoiYWRtaW5AY2xpZW50cHJvLmNvbSIsIm5vbWJyZSI6IkFuYSBHYXJjw61hIiwicm9sIjoiQURNSU4iLCJpYXQiOjE3MzY0NjU2MjUsImV4cCI6MTczNzA3MDQyNX0.ACTUALIZA_ESTE_TOKEN
+
+### 1. Listar todos los clientes (con paginación)
+GET {{baseUrl}}/clientes
+Authorization: Bearer {{token}}
+
+### 2. Listar clientes - página 2
+GET {{baseUrl}}/clientes?page=2&limit=5
+Authorization: Bearer {{token}}
+
+### 3. Buscar clientes
+GET {{baseUrl}}/clientes?search=acme
+Authorization: Bearer {{token}}
+
+### 4. Obtener un cliente por ID
+# Primero ejecuta GET /clientes para obtener un ID válido
+GET {{baseUrl}}/clientes/COLOCA_UN_ID_AQUI
+Authorization: Bearer {{token}}
+
+### 5. Crear nuevo cliente
+POST {{baseUrl}}/clientes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Juan Pérez López",
+  "email": "juan.perez@example.com",
+  "telefono": "+52 55 1234 5678",
+  "empresa": "Tech Solutions México",
+  "puesto": "Director de TI",
+  "direccion": "Av. Reforma 123, Piso 15",
+  "ciudad": "Ciudad de México",
+  "pais": "México",
+  "sitioWeb": "https://techsolutions.mx",
+  "notas": "Cliente potencial interesado en nuestro CRM. Primera reunión agendada para el 15 de enero."
+}
+
+### 6. Crear cliente sin propietario (usa el usuario autenticado)
+POST {{baseUrl}}/clientes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "María González",
+  "email": "maria@startup.com",
+  "telefono": "+52 33 9876 5432",
+  "empresa": "Startup Innovadora",
+  "ciudad": "Guadalajara",
+  "pais": "México"
+}
+
+### 7. Actualizar cliente
+PATCH {{baseUrl}}/clientes/COLOCA_UN_ID_AQUI
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "telefono": "+52 55 9999 8888",
+  "notas": "Cliente actualizado - Segunda reunión realizada exitosamente"
+}
+
+### 8. Eliminar cliente
+DELETE {{baseUrl}}/clientes/COLOCA_UN_ID_AQUI
+Authorization: Bearer {{token}}
+
+### 9. Intentar acceder sin token (debe fallar con 401)
+GET {{baseUrl}}/clientes
+
+### 10. Crear cliente con validación errónea (debe fallar)
+POST {{baseUrl}}/clientes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "email-invalido",
+  "nombre": ""
+}

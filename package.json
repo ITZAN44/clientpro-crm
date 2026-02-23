@@ -1,0 +1,40 @@
+{
+  "name": "clientpro-crm",
+  "version": "1.0.0",
+  "description": "Sistema CRM completo con NestJS y Next.js",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others-on-failure --restart-tries 5 --restart-after 1000 --prefix-colors \"cyan,magenta\" --names \"BACKEND,FRONTEND\" \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "dev:auto": "concurrently --kill-others-on-failure --restart-tries 10 --restart-after 1500 --prefix-colors \"cyan,magenta\" --names \"BACKEND,FRONTEND\" \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "dev:silent": "concurrently --raw --kill-others-on-failure \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run start:dev",
+    "frontend:dev": "cd frontend && npm run dev",
+    "backend:build": "cd backend && npm run build",
+    "frontend:build": "cd frontend && npm run build",
+    "build": "npm run backend:build && npm run frontend:build",
+    "backend:start": "cd backend && npm run start:prod",
+    "frontend:start": "cd frontend && npm start",
+    "start": "concurrently --kill-others-on-failure --names \"BACKEND,FRONTEND\" \"npm run backend:start\" \"npm run frontend:start\"",
+    "test:backend": "cd backend && npm run test",
+    "test:frontend": "cd frontend && npm run test",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "scan": "semgrep --config .semgrep/backend-rules.yaml backend/",
+    "scan:detailed": "semgrep --config .semgrep/backend-rules.yaml --verbose backend/",
+    "scan:json": "semgrep --config .semgrep/backend-rules.yaml --json backend/ > semgrep-results.json"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.3",
+    "concurrently": "^9.2.1",
+    "mcp-server-semgrep": "^1.0.0"
+  },
+  "keywords": [
+    "crm",
+    "nestjs",
+    "nextjs",
+    "postgresql",
+    "prisma"
+  ],
+  "author": "",
+  "license": "MIT"
+}

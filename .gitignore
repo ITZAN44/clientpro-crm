@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+package-lock.json
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Production
+build/
+dist/
+.next/
+out/
+
+# Environment
+.env
+.env*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Prisma
+prisma/migrations/*/migration.sql
+
+# Temporal
+temp/
+tmp/
+*.tmp
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads (si los hay)
+uploads/
+public/uploads/

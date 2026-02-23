@@ -1,0 +1,34 @@
+
+> frontend@0.1.0 build
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\User\Documents\CuriosinCODE\Desarrollo-Wep - copia\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\User\Documents\CuriosinCODE\Desarrollo-Wep - copia\frontend\package-lock.json
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 59s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/(dashboard)/layout.tsx:57:11
+Type error: Type '{ type: "tween"; ease: string; duration: number; }' is not assignable to type 'Transition<any> | undefined'.
+  Type '{ type: "tween"; ease: string; duration: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+    Type '{ type: "tween"; ease: string; duration: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+      Types of property 'ease' are incompatible.
+        Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+
+[0m [90m 55 |[39m           exit[33m=[39m[32m"exit"[39m
+ [90m 56 |[39m           variants[33m=[39m{pageVariants}
+[31m[1m>[22m[39m[90m 57 |[39m           transition[33m=[39m{pageTransition}
+ [90m    |[39m           [31m[1m^[22m[39m
+ [90m 58 |[39m         [33m>[39m
+ [90m 59 |[39m           {children}
+ [90m 60 |[39m         [33m<[39m[33m/[39m[33mmotion[39m[33m.[39mdiv[33m>[39m[0m
+Next.js build worker exited with code: 1 and signal: null
