@@ -15,7 +15,8 @@ Desarrollo-Wep/
 ├── database/               # Scripts SQL
 ├── docs/                   # Documentación
 ├── .opencode/              # Skills y configuración OpenCode
-├── .github/                # GitHub Copilot config
+├── .github/                # GitHub Copilot config + PR templates
+├── .husky/                 # Git Hooks (pre-commit, commit-msg)
 ├── package.json            # Scripts raíz (Concurrently)
 ├── .mcp.json               # MCPs configurados
 ├── opencode.jsonc          # Configuración OpenCode
@@ -29,6 +30,7 @@ Desarrollo-Wep/
 ## 🎨 Frontend (Next.js 16)
 
 ### **Estructura de Carpetas**
+
 ```
 frontend/
 ├── src/
@@ -122,6 +124,7 @@ frontend/
 ```
 
 ### **Páginas Implementadas (7)**
+
 1. **`/login`** - Login con NextAuth.js
 2. **`/dashboard`** - Dashboard con métricas y actividades recientes
 3. **`/clientes`** - DataTable con CRUD de clientes
@@ -131,6 +134,7 @@ frontend/
 7. **`/admin/usuarios`** - Gestión de usuarios y roles (solo ADMIN) ✨ NUEVO
 
 ### **Componentes UI (16 de shadcn/ui)**
+
 - Button, Input, Card, Table, Dialog, Badge
 - Select, Textarea, Label, Avatar, Tabs
 - Dropdown Menu, Toast, Tooltip, Alert, Checkbox
@@ -140,6 +144,7 @@ frontend/
 ## ⚙️ Backend (NestJS 11)
 
 ### **Estructura de Carpetas**
+
 ```
 backend/
 ├── src/
@@ -250,6 +255,7 @@ backend/
 ```
 
 ### **Módulos Implementados (8)**
+
 1. **AuthModule** - JWT authentication + guards + decoradores
 2. **ClientesModule** - CRUD de clientes
 3. **NegociosModule** - CRUD de negocios + cambio de etapa
@@ -260,6 +266,7 @@ backend/
 8. **UsuariosModule** - Gestión de usuarios y roles ✨ NUEVO
 
 ### **Endpoints REST (36 totales)**
+
 - **Auth**: 2 endpoints
 - **Clientes**: 5 endpoints
 - **Negocios**: 6 endpoints
@@ -273,6 +280,7 @@ backend/
 - **Notificaciones**: 5 endpoints
 
 ### **WebSocket Events (5)**
+
 - NUEVA_NOTIFICACION
 - NEGOCIO_ACTUALIZADO
 - ACTIVIDAD_VENCIDA
@@ -284,6 +292,7 @@ backend/
 ## 🗄️ Base de Datos
 
 ### **Archivos**
+
 ```
 database/
 ├── schema.sql               # Estructura completa (8 tablas)
@@ -293,6 +302,7 @@ database/
 ```
 
 ### **Prisma**
+
 ```
 backend/prisma/
 ├── schema.prisma            # 8 modelos, 5 enums
@@ -306,6 +316,7 @@ backend/prisma/
 ## 📚 Documentación
 
 ### **Estructura**
+
 ```
 docs/
 ├── context/                      # Contexto del proyecto
@@ -360,6 +371,7 @@ docs/
 ## 🛠️ Configuración OpenCode
 
 ### **Skills**
+
 ```
 .opencode/
 ├── skills/
@@ -383,6 +395,7 @@ docs/
 ## 🔧 GitHub Copilot
 
 ### **Configuración**
+
 ```
 .github/
 └── copilot/
@@ -391,18 +404,38 @@ docs/
     └── rules.md                  # Reglas fijas de desarrollo
 ```
 
+### **PR Templates y Git Workflow**
+
+```
+.github/
+├── pull_request_template.md     # Template para PRs
+└── workflows/                   # GitHub Actions (futuro)
+```
+
+**Git Flow**:
+
+- `master` - Producción (protegida, requiere PR)
+- `staging` - Pre-producción (protegida, requiere PR)
+- `develop` - Desarrollo activo (protegida, requiere PR)
+
+**Git Hooks** (Husky):
+
+- `pre-commit` - Prettier + lint-staged
+- `commit-msg` - Validación de Conventional Commits
+
 ---
 
 ## 📦 Scripts de Desarrollo
 
 ### **Raíz (package.json)**
+
 ```json
 {
   "scripts": {
-    "dev": "concurrently ...",           // Backend + Frontend
-    "dev:auto": "concurrently ...",      // Con auto-restart agresivo
-    "backend:dev": "npm run start:dev",  // Solo backend
-    "frontend:dev": "npm run dev",       // Solo frontend
+    "dev": "concurrently ...", // Backend + Frontend
+    "dev:auto": "concurrently ...", // Con auto-restart agresivo
+    "backend:dev": "npm run start:dev", // Solo backend
+    "frontend:dev": "npm run dev", // Solo frontend
     "build": "npm run backend:build && npm run frontend:build",
     "lint:backend": "...",
     "lint:frontend": "..."
@@ -417,6 +450,7 @@ docs/
 ### **Nombres de Archivos**
 
 **Backend (NestJS)**:
+
 - Módulos: `clientes.module.ts`
 - Controllers: `clientes.controller.ts`
 - Services: `clientes.service.ts`
@@ -424,6 +458,7 @@ docs/
 - Tests: `clientes.service.spec.ts`
 
 **Frontend (Next.js)**:
+
 - Páginas: `page.tsx` (dentro de carpeta)
 - Componentes: `cliente-form.tsx` (kebab-case)
 - Types: `cliente.ts`
@@ -431,24 +466,25 @@ docs/
 - Tests: `cliente-form.test.tsx`
 
 ### **Estructura de Imports**
+
 ```typescript
 // 1. React/Next.js core
-import { useState } from 'react'
+import { useState } from 'react';
 
 // 2. External libraries
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
 
 // 3. UI Components
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 
 // 4. Custom components
-import ClienteForm from '@/components/cliente-form'
+import ClienteForm from '@/components/cliente-form';
 
 // 5. Types/Interfaces
-import { Cliente } from '@/types/cliente'
+import { Cliente } from '@/types/cliente';
 
 // 6. API/Utils
-import { getClientes } from '@/lib/api/clientes'
+import { getClientes } from '@/lib/api/clientes';
 ```
 
 ---
@@ -462,5 +498,5 @@ import { getClientes } from '@/lib/api/clientes'
 
 ---
 
-**Última revisión**: 30 Enero 2026  
-**Versión**: 0.4.0
+**Última revisión**: 5 Febrero 2026  
+**Versión**: 0.6.1

@@ -9,11 +9,13 @@
 ## 📱 Frontend
 
 ### **Framework Base**
+
 - **Next.js 16.1.1** - Framework React con App Router
 - **TypeScript 5.7.3** - Tipado estático
 - **React 19.0.0** - Biblioteca UI
 
 ### **Estilos y UI**
+
 - **Tailwind CSS v4** - Utility-first CSS framework
 - **shadcn/ui** - Componentes UI accesibles (16 componentes instalados)
   - Button, Input, Card, Table, Dialog, Badge
@@ -22,50 +24,60 @@
 - **Lucide React** - Iconos SVG
 
 ### **Gestión de Estado**
+
 - **TanStack Query v5** (React Query) - Cache y sincronización de datos del servidor
 - **React Context API** - Estado global de notificaciones
 - **React Hook Form** - Gestión de formularios
 - **Zod** - Validación de esquemas
 
 ### **Autenticación**
+
 - **NextAuth.js v5** (beta) - Autenticación con JWT
   - CredentialsProvider
   - JWT + Session callbacks
   - Protección de rutas
 
 ### **Drag & Drop**
+
 - **@dnd-kit** - Biblioteca para Kanban board
   - Drag sensors
   - Sortable context
   - Overlay visual
 
 ### **Visualización de Datos**
+
 - **Recharts** - Gráficas interactivas
   - BarChart, LineChart, PieChart
   - AreaChart, ComposedChart
   - Tooltips, Legends
 
 ### **Exportación**
+
 - **jsPDF** - Generación de PDFs
 - **html2canvas** - Captura de elementos HTML a imagen
 
 ### **Fechas**
+
 - **date-fns** - Manipulación de fechas
 - **react-day-picker** - Date picker con rangos
 
 ### **HTTP Client**
+
 - **Axios** - Cliente HTTP con interceptores
 
 ### **WebSocket**
+
 - **socket.io-client 4.8.1** - Cliente WebSocket
   - Auth con JWT en handshake
   - Reconexión automática
   - Event listeners
 
 ### **Notificaciones**
+
 - **sonner** - Toast notifications
 
 ### **Testing**
+
 - **Jest 30** - Framework de testing
 - **React Testing Library** - Testing de componentes
 - **@testing-library/jest-dom** - Matchers personalizados
@@ -75,10 +87,12 @@
 ## 🖥️ Backend
 
 ### **Framework Base**
+
 - **NestJS 11.0.6** - Framework Node.js progresivo
 - **TypeScript 5.7.3** - Tipado estático
 
 ### **Base de Datos**
+
 - **PostgreSQL** - Base de datos relacional
 - **Prisma 7.2.0** - ORM con type-safety
   - Prisma Client
@@ -87,17 +101,20 @@
   - @prisma/adapter-pg
 
 ### **Autenticación y Seguridad**
+
 - **Passport.js** - Middleware de autenticación
 - **passport-jwt** - Estrategia JWT
 - **@nestjs/jwt** - Módulo JWT de NestJS
 - **bcrypt** - Hash de contraseñas (10 rounds)
 
 ### **Validación**
+
 - **class-validator** - Validación de DTOs
 - **class-transformer** - Transformación de datos
 - Mensajes de error en español
 
 ### **Real-Time**
+
 - **Socket.io 4.8.0** - WebSocket bidireccional
 - **@nestjs/websockets** - Módulo WebSocket de NestJS
 - **@nestjs/platform-socket.io** - Adaptador Socket.io
@@ -106,6 +123,7 @@
   - Event emitters
 
 ### **Utilidades**
+
 - **Axios** - HTTP client
 - **CORS** - Configurado para desarrollo
 
@@ -114,12 +132,14 @@
 ## 🗄️ Base de Datos
 
 ### **PostgreSQL**
+
 - **Versión**: Latest (containerizado)
 - **Base de datos**: `clientpro_crm`
 - **Puerto**: 5432
 - **Usuario**: postgres
 
 ### **Prisma**
+
 - **8 Modelos**:
   - Equipo
   - Usuario
@@ -141,19 +161,39 @@
 
 ## 🔧 DevOps y Herramientas
 
+### **Control de Versiones**
+
+- **Git** - Sistema de control de versiones
+- **GitHub** - Repositorio remoto: [ITZAN44/clientpro-crm](https://github.com/ITZAN44/clientpro-crm)
+- **Git Flow** - Estrategia de branching
+  - `master` - Producción (protegida)
+  - `staging` - Pre-producción (protegida)
+  - `develop` - Desarrollo activo (protegida)
+  - Feature branches: `feature/*`, `fix/*`, `hotfix/*`
+- **PR Templates** - Plantillas para Pull Requests con checklist
+
 ### **Gestión de Mono-repo**
+
 - **Concurrently 9.2.1** - Ejecutar backend + frontend simultáneamente
   - Scripts unificados en package.json raíz
   - Auto-restart (5 intentos)
   - Prefijos de color: [BACKEND] cyan, [FRONTEND] magenta
 
 ### **Linting y Formato**
+
 - **ESLint** - Linter para JavaScript/TypeScript
 - **Prettier** - Formateador de código
   - Backend: single quotes, trailing commas
   - Frontend: Next.js defaults
+- **Husky 9.1.7** - Git Hooks automáticos
+  - Pre-commit: lint-staged + prettier
+  - Commit-msg: Conventional Commits validation
+- **lint-staged** - Ejecuta linters solo en archivos staged
+  - Prettier en archivos modificados
+  - ESLint en backend/frontend según carpeta
 
 ### **Análisis Estático**
+
 - **Semgrep 1.150.0** - Análisis estático de código
   - 9 reglas personalizadas para backend
   - Detección de code smells, secrets, SQL injection
@@ -162,11 +202,20 @@
   - Ver detalles en `decisions/006-semgrep-static-analysis.md`
 
 ### **Testing**
+
 - **Jest** - Framework de testing (backend + frontend)
 - **Supertest** - Testing de APIs HTTP (backend)
 - **React Testing Library** - Testing de componentes (frontend)
 
+### **Convenciones de Código**
+
+- **Conventional Commits** - Formato estandarizado de commits
+  - `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`
+  - Enforced con Husky commit-msg hook
+  - Ejemplo: `feat: agregar autenticación JWT`
+
 ### **MCPs (Model Context Protocol)**
+
 - **pgsql** - PostgreSQL MCP
   - Queries, migraciones, inspección de DB
 - **chrome-devtools** - Browser testing
@@ -185,6 +234,7 @@
 ## 📦 Versiones de Dependencias Clave
 
 ### **Frontend** (`frontend/package.json`)
+
 ```json
 {
   "next": "16.1.1",
@@ -202,6 +252,7 @@
 ```
 
 ### **Backend** (`backend/package.json`)
+
 ```json
 {
   "@nestjs/core": "^11.0.6",
@@ -223,6 +274,7 @@
 ## 📡 APIs y Endpoints
 
 ### **REST API** (36 endpoints)
+
 - **Auth**: 2 endpoints (login, register)
 - **Clientes**: 5 endpoints (CRUD + list)
 - **Negocios**: 6 endpoints (CRUD + list + cambiar etapa)
@@ -233,6 +285,7 @@
 - **Usuarios**: 2 endpoints (list, cambiar rol) ✨ NUEVO
 
 ### **WebSocket** (5 eventos)
+
 - NUEVA_NOTIFICACION (emit)
 - NEGOCIO_ACTUALIZADO (emit)
 - ACTIVIDAD_VENCIDA (emit)
@@ -244,6 +297,7 @@
 ## 🎨 Diseño y UX
 
 ### **Sistema de Diseño**
+
 - **Paleta de colores**:
   - Dominante: #292524 (stone-900)
   - Primario: #EA580C (orange-600)
@@ -254,6 +308,7 @@
 - **Sombras**: Tailwind CSS shadow utilities
 
 ### **Componentes UI**
+
 - DataTables con paginación
 - Kanban boards con drag & drop
 - Gráficas interactivas
@@ -267,11 +322,13 @@
 ## 🔐 Seguridad
 
 ### **Autenticación**
+
 - JWT tokens (firma HMAC SHA-256)
 - Refresh tokens (pendiente)
 - Session management con NextAuth
 
 ### **Autorización**
+
 - **RolesGuard** para endpoints ✨ NUEVO
 - **Decoradores**: @Roles, @CurrentUser ✨ NUEVO
 - Roles: ADMIN, MANAGER, VENDEDOR
@@ -280,12 +337,14 @@
 - Validación de ownership (usuario solo ve sus datos)
 
 ### **Validación**
+
 - class-validator en todos los DTOs
 - Zod schemas en frontend
 - Sanitización de inputs
 - CORS configurado
 
 ### **Base de Datos**
+
 - Prisma ORM (SQL injection protection)
 - Passwords hasheados con bcrypt
 - Timestamps automáticos (createdAt, updatedAt)
@@ -309,6 +368,7 @@
 ## 🚀 Comandos de Desarrollo
 
 ### **Desarrollo**
+
 ```bash
 npm run dev                  # Backend + Frontend (concurrently)
 npm run backend:dev          # Solo backend (puerto 4000)
@@ -316,12 +376,14 @@ npm run frontend:dev         # Solo frontend (puerto 3000)
 ```
 
 ### **Testing**
+
 ```bash
 cd frontend && npm test      # Frontend tests
 cd backend && npm test       # Backend tests
 ```
 
 ### **Linting**
+
 ```bash
 npm run lint:backend         # ESLint backend
 npm run lint:frontend        # ESLint frontend
@@ -329,6 +391,7 @@ cd backend && npm run format # Prettier backend
 ```
 
 ### **Prisma**
+
 ```bash
 cd backend
 npx prisma generate          # Generar Prisma Client
@@ -349,5 +412,5 @@ npx prisma studio            # Abrir Prisma Studio
 
 ---
 
-**Última revisión**: 30 Enero 2026  
-**Versión del proyecto**: 0.4.0
+**Última revisión**: 5 Febrero 2026  
+**Versión del proyecto**: 0.6.1

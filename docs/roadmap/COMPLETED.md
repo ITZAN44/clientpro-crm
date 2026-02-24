@@ -1,20 +1,21 @@
 # Funcionalidades Completadas
 
 > **Propósito**: Registro histórico de todas las funcionalidades implementadas y completadas
-> **Última actualización**: 5 de febrero de 2026
-> **Versión actual**: v0.7.0
+> **Última actualización**: 23 de febrero de 2026
+> **Versión actual**: v0.7.1
 
 ---
 
 ## 🎉 Resumen Ejecutivo
 
-**Estado**: MVP 98% completo  
-**Fases completadas**: 5.6 de 6  
+**Estado**: MVP 98% completo + Fase 6 iniciada (Subfase 6.1 completada)  
+**Fases completadas**: 5.6 de 6 + Subfase 6.1  
 **Módulos backend**: 8 completos (agregado UsuariosModule)  
 **Páginas frontend**: 7 funcionales (agregado /admin/usuarios)  
 **Endpoints**: 36 operativos (31 REST + 5 WebSocket)  
 **Testing**: Backend 96/96, Frontend 144/144 pasando  
-**Mejoras UX**: Skeleton loaders, atajos de teclado, animaciones implementadas
+**Mejoras UX**: Skeleton loaders, atajos de teclado, animaciones implementadas  
+**Git**: Repositorio en GitHub con Git Flow, hooks automatizados ✨ NUEVO
 
 ---
 
@@ -26,6 +27,7 @@
 ### **Backend Completado**
 
 #### **Setup Inicial**
+
 - ✅ NestJS 11.0.6 configurado con TypeScript 5.7.2
 - ✅ PostgreSQL conectado vía Prisma 7.2.0
 - ✅ CORS habilitado para frontend
@@ -33,6 +35,7 @@
 - ✅ Puerto 4000 configurado
 
 #### **AuthModule**
+
 - ✅ POST `/auth/login` - Login con JWT
 - ✅ POST `/auth/register` - Registro de usuarios
 - ✅ JWT Strategy con Passport.js
@@ -42,6 +45,7 @@
 - ✅ Validación con class-validator (mensajes en español)
 
 **Archivos**:
+
 ```
 backend/src/auth/
 ├── auth.module.ts
@@ -57,6 +61,7 @@ backend/src/auth/
 ### **Frontend Completado**
 
 #### **Configuración Base**
+
 - ✅ Next.js 16.0.1 con App Router
 - ✅ React 19.0.0 + React DOM 19.0.0
 - ✅ TypeScript 5.7.3 modo estricto
@@ -65,6 +70,7 @@ backend/src/auth/
 - ✅ Puerto 3000 configurado
 
 #### **Autenticación (NextAuth.js)**
+
 - ✅ CredentialsProvider conectado al backend
 - ✅ JWT callbacks (id, rol, accessToken)
 - ✅ Session con datos del usuario
@@ -72,6 +78,7 @@ backend/src/auth/
 - ✅ Redirección automática
 
 #### **Página Login** (`/login`)
+
 - ✅ Formulario con react-hook-form + Zod
 - ✅ Diseño moderno con panel lateral dark
 - ✅ Iconos lucide-react (Zap, Mail, Lock)
@@ -80,6 +87,7 @@ backend/src/auth/
 - ✅ Manejo de errores con alertas
 
 #### **Dashboard** (`/dashboard`)
+
 - ✅ Header sticky con navegación
 - ✅ 4 tarjetas de estadísticas con gradientes
 - ✅ Actividad reciente con timeline
@@ -88,6 +96,7 @@ backend/src/auth/
 - ✅ Todos los iconos de lucide-react
 
 **Archivos**:
+
 ```
 frontend/src/
 ├── app/
@@ -102,17 +111,20 @@ frontend/src/
 ### **Base de Datos**
 
 #### **Schema Prisma**
+
 - ✅ 8 modelos: Equipo, Usuario, Cliente, Negocio, Actividad, Email, Nota, Notificacion
 - ✅ 5 enums: RolUsuario, EtapaNegocio, TipoActividad, TipoNotificacion, TipoMoneda
 - ✅ Relaciones completas configuradas
 - ✅ Índices en foreign keys
 
 #### **Datos de Seed**
+
 - ✅ 7 usuarios de prueba (Password123!)
 - ✅ 2 equipos configurados
 - ✅ Contraseñas hasheadas con bcrypt
 
 **Usuarios disponibles**:
+
 - admin@clientpro.com (ADMIN)
 - gerente@clientpro.com (MANAGER)
 - vendedor1@clientpro.com (VENDEDOR)
@@ -124,6 +136,7 @@ frontend/src/
 ### **Diseño Visual**
 
 #### **Paleta de Colores**
+
 - ✅ Dominante: #292524 (stone-900)
 - ✅ Primario: #EA580C (orange-600)
 - ✅ Acento: #84CC16 (lime-500)
@@ -141,6 +154,7 @@ frontend/src/
 ### **Módulo Clientes** (Completado 09/01)
 
 #### **Backend**
+
 - ✅ GET `/clientes` - Listado con paginación y búsqueda
 - ✅ GET `/clientes/:id` - Detalle con propietario
 - ✅ POST `/clientes` - Crear cliente
@@ -151,6 +165,7 @@ frontend/src/
 - ✅ Auto-asignación de propietario
 
 **Archivos**:
+
 ```
 backend/src/clientes/
 ├── clientes.module.ts
@@ -164,6 +179,7 @@ backend/src/clientes/
 ```
 
 #### **Frontend**
+
 - ✅ Página `/clientes` (355 líneas)
 - ✅ DataTable con TanStack Table
 - ✅ Búsqueda en tiempo real (800ms debounce)
@@ -178,6 +194,7 @@ backend/src/clientes/
 - ✅ TanStack Query para caching
 
 **Archivos**:
+
 ```
 frontend/src/
 ├── app/clientes/page.tsx
@@ -190,6 +207,7 @@ frontend/src/
 ### **Módulo Negocios** (Completado 13/01)
 
 #### **Backend**
+
 - ✅ GET `/negocios` - Listado con filtros
 - ✅ GET `/negocios/:id` - Detalle con cliente y propietario
 - ✅ POST `/negocios` - Crear negocio
@@ -201,6 +219,7 @@ frontend/src/
 - ✅ 6 etapas: PROSPECTO, CONTACTO, PROPUESTA, NEGOCIACION, GANADO, PERDIDO
 
 **Archivos**:
+
 ```
 backend/src/negocios/
 ├── negocios.module.ts
@@ -214,6 +233,7 @@ backend/src/negocios/
 ```
 
 #### **Frontend**
+
 - ✅ Vista Kanban `/negocios` (323 líneas)
 - ✅ Drag & Drop con @dnd-kit
 - ✅ 6 columnas con colores distintivos
@@ -227,6 +247,7 @@ backend/src/negocios/
 - ✅ Date picker para fecha de cierre
 
 **Archivos**:
+
 ```
 frontend/src/
 ├── app/negocios/page.tsx
@@ -241,6 +262,7 @@ frontend/src/
 ### **Módulo Actividades** (Completado 18/01)
 
 #### **Backend**
+
 - ✅ POST `/actividades` - Crear actividad
 - ✅ GET `/actividades` - Listado con filtros
 - ✅ GET `/actividades/:id` - Detalle con relaciones
@@ -252,6 +274,7 @@ frontend/src/
 - ✅ Validación: al menos cliente o negocio requerido
 
 **Archivos**:
+
 ```
 backend/src/actividades/
 ├── actividades.module.ts
@@ -264,6 +287,7 @@ backend/src/actividades/
 ```
 
 #### **Frontend**
+
 - ✅ Página `/actividades` (520+ líneas)
 - ✅ Layout tipo cards (no tabla)
 - ✅ Iconos por tipo (Phone, Mail, Users, CheckSquare, FileText)
@@ -277,6 +301,7 @@ backend/src/actividades/
 - ✅ Integrado en Dashboard ("Actividad Reciente")
 
 **Archivos**:
+
 ```
 frontend/src/
 ├── app/actividades/page.tsx (520+ líneas)
@@ -296,6 +321,7 @@ frontend/src/
 ### **Módulo Stats** (Completado 13/01)
 
 #### **Backend**
+
 - ✅ GET `/stats/general` - Clientes, negocios, ventas totales
 - ✅ GET `/stats/distribucion-etapas` - Pipeline por etapa
 - ✅ Agregaciones con Prisma
@@ -303,6 +329,7 @@ frontend/src/
 - ✅ Formato de moneda
 
 **Archivos**:
+
 ```
 backend/src/stats/
 ├── stats.module.ts
@@ -311,6 +338,7 @@ backend/src/stats/
 ```
 
 #### **Frontend**
+
 - ✅ Dashboard con datos reales (no mocks)
 - ✅ 3 stat cards conectadas a API
 - ✅ TanStack Query con auto-refresh
@@ -323,12 +351,14 @@ backend/src/stats/
 ### **Módulo Reportes** (Completado 18/01)
 
 #### **Backend**
+
 - ✅ GET `/reportes/ventas-mes` - Ventas por mes (últimos 6 meses)
 - ✅ GET `/reportes/top-vendedores` - Top vendedores por conversión
 - ✅ GET `/reportes/pipeline` - Valor total por etapa
 - ✅ Agregaciones complejas con Prisma
 
 **Archivos**:
+
 ```
 backend/src/reportes/
 ├── reportes.module.ts
@@ -337,6 +367,7 @@ backend/src/reportes/
 ```
 
 #### **Frontend**
+
 - ✅ Página `/reportes` con gráficos
 - ✅ Recharts para visualización
 - ✅ Gráfico de líneas (ventas por mes)
@@ -346,6 +377,7 @@ backend/src/reportes/
 - ✅ Export a CSV/Excel (planeado)
 
 **Archivos**:
+
 ```
 frontend/src/
 ├── app/reportes/page.tsx
@@ -362,6 +394,7 @@ frontend/src/
 ### **Backend Completado**
 
 #### **Módulo Notificaciones**
+
 - ✅ POST `/notificaciones` - Crear notificación
 - ✅ GET `/notificaciones` - Listado con paginación
 - ✅ GET `/notificaciones/no-leidas/count` - Contador
@@ -372,6 +405,7 @@ frontend/src/
 - ✅ Lógica dual (propietario + quien realiza cambio)
 
 **Archivos**:
+
 ```
 backend/src/notificaciones/
 ├── notificaciones.module.ts
@@ -383,6 +417,7 @@ backend/src/notificaciones/
 ```
 
 #### **WebSocket Gateway (Socket.io)**
+
 - ✅ Socket.io 4.8.1 integrado
 - ✅ Autenticación JWT en handshake
 - ✅ Rooms por usuario: `user:${userId}`
@@ -396,6 +431,7 @@ backend/src/notificaciones/
 - ✅ Notificaciones duales automáticas
 
 **Archivos**:
+
 ```
 backend/src/notificaciones/
 ├── notificaciones.gateway.ts (WebSocket)
@@ -405,6 +441,7 @@ backend/src/notificaciones/
 ### **Frontend Completado**
 
 #### **Componentes de Notificaciones**
+
 - ✅ NotificationBadge con contador en tiempo real
 - ✅ NotificationDropdown con lista de notificaciones
 - ✅ NotificationItem con iconos por tipo
@@ -414,6 +451,7 @@ backend/src/notificaciones/
 - ✅ Sonido de notificación (opcional)
 
 **Archivos**:
+
 ```
 frontend/src/
 ├── components/notifications/
@@ -427,6 +465,7 @@ frontend/src/
 ```
 
 #### **Integración**
+
 - ✅ Badge en Navbar siempre visible
 - ✅ Dropdown en Header
 - ✅ Auto-actualización de estadísticas al recibir notificación
@@ -434,6 +473,7 @@ frontend/src/
 - ✅ Manejo de reconexión automática
 
 ### **Problemas Críticos Resueltos**
+
 - ✅ 404 error en `urlAccion` → Corregido path
 - ✅ TypeScript enum error NEGOCIO_ACTUALIZADO → Agregado al enum
 - ✅ CORS Socket.io → Configurado correctamente
@@ -450,24 +490,28 @@ frontend/src/
 ### **Backend Completado**
 
 #### **Módulo de Autorización**
+
 - ✅ RolesGuard para verificar roles requeridos
 - ✅ Decoradores: `@Roles()` y `@CurrentUser()`
 - ✅ AuditInterceptor para logs de auditoría
 - ✅ Tests unitarios: 7/7 pasando
 
 #### **Módulo Usuarios**
+
 - ✅ GET `/usuarios` - Listar usuarios (solo ADMIN)
 - ✅ PATCH `/usuarios/:id/rol` - Cambiar rol (solo ADMIN)
 - ✅ DTOs con validación
 - ✅ Protección por roles
 
 #### **Permisos en Módulo Clientes**
+
 - ✅ GET `/clientes` - Filtrado por propietario si VENDEDOR
 - ✅ PATCH `/clientes/:id` - Solo ADMIN y MANAGER
 - ✅ DELETE `/clientes/:id` - Solo ADMIN
 - ✅ Validación de permisos en service layer
 
 **Archivos**:
+
 ```
 backend/src/
 ├── auth/
@@ -491,23 +535,27 @@ backend/src/
 ### **Frontend Completado**
 
 #### **Sistema de Autenticación y Roles**
+
 - ✅ Hook `useAuth()` con helpers (isAdmin, isManager, isVendedor)
 - ✅ Componente `<RoleGuard>` para renderizado condicional
 - ✅ HOC `<ProtectedRoute>` para protección de páginas
 - ✅ Tipos sincronizados con backend
 
 #### **Página de Administración**
+
 - ✅ `/admin/usuarios` - Gestión de usuarios (solo ADMIN)
 - ✅ Tabla con datos de usuarios
 - ✅ Dialog para cambiar roles
 - ✅ Validación y permisos visuales
 
 #### **UI Condicional**
+
 - ✅ Botones de editar/eliminar según rol
 - ✅ Badge de rol en header
 - ✅ Acceso a admin desde dashboard (solo ADMIN)
 
 **Archivos**:
+
 ```
 frontend/src/
 ├── types/ (rol.ts, usuario.ts)
@@ -524,13 +572,13 @@ frontend/src/
 
 ### **Tabla de Permisos**
 
-| Acción | ADMIN | MANAGER | VENDEDOR |
-|--------|-------|---------|----------|
-| Ver clientes | ✅ Todos | ✅ Todos | ✅ Solo propios |
-| Crear cliente | ✅ | ✅ | ✅ |
-| Editar cliente | ✅ | ✅ | ❌ |
-| Eliminar cliente | ✅ | ❌ | ❌ |
-| Admin usuarios | ✅ | ❌ | ❌ |
+| Acción           | ADMIN    | MANAGER  | VENDEDOR        |
+| ---------------- | -------- | -------- | --------------- |
+| Ver clientes     | ✅ Todos | ✅ Todos | ✅ Solo propios |
+| Crear cliente    | ✅       | ✅       | ✅              |
+| Editar cliente   | ✅       | ✅       | ❌              |
+| Eliminar cliente | ✅       | ❌       | ❌              |
+| Admin usuarios   | ✅       | ❌       | ❌              |
 
 ---
 
@@ -542,6 +590,7 @@ frontend/src/
 ### **Backend Testing - COMPLETADO** ✅
 
 #### **Tests Implementados**
+
 - ✅ **AuthService**: 12 tests (login, register, JWT, hash)
 - ✅ **ClientesService**: 19 tests (CRUD, permisos por rol, búsqueda)
 - ✅ **NegociosService**: 19 tests (CRUD, Kanban, auto-timestamp, notificaciones)
@@ -552,6 +601,7 @@ frontend/src/
 **Total**: 96 tests pasando
 
 #### **Coverage Alcanzado**
+
 ```
 Servicio                  % Stmts  % Branch  % Funcs  % Lines
 ──────────────────────────────────────────────────────────────
@@ -567,6 +617,7 @@ PROMEDIO                 96.25%    78.57%    100%     96.1%
 **Meta**: 80%+ → **SUPERADO por 16.25%** ✅
 
 **Archivos creados**:
+
 ```
 backend/src/
 ├── testing/prisma.mock.ts (factory de mocks)
@@ -580,6 +631,7 @@ backend/src/
 ### **Frontend Testing - COMPLETADO (Componentes UI Básicos)** ✅
 
 #### **Tests Implementados**
+
 - ✅ **Badge**: 13 tests (variantes, asChild, props)
 - ✅ **Button**: 37 tests (6 variantes, 6 tamaños, disabled, interacciones)
 - ✅ **Card**: 29 tests (7 subcomponentes, composición)
@@ -589,6 +641,7 @@ backend/src/
 **Total**: 144 tests pasando (138 nuevos + 6 anteriores de NotificationBadge)
 
 #### **Coverage Alcanzado**
+
 ```
 File         % Stmts  % Branch  % Funcs  % Lines
 ───────────────────────────────────────────────
@@ -604,6 +657,7 @@ PROMEDIO      93.75%     100%     100%     100%
 **Meta**: 70%+ → **SUPERADO por 23.75%** ✅
 
 **Archivos creados**:
+
 ```
 frontend/src/components/ui/
 ├── badge.test.tsx (13 tests)
@@ -614,12 +668,14 @@ frontend/src/components/ui/
 ```
 
 #### **Configuración de Testing**
+
 - ✅ Jest 30 + React Testing Library configurados
 - ✅ Mocks globales: Next.js, NextAuth, Socket.io
 - ✅ `jest.config.js` y `jest.setup.js` funcionales
 - ✅ Patrones de testing establecidos (AAA pattern)
 
 ### **Pendiente Fase 5**
+
 - ⏳ Tests de componentes UI complejos (Select, Dialog, Tabs, Table)
 - ⏳ Tests de páginas del dashboard
 - ⏳ Tests de integración WebSocket
@@ -635,6 +691,7 @@ frontend/src/components/ui/
 ### **Frontend Completado**
 
 #### **Dark Mode Implementado**
+
 - ✅ Soporte dark mode completo en todas las páginas
 - ✅ Toggle manual en header del dashboard
 - ✅ Paleta de colores consistente (stone-800/900)
@@ -645,6 +702,7 @@ frontend/src/components/ui/
   - Reportes (1 archivo)
 
 #### **Componentes Actualizados**
+
 - ✅ Forms e inputs con bg/border/text/placeholder
 - ✅ Select components (Trigger, Content, Item)
 - ✅ Tables con headers, rows y cells
@@ -655,6 +713,7 @@ frontend/src/components/ui/
 - ✅ Badges con variantes dark (blue, green, red, lime)
 
 **Archivos modificados**:
+
 ```
 frontend/src/app/
 ├── clientes/
@@ -675,6 +734,7 @@ frontend/src/app/
 ```
 
 #### **Design System Establecido**
+
 ```tsx
 // Patrones estándar
 bg-white dark:bg-stone-800                    // Cards, modals
@@ -700,6 +760,7 @@ color: 'hsl(var(--foreground))'
 ### **Frontend Completado**
 
 #### **Skeleton Loaders Implementados** ✅
+
 - ✅ Componente base `<Skeleton />` reutilizable
 - ✅ 6 variantes especializadas:
   - TableSkeleton (tablas con paginación)
@@ -710,22 +771,26 @@ color: 'hsl(var(--foreground))'
   - NotificationSkeleton (dropdown)
 
 **Páginas actualizadas**:
+
 - ✅ `/dashboard` - DashboardSkeleton
 - ✅ `/clientes` - ClienteListSkeleton
 - ✅ `/negocios` - NegocioKanbanSkeleton
 
 **Beneficios**:
+
 - Evita Cumulative Layout Shift (CLS)
 - Mejor percepción de velocidad
 - Estructura visible durante carga
 
 #### **Loading Spinners Personalizados** ✅
+
 - ✅ Componente `<LoadingSpinner />` con Framer Motion
 - ✅ 3 tamaños: sm, md, lg
 - ✅ Componente `<LoadingState />` con mensaje opcional
 - ✅ Animación suave con rotación continua
 
 #### **Transiciones de Página** ✅
+
 - ✅ 5 componentes de animación reutilizables:
   - PageTransition (cambio de página)
   - FadeIn (solo fade)
@@ -736,6 +801,7 @@ color: 'hsl(var(--foreground))'
 - ✅ Duración optimizada (300-500ms)
 
 #### **Toast Notifications Mejoradas** ✅
+
 - ✅ Close button agregado
 - ✅ Duration aumentada a 4000ms
 - ✅ Expand mode habilitado (múltiples toasts)
@@ -743,6 +809,7 @@ color: 'hsl(var(--foreground))'
 - ✅ Mejor shadow y estilos
 
 #### **Atajos de Teclado Globales** ✅
+
 - ✅ Event listeners manuales (no react-hotkeys-hook)
 - ✅ Compatible con teclados internacionales (Español Bolivia, etc.)
 - ✅ Navegación global:
@@ -762,6 +829,7 @@ color: 'hsl(var(--foreground))'
 **Problema resuelto**: Reemplazado `react-hotkeys-hook` por event listeners nativos para garantizar compatibilidad con cualquier layout de teclado.
 
 #### **Documentación de Accesibilidad** ✅
+
 - ✅ Guía completa de accesibilidad (ACCESSIBILITY.md)
   - Resumen de mejoras implementadas
   - Checklist WCAG 2.1
@@ -775,6 +843,7 @@ color: 'hsl(var(--foreground))'
   - Compatible con teclados internacionales
 
 **Archivos creados**:
+
 ```
 frontend/src/
 ├── components/ui/
@@ -793,10 +862,12 @@ docs/guides/
 ```
 
 **Dependencias agregadas**:
+
 - `framer-motion@^12.x` - Animaciones
 - `react-hotkeys-hook@^4.x` - Instalado (no usado finalmente)
 
 **Mejoras de UX logradas**:
+
 - ✅ Percepción de velocidad mejorada (skeletons)
 - ✅ Feedback visual consistente
 - ✅ Productividad para power users (atajos)
@@ -805,9 +876,357 @@ docs/guides/
 
 ---
 
+## ✅ Subfase 6.1: Version Control Systems (COMPLETADA)
+
+**Fecha**: 23 de febrero de 2026  
+**Sesión**: [SESION_23_FEBRERO_2026.md](../sessions/2026/02-FEBRERO/SESION_23_FEBRERO_2026.md)  
+**Tiempo invertido**: ~2 horas  
+**Impacto en Score**: Version Control 0% → 90%, Repo Hosting 0% → 90%
+
+### **Objetivo**
+
+Inicializar control de versiones con Git, crear repositorio en GitHub y configurar flujo de trabajo profesional con Git Flow y hooks automatizados.
+
+### **Tareas Completadas**
+
+#### **1. Inicializar Git** ✅
+
+**Alcance**:
+
+- Repositorio creado con 247 archivos, 39,943 líneas de código
+- `.gitattributes` configurado para normalización LF
+- `.gitignore` verificado (sin secrets ni archivos sensibles)
+- Commit inicial limpio y exitoso
+
+**Archivos modificados/creados**:
+
+- `.gitattributes` - Normalización EOL (LF para todos los archivos de texto)
+
+**Comandos ejecutados**:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit - ClientPro CRM v0.7.0"
+```
+
+**Evidencia**: Historial de commits limpio, sin warnings
+
+---
+
+#### **2. Crear Repositorio en GitHub** ✅
+
+**Alcance**:
+
+- Repositorio público creado: [`https://github.com/ITZAN44/clientpro-crm`](https://github.com/ITZAN44/clientpro-crm)
+- Remote configurado correctamente
+- GitHub Push Protection manejado (token Figma removido de `.env.example`)
+- Push inicial exitoso
+
+**Comandos ejecutados**:
+
+```bash
+git remote add origin https://github.com/ITZAN44/clientpro-crm.git
+git branch -M master
+git push -u origin master
+```
+
+**Problema resuelto**: GitHub Push Protection bloqueó push por token Figma en `.env.example`  
+**Solución**: Removido manualmente con `git filter-branch`, validado sin secrets
+
+**Evidencia**: Repositorio público accesible en GitHub
+
+---
+
+#### **3. Configurar Git Workflow** ✅
+
+**Alcance**:
+
+- Git Flow completo documentado (379 líneas)
+- 3 ramas principales creadas: `master`, `staging`, `develop`
+- Conventional Commits establecido
+- GitHub templates creados para PRs e issues
+- Semantic Versioning documentado
+
+**Ramas creadas**:
+
+```bash
+git checkout -b develop
+git push -u origin develop
+
+git checkout -b staging
+git push -u origin staging
+```
+
+**Estructura de ramas**:
+
+- `master` → Producción (protegido, requiere PR con aprobación)
+- `staging` → Pre-producción (requiere PR desde develop)
+- `develop` → Desarrollo activo (branch por defecto, requiere PR con tests)
+- `feature/*` → Nuevas funcionalidades
+- `bugfix/*` → Corrección de bugs
+- `hotfix/*` → Fixes críticos de producción
+
+**Documentación creada**:
+
+```
+docs/guides/git/
+├── GIT_WORKFLOW.md (379 líneas)
+│   ├── Estrategia Git Flow completa
+│   ├── Conventional Commits
+│   ├── Semantic Versioning
+│   └── Workflows comunes
+├── GIT_HOOKS.md (238 líneas)
+│   ├── Documentación de hooks
+│   ├── Guía de troubleshooting
+│   └── Cómo bypass (emergencias)
+└── README.md (índice)
+```
+
+**GitHub Templates creados**:
+
+```
+.github/
+├── PULL_REQUEST_TEMPLATE.md
+│   ├── Checklist de PR
+│   ├── Descripción de cambios
+│   ├── Tipo de cambio (feature/fix/docs/etc.)
+│   └── Screenshots (opcional)
+├── ISSUE_TEMPLATE/
+│   ├── bug_report.md
+│   │   ├── Pasos para reproducir
+│   │   ├── Comportamiento esperado vs actual
+│   │   └── Contexto técnico
+│   └── feature_request.md
+│       ├── Descripción de feature
+│       ├── Valor de negocio
+│       └── Diseño/mockups (opcional)
+```
+
+**Conventional Commits Format**:
+
+```
+type(scope): subject
+
+Types: feat, fix, docs, refactor, test, chore, perf, style
+Scope: clientes, negocios, auth, ui, etc. (opcional)
+Subject: descripción imperativa, sin punto final
+
+Ejemplos:
+- feat(clientes): add advanced filter functionality
+- fix(auth): resolve token expiration issue
+- docs(readme): update installation instructions
+```
+
+**Evidencia**: 3 ramas en GitHub, documentación completa en `/docs/guides/git/`
+
+---
+
+#### **4. Configurar Git Hooks** ✅
+
+**Alcance**:
+
+- Husky v9.1.7 instalado y configurado
+- lint-staged v16.2.7 instalado
+- Prettier instalado con configuración unificada
+- 3 hooks automatizados funcionando
+
+**Hooks implementados**:
+
+1. **Pre-commit** (`.husky/pre-commit`):
+   - ESLint auto-fix en archivos staged (backend + frontend)
+   - Prettier format en archivos staged (backend + frontend + markdown)
+   - Solo procesa archivos staged (lint-staged)
+   - Se ejecuta antes de `git commit`
+
+2. **Commit-msg** (`.husky/commit-msg`):
+   - Valida formato Conventional Commits
+   - Bloquea commit si formato es inválido
+   - Regex: `^(feat|fix|docs|refactor|test|chore|perf|style)(\(.+\))?: .{1,100}$`
+
+3. **Pre-push** (`.husky/pre-push`):
+   - Bloquea push directo a `master` (requiere PR)
+   - Ejecuta TypeScript check en backend (`tsc --noEmit`)
+   - Ejecuta TypeScript check en frontend (`tsc --noEmit`)
+   - Ejecuta build completo (`npm run build`)
+   - Toma ~30-60 segundos
+
+**Configuración lint-staged** (package.json raíz):
+
+```json
+{
+  "lint-staged": {
+    "backend/**/*.{ts,js}": ["cd backend && eslint --fix", "cd backend && prettier --write"],
+    "frontend/**/*.{ts,tsx,js,jsx}": [
+      "cd frontend && eslint --fix",
+      "cd frontend && prettier --write"
+    ],
+    "**/*.md": "prettier --write"
+  }
+}
+```
+
+**Configuración Prettier** (`.prettierrc`):
+
+```json
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "endOfLine": "lf"
+}
+```
+
+**Dependencias instaladas** (raíz del proyecto):
+
+```json
+{
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "latest"
+  }
+}
+```
+
+**Archivos creados**:
+
+```
+.husky/
+├── pre-commit (ESLint + Prettier)
+├── commit-msg (Conventional Commits validation)
+└── pre-push (TypeScript + Build + bloqueo master)
+
+.prettierrc (configuración Prettier)
+```
+
+**Testing de hooks realizado**:
+
+- ✅ Pre-commit: Auto-fix de linting y formato
+- ✅ Commit-msg: Validación de mensajes
+- ✅ Pre-push: TypeScript check + Build + bloqueo master
+- ✅ Bypass con `--no-verify` funciona (emergencias)
+
+**Evidencia**: Hooks activos en `.husky/`, tests pasando, documentación en `GIT_HOOKS.md`
+
+---
+
+### **Archivos Totales Creados/Modificados**
+
+**Nuevos archivos (14)**:
+
+```
+.husky/
+├── pre-commit
+├── commit-msg
+└── pre-push
+
+.prettierrc
+.gitattributes
+
+docs/guides/git/
+├── GIT_WORKFLOW.md (379 líneas)
+├── GIT_HOOKS.md (238 líneas)
+└── README.md
+
+.github/
+├── PULL_REQUEST_TEMPLATE.md
+└── ISSUE_TEMPLATE/
+    ├── bug_report.md
+    └── feature_request.md
+```
+
+**Archivos modificados**:
+
+- `package.json` (raíz): agregado lint-staged, husky, prettier
+- `.env.example`: removido token Figma (GitHub Push Protection)
+
+---
+
+### **Problemas Resueltos**
+
+#### **1. GitHub Push Protection - Token Figma**
+
+**Problema**: GitHub bloqueó push por token Figma en `.env.example`  
+**Solución**: Removido manualmente con `git filter-branch --tree-filter`  
+**Validación**: `git log --all --full-history -- .env.example` sin matches  
+**Aprendizaje**: Siempre validar `.env.example` antes de commit inicial
+
+#### **2. Configuración Husky en Monorepo**
+
+**Problema**: Husky debe instalarse en raíz, pero lint-staged necesita cd a subdirectorios  
+**Solución**: Configurar lint-staged con `cd backend && ...` y `cd frontend && ...`  
+**Evidencia**: Pre-commit funciona correctamente en ambos directorios
+
+---
+
+### **Impacto en Roadmap Backend Developer**
+
+| Categoría                      | Antes | Después | Mejora  |
+| ------------------------------ | ----- | ------- | ------- |
+| Version Control Systems        | 0%    | 90%     | +90% 🚀 |
+| Repo Hosting Services (GitHub) | 0%    | 90%     | +90% 🚀 |
+| **Score General Fase 6**       | 40%   | 48%     | +8% ✅  |
+
+**Progreso hacia Senior Backend**: 48% → Meta 75-80%
+
+---
+
+### **Documentación Relacionada**
+
+**Documentación Técnica**:
+
+- [docs/guides/git/GIT_WORKFLOW.md](../guides/git/GIT_WORKFLOW.md) - Git Flow completo
+- [docs/guides/git/GIT_HOOKS.md](../guides/git/GIT_HOOKS.md) - Hooks automatizados
+- [docs/guides/git/README.md](../guides/git/README.md) - Índice de guías Git
+
+**ADRs**:
+
+- ADR-006: Git Flow como estrategia de branching (pendiente)
+
+**Sesión de Desarrollo**:
+
+- [SESION_23_FEBRERO_2026.md](../sessions/2026/02-FEBRERO/SESION_23_FEBRERO_2026.md) - Detalles completos
+
+**Roadmap**:
+
+- [BACKLOG.md](./BACKLOG.md) - Subfase 6.1 removida
+- [CURRENT.md](./CURRENT.md) - Estado actualizado a Subfase 6.2
+
+---
+
+### **Próximos Pasos Recomendados**
+
+**Opción A: Subfase 6.2 - Containerization (Docker)** - RECOMENDADO
+
+- Dockerfiles multi-stage para backend y frontend
+- docker-compose.yml con PostgreSQL, Redis, Nginx
+- Tiempo estimado: 1 semana
+
+**Opción B: Subfase 6.3 - CI/CD Pipeline (GitHub Actions)** - ALTERNATIVA
+
+- Workflows de testing, linting, build
+- Despliegue automático a staging
+- Tiempo estimado: 3 días
+
+**Opción C: Continuar desarrollo de features**
+
+- Módulo de Emails
+- Búsqueda global (Cmd+K)
+- Exportación de datos
+
+---
+
+**Fin de Subfase 6.1** | Version Control Systems ✅ COMPLETADA (23 Feb 2026)
+
+---
+
 ## 📊 Estadísticas Finales (Fase 1-5.6)
 
 ### **Backend**
+
 - **Módulos**: 8 completos
   - AuthModule
   - ClientesModule
@@ -826,6 +1245,7 @@ docs/guides/
 - **Líneas de código**: ~3500+
 
 ### **Frontend**
+
 - **Páginas**: 7 funcionales
   - `/login`
   - `/dashboard`
@@ -843,6 +1263,7 @@ docs/guides/
 - **Líneas de código**: ~3000+
 
 ### **Base de Datos**
+
 - **Modelos Prisma**: 8
 - **Enums**: 5
 - **Relaciones**: 12+
@@ -852,6 +1273,7 @@ docs/guides/
 ### **Dependencias Principales**
 
 **Backend**:
+
 - NestJS 11.0.6
 - Prisma 7.2.0
 - Socket.io 4.8.1
@@ -860,6 +1282,7 @@ docs/guides/
 - class-validator
 
 **Frontend**:
+
 - Next.js 16.0.1
 - React 19.0.0
 - Tailwind CSS v4
@@ -879,12 +1302,14 @@ docs/guides/
 ## 🎯 Logros Destacados
 
 ### **Arquitectura**
+
 - ✅ Clean architecture con módulos separados
 - ✅ Type-safety end-to-end (Prisma → Backend → Frontend)
 - ✅ Patrones consistentes en todo el código
 - ✅ Reutilización de componentes
 
 ### **Funcionalidades**
+
 - ✅ CRUD completo para 3 entidades principales
 - ✅ Sistema Kanban drag & drop
 - ✅ Dashboard con datos en tiempo real
@@ -895,6 +1320,7 @@ docs/guides/
 - ✅ Administración de usuarios ✨ NUEVO
 
 ### **Developer Experience**
+
 - ✅ Hot reload en desarrollo (backend + frontend)
 - ✅ TypeScript estricto (cero errores)
 - ✅ Validación automática de DTOs
@@ -902,6 +1328,7 @@ docs/guides/
 - ✅ Documentación exhaustiva
 
 ### **UI/UX**
+
 - ✅ Diseño profesional y consistente
 - ✅ Responsive design
 - ✅ Accesibilidad (ARIA compliant)
@@ -917,12 +1344,14 @@ docs/guides/
 ## 📚 Documentación Relacionada
 
 **Contexto del Proyecto**:
+
 - [docs/context/OVERVIEW.md](../context/OVERVIEW.md) - Resumen ejecutivo
 - [docs/context/STACK.md](../context/STACK.md) - Stack tecnológico completo
 - [docs/context/DATABASE.md](../context/DATABASE.md) - Schema y modelos
 - [docs/context/ARCHITECTURE.md](../context/ARCHITECTURE.md) - Estructura de archivos
 
 **Decisiones Arquitectónicas**:
+
 - [docs/decisions/001-nestjs-backend.md](../decisions/001-nestjs-backend.md)
 - [docs/decisions/002-nextjs-16-app-router.md](../decisions/002-nextjs-16-app-router.md)
 - [docs/decisions/003-socket-io-realtime.md](../decisions/003-socket-io-realtime.md)
@@ -930,9 +1359,11 @@ docs/guides/
 - [docs/decisions/005-shadcn-ui.md](../decisions/005-shadcn-ui.md)
 
 **Sesiones de Desarrollo**:
+
 - [docs/sessions/2026/01-ENERO/README.md](../sessions/2026/01-ENERO/README.md) - Todas las sesiones de Enero
 
 **Roadmap**:
+
 - [docs/roadmap/CURRENT.md](./CURRENT.md) - Sprint actual (Fase 5)
 - [docs/roadmap/BACKLOG.md](./BACKLOG.md) - Próximas fases y features
 
@@ -941,6 +1372,7 @@ docs/guides/
 ## ✅ Resumen
 
 **5.6 Fases Completadas** (Enero-Febrero 2026):
+
 - Fase 1: Configuración y Autenticación ✅
 - Fase 2: Módulos CRUD ✅
 - Fase 3: Dashboard y Reportes ✅
@@ -948,11 +1380,12 @@ docs/guides/
 - Fase 4.5: Sistema de Permisos y Roles ✅
 - Fase 5: Testing Backend y Frontend UI Básicos ✅
 - Fase 5.5: Dark Mode UI ✅
-- Fase 5.6: Mejoras UI/UX ✅ ✨ NUEVO
+- Fase 5.6: Mejoras UI/UX ✅
+- **Subfase 6.1: Version Control Systems ✅** ✨ NUEVO
 
-**MVP 98% completo** - Testing completo, UX profesional, listo para auditoría o producción
+**MVP 98% completo** - Testing completo, UX profesional, Git Flow configurado
 
-**Próximo paso**: Fase 5.7 (Auditoría de Accesibilidad) o Fase 6 (Producción)
+**Próximo paso**: Subfase 6.2 - Containerization (Docker) o 6.3 - CI/CD Pipeline
 
 ---
 

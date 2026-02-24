@@ -1,19 +1,20 @@
 # Sprint Actual y Próximos Pasos Inmediatos
 
 > **Propósito**: Trabajo en progreso y próximas tareas prioritarias
-> **Última actualización**: 5 de febrero de 2026
-> **Fase actual**: Fase 5 - Testing y Calidad (Completada) + Mejoras UI/UX (Completada)
+> **Última actualización**: 23 de febrero de 2026
+> **Fase actual**: Fase 6 - Subfase 6.1 Completada (Version Control Systems)
 
 ---
 
 ## 🎯 Estado Actual del Proyecto
 
-**Versión**: v0.7.0  
+**Versión**: v0.7.1  
 **Progreso MVP**: 98%  
-**Última sesión**: 5 de febrero de 2026  
-**Última fase completada**: Fase 5.6 (Mejoras UI/UX)
+**Última sesión**: 23 de febrero de 2026  
+**Última subfase completada**: Subfase 6.1 (Version Control Systems)
 
 **Módulos activos**:
+
 - ✅ 8 módulos backend completos (agregado UsuariosModule)
 - ✅ 7 páginas frontend funcionales (agregado /admin/usuarios)
 - ✅ 36 endpoints operativos (31 REST + 5 WebSocket)
@@ -22,6 +23,63 @@
 - ✅ Tests Frontend: 144/144 pasando (93.75% coverage en UI básicos)
 - ✅ Dark Mode completo en todas las páginas
 - ✅ Mejoras UI/UX implementadas (skeleton loaders, atajos de teclado, animaciones)
+- ✅ Git Flow configurado con hooks automatizados ✨ NUEVO
+- ✅ Repositorio en GitHub: https://github.com/ITZAN44/clientpro-crm ✨ NUEVO
+
+---
+
+## ✅ Subfase 6.1: Version Control Systems (COMPLETADA - 100%)
+
+**Objetivo**: Inicializar Git, crear repositorio en GitHub y configurar flujo de trabajo profesional
+
+**Prioridad**: CRÍTICA  
+**Estimado**: 1 día  
+**Estado**: ✅ **COMPLETADO**  
+**Fecha**: 23 de febrero de 2026
+
+### **Completado**
+
+#### **1. Inicializar Git** ✅
+
+- [x] Repositorio creado con 247 archivos, 39,943 líneas
+- [x] `.gitattributes` configurado (LF normalization)
+- [x] `.gitignore` verificado (sin secrets)
+- [x] Commit inicial limpio
+
+#### **2. Crear Repositorio en GitHub** ✅
+
+- [x] Repo público: https://github.com/ITZAN44/clientpro-crm
+- [x] Remote configurado correctamente
+- [x] GitHub Push Protection manejado (token Figma removido)
+- [x] Push inicial exitoso
+
+#### **3. Configurar Git Workflow** ✅
+
+- [x] 3 ramas creadas: `master`, `staging`, `develop`
+- [x] Git Flow documentado (379 líneas): `docs/guides/git/GIT_WORKFLOW.md`
+- [x] Conventional Commits establecidos
+- [x] GitHub templates creados:
+  - `.github/PULL_REQUEST_TEMPLATE.md`
+  - `.github/ISSUE_TEMPLATE/bug_report.md`
+  - `.github/ISSUE_TEMPLATE/feature_request.md`
+- [x] Semantic Versioning documentado
+
+#### **4. Configurar Git Hooks** ✅
+
+- [x] Husky v9.1.7 instalado y configurado
+- [x] lint-staged v16.2.7 instalado
+- [x] Prettier instalado con config unificada
+- [x] 3 hooks automáticos:
+  - Pre-commit: lint-staged (ESLint + Prettier)
+  - Commit-msg: Conventional Commits validation
+  - Pre-push: TypeScript checks + bloqueo push a master
+- [x] Documentación completa (238 líneas): `docs/guides/git/GIT_HOOKS.md`
+
+**Impacto en Score**:
+
+- Version Control Systems: 0% → 90% (+90%)
+- Repo Hosting Services: 0% → 90% (+90%)
+- Score General Fase 6: 40% → 48% (+8%)
 
 ---
 
@@ -36,11 +94,13 @@
 ### **✅ Backend Testing - COMPLETADO**
 
 #### **Infraestructura** ✅
+
 - [x] Configurar Jest para NestJS
 - [x] Mocks centralizados para PrismaService (`testing/prisma.mock.ts`)
 - [x] Patrones de testing establecidos
 
 #### **Tests Unitarios (Services)** ✅
+
 - [x] AuthService (12 tests, 100% coverage)
 - [x] ClientesService (19 tests, 94% coverage)
 - [x] NegociosService (19 tests, 92% coverage)
@@ -55,11 +115,13 @@
 ### **🔄 Frontend Testing - PARCIAL (35% Completado)**
 
 #### **Infraestructura** ✅
+
 - [x] Jest + React Testing Library configurados
 - [x] Mocks globales (Next.js, NextAuth, Socket.io)
 - [x] Patrones de testing establecidos
 
 #### **Tests de Componentes UI Básicos** ✅
+
 - [x] Badge (13 tests, 87.5% coverage)
 - [x] Button (37 tests, 87.5% coverage)
 - [x] Card (29 tests, 100% coverage)
@@ -71,6 +133,7 @@
 **Meta para UI básicos**: 70%+ → **SUPERADO por 23.75%** 🎯
 
 #### **Pendiente Frontend (Post-MVP)**
+
 - [ ] Componentes UI complejos (Select, Dialog, Tabs, Table) - 15-20 horas
 - [ ] Páginas (/dashboard, /clientes, /negocios) - 10-15 horas
 - [ ] Integración WebSocket - 4-6 horas
@@ -92,28 +155,33 @@
 ### **Completado**
 
 #### **1. Skeleton Loaders** ✅
+
 - [x] Componente base `<Skeleton />`
 - [x] Variantes especializadas (TableSkeleton, CardSkeleton, DashboardSkeleton)
 - [x] Implementado en 3 páginas principales (Dashboard, Clientes, Negocios)
 - [x] Reduce CLS (Cumulative Layout Shift)
 
 #### **2. Loading Spinners** ✅
+
 - [x] Spinner personalizado con Framer Motion
 - [x] Componente `<LoadingState />` con mensaje
 - [x] 3 tamaños (sm, md, lg)
 
 #### **3. Transiciones de Página** ✅
+
 - [x] PageTransition con Framer Motion
 - [x] 5 componentes reutilizables (FadeIn, SlideUp, ScaleIn, StaggerChildren)
 - [x] Respeta `prefers-reduced-motion` (accesibilidad)
 
 #### **4. Toast Notifications Mejoradas** ✅
+
 - [x] Close button agregado
 - [x] Duration aumentada a 4s
 - [x] Expand mode habilitado
 - [x] Clases Tailwind personalizadas
 
 #### **5. Atajos de Teclado** ✅
+
 - [x] Event listeners manuales (compatible con teclados internacionales)
 - [x] Navegación global: `g+d`, `g+c`, `g+n`, `g+a`, `g+r`
 - [x] Ayuda: `h`, `?`, `Ctrl+/`
@@ -123,11 +191,13 @@
 **Problema resuelto**: React-hotkeys-hook reemplazado por event listeners nativos para garantizar compatibilidad con teclados internacionales (Español Bolivia, etc.)
 
 #### **6. Documentación** ✅
+
 - [x] Guía de accesibilidad (ACCESSIBILITY.md)
 - [x] Guía de atajos de teclado (KEYBOARD_SHORTCUTS.md)
 - [x] Sesión documentada (SESION_5_FEBRERO_2026.md)
 
 **Dependencias agregadas**:
+
 - `framer-motion@^12.x` - Animaciones
 - `react-hotkeys-hook@^4.x` - Atajos (posteriormente reemplazado por event listeners)
 
@@ -135,15 +205,23 @@
 
 ## ⚡ Tareas Urgentes (Esta Semana)
 
-### **Prioridad 1: Auditoría de Accesibilidad (Fase 5.7)** - RECOMENDADO
-1. [ ] Lighthouse Audit (Meta: Score > 90)
-2. [ ] WAVE Extension o axe DevTools (Contrast ratio WCAG AA)
-3. [ ] Screen Reader Testing (NVDA/VoiceOver)
-4. [ ] Keyboard Navigation Testing (Tab, Enter, Esc + atajos globales)
+### **Prioridad 1: Subfase 6.2 - Containerization (Docker)** - RECOMENDADO
 
-**Tiempo estimado**: 2-3 días
+1. [ ] Crear Dockerfile multi-stage para backend
+2. [ ] Crear Dockerfile multi-stage para frontend (Next.js standalone)
+3. [ ] Configurar docker-compose.yml (PostgreSQL, backend, frontend, Redis)
+4. [ ] Documentar setup de Docker
+5. [ ] Verificar stack completo con `docker-compose up`
+
+**Tiempo estimado**: 1 semana
 
 **Completados recientemente**:
+
+- ✅ Subfase 6.1: Version Control Systems (23 Feb 2026)
+  - Git Flow configurado
+  - Repositorio en GitHub
+  - Hooks automatizados (Husky + lint-staged)
+  - Conventional Commits
 - ✅ Testing Backend (96.25% coverage)
 - ✅ Testing Frontend UI Básicos (93.75% coverage)
 - ✅ Dark Mode en todos los módulos (4 Feb 2026)
@@ -154,16 +232,19 @@
   - Toast mejoradas
   - Atajos de teclado funcionando
 
-### **Prioridad 2: Pasar a Producción (Fase 6)** - ALTERNATIVA
-Si la auditoría de accesibilidad no es crítica, proceder directamente a:
-1. [ ] Configurar Vercel + Railway
-2. [ ] Variables de entorno de producción
-3. [ ] CI/CD con GitHub Actions
-4. [ ] Monitoreo (Sentry)
+### **Prioridad 2: Subfase 6.3 - CI/CD Pipeline (GitHub Actions)** - ALTERNATIVA
 
-**Tiempo estimado**: 2-3 semanas
+Si Docker no es prioritario, proceder directamente a:
+
+1. [ ] Workflow de Testing (.github/workflows/test.yml)
+2. [ ] Workflow de Linting (.github/workflows/lint.yml)
+3. [ ] Workflow de Build (.github/workflows/build.yml)
+4. [ ] Quality Gates en PRs
+
+**Tiempo estimado**: 3 días
 
 ### **Prioridad 3: Revisar Código Existente** (Opcional)
+
 1. [ ] Ejecutar `get_errors` en todo el proyecto
 2. [ ] Resolver warnings acumulados (si hay)
 3. [ ] Refactorizar código duplicado
@@ -172,6 +253,7 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 **Tiempo estimado**: 1 día
 
 ### **Prioridad 4: Documentación Técnica** (Opcional)
+
 1. [x] Reorganizar documentación ✅
 2. [ ] Actualizar CHANGELOG.md con v0.7.0
 3. [ ] Crear diagramas de arquitectura (opcional)
@@ -186,18 +268,21 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 ### **Mejoras Rápidas** (Ya completadas en Fase 5.6)
 
 **UI/UX**:
+
 - [x] Skeleton loaders para tablas ✅
 - [x] Animaciones de transición ✅
 - [x] Toast notifications unificadas ✅
 - [ ] Error boundaries en páginas (pendiente)
 
 **Performance**:
+
 - [ ] Lazy loading de páginas
 - [ ] Optimización de imágenes (si hay)
 - [ ] Memoización de componentes pesados
 - [x] Debounce en búsquedas (ya implementado en clientes) ✅
 
 **Seguridad**:
+
 - [ ] Rate limiting en endpoints críticos
 - [ ] Validación de permisos por rol
 - [ ] Sanitización de inputs
@@ -205,11 +290,40 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 
 ---
 
-## 🔜 Después de Fase 5
+## 🔜 Después de Subfase 6.1
 
-### **Fase 5.7: Auditoría de Accesibilidad** (Estimado: 2-3 días) - OPCIONAL
+### **Subfase 6.2: Containerization (Docker)** (Estimado: 1 semana) - RECOMENDADO
 
 **Objetivos**:
+
+1. Dockerfile multi-stage para backend (Node 20 Alpine)
+2. Dockerfile multi-stage para frontend (Next.js standalone)
+3. docker-compose.yml con servicios: postgres, backend, frontend, redis
+4. Healthchecks y restart policies
+5. Optimización de imágenes (< 200MB frontend)
+
+**Estado**: Pendiente, siguiente paso recomendado
+
+[Ver detalles completos →](./BACKLOG.md#subfase-62-containerization-docker)
+
+### **Subfase 6.3: CI/CD Pipeline (GitHub Actions)** (Estimado: 3 días) - ALTERNATIVA
+
+**Objetivos**:
+
+1. Workflow de testing automático
+2. Workflow de linting
+3. Workflow de build con Docker
+4. Quality gates en PRs
+5. Dependabot configurado
+
+**Estado**: Pendiente, alternativa a Docker
+
+[Ver detalles completos →](./BACKLOG.md#subfase-63-cicd-github-actions)
+
+### **Fase 5.7: Auditoría de Accesibilidad** (Estimado: 2-3 días) - OPCIONAL POST-MVP
+
+**Objetivos**:
+
 1. Lighthouse Audit (Meta: Score > 90)
 2. Contrast Ratio Verification (WCAG AA: 4.5:1)
 3. Screen Reader Testing (NVDA/VoiceOver)
@@ -219,33 +333,25 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 
 [Ver detalles completos →](../guides/ACCESSIBILITY.md)
 
-### **Fase 6: Producción y Deploy** (Estimado: 2-3 semanas) - RECOMENDADO
-
-**Objetivos**:
-1. Configurar ambiente de producción
-2. Desplegar a Vercel + Railway
-3. Configurar CI/CD
-4. Monitoreo y logging
-5. Estrategia de backups
-
-[Ver detalles completos →](./BACKLOG.md#fase-6-producción-y-deploy)
-
 ---
 
 ## 📊 Métricas de Progreso
 
 ### **Coverage Actual**
+
 - Backend: 96.25% ✅ (COMPLETADO - superó meta de 80%)
 - Frontend UI Básicos: 93.75% ✅ (COMPLETADO - superó meta de 70%)
 - Frontend Completo: ~15% del proyecto total (testing crítico completo)
 
 ### **Meta Fase 5**
+
 - Backend: 80%+ ✅ **COMPLETADO**
 - Frontend UI Básicos: 70%+ ✅ **COMPLETADO**
 - Frontend Completo: 70%+ ⏳ (pendiente post-MVP)
 - E2E: 3+ flujos críticos ⏳ (pendiente post-MVP)
 
 ### **Mejoras UI/UX (Fase 5.6)**
+
 - Skeleton Loaders: ✅ **COMPLETADO**
 - Loading Spinners: ✅ **COMPLETADO**
 - Page Transitions: ✅ **COMPLETADO**
@@ -254,6 +360,7 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 - Guías de Accesibilidad: ✅ **COMPLETADO**
 
 ### **Deuda Técnica**
+
 - **Alta**: ~~Sin testing~~ ✅ Testing backend completo, UI básicos completos
 - **Media**: Testing frontend completo ⏳ (testing crítico completado, resto post-MVP)
 - **Baja**: Falta documentación JSDoc, algunos componentes duplicados
@@ -263,6 +370,7 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 ## 🎯 Definición de "Done" para Fase 5
 
 **Criterios de aceptación**:
+
 - [x] 90% funcionalidades MVP implementadas ✅
 - [x] 80%+ cobertura backend ✅ (96.25%)
 - [x] Infraestructura de testing frontend configurada ✅
@@ -324,6 +432,7 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 **Ninguno actualmente** - Proyecto en buen estado para continuar
 
 **Posibles bloqueadores**:
+
 - Curva de aprendizaje de Playwright (E2E)
 - Mocking de Socket.io en tests puede ser complejo
 - NextAuth mocking requiere setup específico
@@ -333,15 +442,18 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 ## 📚 Referencias Útiles
 
 **Testing Backend (NestJS)**:
+
 - [NestJS Testing Docs](https://docs.nestjs.com/fundamentals/testing)
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
 
 **Testing Frontend (Next.js + RTL)**:
+
 - [Next.js Testing Docs](https://nextjs.org/docs/app/building-your-application/testing)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro)
 - [Playwright Docs](https://playwright.dev)
 
 **Documentación Interna**:
+
 - [AGENTS.md](../../AGENTS.md) - Comandos, code style, patrones
 - [docs/context/STACK.md](../context/STACK.md) - Stack tecnológico
 - [.github/copilot/rules.md](../../.github/copilot/rules.md) - Reglas de desarrollo
@@ -352,29 +464,36 @@ Si la auditoría de accesibilidad no es crítica, proceder directamente a:
 
 **Decisión Estratégica Requerida**:
 
-**Opción A**: Auditoría de Accesibilidad - Fase 5.7 (2-3 días)
-- Lighthouse Audit (Meta: Score > 90)
-- WAVE/axe DevTools (Contrast ratio)
+**Opción A: Containerization - Subfase 6.2 (RECOMENDADO - 1 semana)**
+
+- Dockerfiles multi-stage para backend y frontend
+- docker-compose.yml con PostgreSQL, Redis, Nginx
+- Git Flow ya configurado ✅
+- Testing completo ✅
+- Proyecto listo para containerizar
+
+**Opción B: CI/CD Pipeline - Subfase 6.3 (ALTERNATIVA - 3 días)**
+
+- Workflows de GitHub Actions
+- Testing automático en PRs
+- Build automático
+- Quality gates
+- Ideal si se quiere automatización antes que Docker
+
+**Opción C: Auditoría de Accesibilidad - Fase 5.7 (OPCIONAL - 2-3 días)**
+
+- Lighthouse Audit
+- WAVE/axe DevTools
 - Screen Reader Testing
-- Verificar atajos de teclado con usuarios reales
+- Pulir antes de producción
 
-**Opción B**: Producción - Fase 6 (RECOMENDADO - 2-3 semanas)
-- Testing crítico completo ✅
-- MVP funcional y estable ✅
-- UX profesional ✅
-- Desplegar a producción
-- Continuar testing en iteraciones futuras
+**Preparación para Opción A** (Recomendada):
 
-**Opción C**: Completar Testing Frontend (2-3 semanas adicionales)
-- Componentes UI complejos
-- Páginas del dashboard
-- Tests E2E
-
-**Preparación para Opción B** (Recomendada):
-- Leer docs de despliegue (Vercel + Railway)
-- Revisar configuración de variables de entorno
-- Preparar estrategia de CI/CD
+- Leer docs de Docker multi-stage builds
+- Revisar Next.js standalone output
+- Preparar variables de entorno para Docker
+- Estudiar docker-compose healthchecks
 
 ---
 
-**Fin de roadmap/CURRENT.md** | ~270 líneas | Sprint actual actualizado con Fase 5.6
+**Fin de roadmap/CURRENT.md** | ~380 líneas | Sprint actual actualizado con Subfase 6.1

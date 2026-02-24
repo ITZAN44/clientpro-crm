@@ -228,7 +228,7 @@ docs(readme): update installation instructions
 refactor(negocios): extract Kanban logic to hook
 ```
 
-**Documentación completa**: [docs/GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md)
+**Documentación completa**: [docs/guides/git/GIT_WORKFLOW.md](docs/guides/git/GIT_WORKFLOW.md)
 
 ---
 
@@ -239,8 +239,8 @@ Ver la carpeta `docs/` para documentación completa:
 - **[CONTEXTO_PROYECTO.md](docs/CONTEXTO_PROYECTO.md)** - 🎯 **Lee esto primero** - Stack, tablas, MCPs, pendientes
 - **[PROXIMOS_PASOS.md](docs/PROXIMOS_PASOS.md)** - 🚀 Roadmap y checklist de desarrollo
 - **[wireframe.md](docs/wireframe.md)** - 🎨 Diseños UI de todas las pantallas
-- **[GIT_WORKFLOW.md](docs/GIT_WORKFLOW.md)** - 🔀 Estrategia de branching y convenciones Git
-- **[GIT_HOOKS.md](docs/GIT_HOOKS.md)** - 🪝 Hooks automáticos con Husky
+- **[GIT_WORKFLOW.md](docs/guides/git/GIT_WORKFLOW.md)** - 🔀 Estrategia de branching y convenciones Git
+- **[GIT_HOOKS.md](docs/guides/git/GIT_HOOKS.md)** - 🪝 Hooks automáticos con Husky
 
 ## �📄 Licencia
 

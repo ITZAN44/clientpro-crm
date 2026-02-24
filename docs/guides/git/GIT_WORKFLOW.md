@@ -7,12 +7,14 @@ Este proyecto utiliza una estrategia de Git Flow adaptada para equipos pequeños
 ### Ramas Principales
 
 #### `master` (Producción)
+
 - **Propósito**: Código en producción, estable y probado
 - **Protección**: Requiere PR con revisión aprobada
 - **Deploy**: Automático a producción (cuando se configure CI/CD)
 - **Commits directos**: ❌ Prohibidos
 
 #### `staging` (Pre-producción)
+
 - **Propósito**: Testing final antes de producción
 - **Protección**: Requiere PR desde `develop`
 - **Deploy**: Automático a entorno de staging (cuando se configure CI/CD)
@@ -20,6 +22,7 @@ Este proyecto utiliza una estrategia de Git Flow adaptada para equipos pequeños
 - **Merges hacia**: `master`
 
 #### `develop` (Desarrollo)
+
 - **Propósito**: Integración continua de features
 - **Protección**: Requiere PR con tests pasando
 - **Deploy**: Automático a entorno de desarrollo (cuando se configure CI/CD)
@@ -29,6 +32,7 @@ Este proyecto utiliza una estrategia de Git Flow adaptada para equipos pequeños
 ### Ramas de Trabajo
 
 #### Feature Branches (`feature/*`)
+
 ```bash
 # Crear feature branch desde develop
 git checkout develop
@@ -41,11 +45,13 @@ git checkout -b feature/email-notifications
 ```
 
 **Nomenclatura**:
+
 - `feature/client-filters` - Nueva funcionalidad de filtros de clientes
 - `feature/kanban-drag-drop` - Drag & drop en el tablero Kanban
 - `feature/dashboard-widgets` - Nuevos widgets para el dashboard
 
 **Workflow**:
+
 1. Trabajar en la feature
 2. Commitear frecuentemente con mensajes descriptivos
 3. Hacer push regularmente
@@ -55,6 +61,7 @@ git checkout -b feature/email-notifications
 7. Eliminar la rama feature
 
 #### Bugfix Branches (`bugfix/*`)
+
 ```bash
 # Crear bugfix branch desde develop
 git checkout develop
@@ -69,6 +76,7 @@ git checkout -b bugfix/date-picker-timezone
 **Workflow**: Igual que feature branches
 
 #### Hotfix Branches (`hotfix/*`)
+
 ```bash
 # Crear hotfix branch desde master (urgente)
 git checkout master
@@ -80,12 +88,14 @@ git checkout -b hotfix/auth-token-expiration
 ```
 
 **Workflow**:
+
 1. Trabajar en el fix crítico
 2. Crear PR a `master` Y `develop`
 3. Mergear en ambas ramas
 4. Tag de versión patch (v0.7.1)
 
 #### Release Branches (`release/*`)
+
 ```bash
 # Crear release branch desde develop
 git checkout develop
@@ -96,6 +106,7 @@ git checkout -b release/v1.0.0
 **Propósito**: Preparación de release (bump de versión, changelog, bug fixes finales)
 
 **Workflow**:
+
 1. Crear desde `develop`
 2. Bump version en `package.json`
 3. Actualizar `CHANGELOG.md`
@@ -161,6 +172,7 @@ chore(deps): update NestJS to v11.0.5
 ### Scope Guidelines
 
 **Backend scopes**:
+
 - `auth` - Autenticación y autorización
 - `clientes` - Módulo de clientes
 - `negocios` - Módulo de negocios/deals
@@ -172,6 +184,7 @@ chore(deps): update NestJS to v11.0.5
 - `api` - Cambios generales en API
 
 **Frontend scopes**:
+
 - `ui` - Componentes de UI (shadcn/ui)
 - `dashboard` - Página del dashboard
 - `kanban` - Tablero Kanban
@@ -182,6 +195,7 @@ chore(deps): update NestJS to v11.0.5
 - `socket` - Socket.io client
 
 **General scopes**:
+
 - `deps` - Dependencias
 - `config` - Configuración
 - `ci` - CI/CD

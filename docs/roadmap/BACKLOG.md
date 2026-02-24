@@ -1,7 +1,7 @@
 # Backlog de Features y Próximas Fases
 
 > **Propósito**: Listado priorizado de features futuras y mejoras planificadas
-> **Última actualización**: 5 de febrero de 2026
+> **Última actualización**: 23 de febrero de 2026
 > **Estado**: Planificación post-MVP (98% completo)
 
 ---
@@ -26,22 +26,22 @@
 
 ### **Score Actual vs Objetivo**
 
-| Categoría | Actual | Objetivo | Gap |
-|-----------|--------|----------|-----|
-| Version Control Systems | 0% | 90% | 🔴 CRÍTICO |
-| Repo Hosting Services | 0% | 90% | 🔴 CRÍTICO |
-| CI/CD | 0% | 80% | 🔴 CRÍTICO |
-| Containerization | 0% | 85% | 🔴 CRÍTICO |
-| Caching | 10% | 70% | 🟡 Alta |
-| Web Servers | 30% | 75% | 🟡 Alta |
-| Building For Scale | 15% | 60% | 🟡 Media |
-| **Score General** | **40%** | **75-80%** | **Senior** |
+| Categoría               | Actual  | Objetivo   | Gap           |
+| ----------------------- | ------- | ---------- | ------------- |
+| Version Control Systems | 90%     | 90%        | ✅ COMPLETADO |
+| Repo Hosting Services   | 90%     | 90%        | ✅ COMPLETADO |
+| CI/CD                   | 0%      | 80%        | 🔴 CRÍTICO    |
+| Containerization        | 0%      | 85%        | 🔴 CRÍTICO    |
+| Caching                 | 10%     | 70%        | 🟡 Alta       |
+| Web Servers             | 30%     | 75%        | 🟡 Alta       |
+| Building For Scale      | 15%     | 60%        | 🟡 Media      |
+| **Score General**       | **48%** | **75-80%** | **Senior**    |
 
 ---
 
 ### **Objetivos Principales**
 
-1. **Inicializar Version Control (Git + GitHub)** - CRÍTICO
+1. ~~**Inicializar Version Control (Git + GitHub)**~~ - ✅ COMPLETADO (23 Feb 2026)
 2. **Implementar Containerization (Docker)** - CRÍTICO
 3. **Configurar CI/CD (GitHub Actions)** - CRÍTICO
 4. **Implementar Caching (Redis)** - Alta Prioridad
@@ -53,47 +53,6 @@
 ### **Tareas Detalladas**
 
 ---
-
-#### **Subfase 6.1: Version Control Systems** ⚠️ CRÍTICO
-
-**Tiempo estimado**: 1 día  
-**Objetivo**: Git 0% → 90%
-
-**Tareas**:
-
-1. **Inicializar Git** (30 min)
-   - [ ] `git init` en raíz del proyecto
-   - [ ] Verificar `.gitignore` está completo
-   - [ ] `git add .`
-   - [ ] `git commit -m "Initial commit - ClientPro CRM v0.7.0"`
-   - [ ] Crear `.gitattributes` (EOL consistency)
-
-2. **Crear Repositorio en GitHub** (30 min)
-   - [ ] Crear repositorio en GitHub: `clientpro-crm`
-   - [ ] Configurar descripción y tags (CRM, NestJS, Next.js, TypeScript)
-   - [ ] `git remote add origin <url>`
-   - [ ] `git branch -M main`
-   - [ ] `git push -u origin main`
-
-3. **Configurar Git Workflow** (1 hora)
-   - [ ] Crear branch `develop` para desarrollo
-   - [ ] Crear branch `feature/fase-6-senior-level` para esta fase
-   - [ ] Documentar Git workflow en `docs/guides/GIT_WORKFLOW.md`
-   - [ ] Configurar branch protection en `main` (requiere PR)
-
-4. **Configurar Git Hooks** (30 min)
-   - [ ] Instalar Husky: `npm install --save-dev husky`
-   - [ ] Pre-commit hook: Ejecutar linting
-   - [ ] Pre-push hook: Ejecutar tests
-   - [ ] Commit message linting (Conventional Commits)
-
-**Evidencia de Completitud**:
-- ✅ Repositorio en GitHub público
-- ✅ Historial de commits limpio
-- ✅ Branches configurados
-- ✅ Hooks funcionando
-
-**Impacto en Score**: Version Control 0% → 90%
 
 ---
 
@@ -120,7 +79,7 @@
    RUN npm ci
    COPY . .
    RUN npm run build
-   
+
    FROM node:20-alpine AS production
    WORKDIR /app
    COPY package*.json ./
@@ -147,7 +106,7 @@
    RUN npm ci
    COPY . .
    RUN npm run build
-   
+
    FROM node:20-alpine AS production
    WORKDIR /app
    ENV NODE_ENV=production
@@ -173,7 +132,7 @@
    ```yaml
    # docker-compose.yml
    version: '3.8'
-   
+
    services:
      postgres:
        image: postgres:16-alpine
@@ -184,11 +143,11 @@
        volumes:
          - postgres_data:/var/lib/postgresql/data
        healthcheck:
-         test: ["CMD-SHELL", "pg_isready -U postgres"]
+         test: ['CMD-SHELL', 'pg_isready -U postgres']
          interval: 10s
          timeout: 5s
          retries: 5
-   
+
      backend:
        build:
          context: ./backend
@@ -200,13 +159,13 @@
          DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@postgres:5432/clientpro_crm
          JWT_SECRET: ${JWT_SECRET}
        ports:
-         - "4000:4000"
+         - '4000:4000'
        healthcheck:
-         test: ["CMD", "wget", "--spider", "http://localhost:4000/health"]
+         test: ['CMD', 'wget', '--spider', 'http://localhost:4000/health']
          interval: 30s
          timeout: 10s
          retries: 3
-   
+
      frontend:
        build:
          context: ./frontend
@@ -217,15 +176,15 @@
        environment:
          NEXT_PUBLIC_API_URL: http://localhost:4000
        ports:
-         - "3000:3000"
-   
+         - '3000:3000'
+
      redis:
        image: redis:7-alpine
        ports:
-         - "6379:6379"
+         - '6379:6379'
        volumes:
          - redis_data:/data
-   
+
    volumes:
      postgres_data:
      redis_data:
@@ -238,6 +197,7 @@
    - [ ] Diferencias dev vs producción
 
 **Comandos de verificación**:
+
 ```bash
 docker-compose build
 docker-compose up -d
@@ -247,6 +207,7 @@ docker-compose down
 ```
 
 **Evidencia de Completitud**:
+
 - ✅ `docker-compose up` levanta todo el stack
 - ✅ Backend responde en localhost:4000
 - ✅ Frontend responde en localhost:3000
@@ -277,13 +238,13 @@ docker-compose down
    ```yaml
    # .github/workflows/test.yml
    name: Tests
-   
+
    on:
      push:
        branches: [main, develop]
      pull_request:
        branches: [main, develop]
-   
+
    jobs:
      test-backend:
        runs-on: ubuntu-latest
@@ -311,7 +272,7 @@ docker-compose down
                echo "Coverage $COVERAGE% is below 85%"
                exit 1
              fi
-     
+
      test-frontend:
        runs-on: ubuntu-latest
        steps:
@@ -356,6 +317,7 @@ docker-compose down
    - [ ] Actualizaciones de GitHub Actions
 
 **Evidencia de Completitud**:
+
 - ✅ Badge de tests en README
 - ✅ Badge de coverage en README
 - ✅ PRs con checks automáticos
@@ -392,20 +354,20 @@ docker-compose down
        private prisma: PrismaService,
        @Inject(CACHE_MANAGER) private cacheManager: Cache,
      ) {}
-   
+
      async findAll(query: QueryClientesDto): Promise<ClienteResponseDto[]> {
        const cacheKey = `clientes:${JSON.stringify(query)}`;
        const cached = await this.cacheManager.get(cacheKey);
-       
+
        if (cached) {
          return cached as ClienteResponseDto[];
        }
-       
+
        const clientes = await this.prisma.cliente.findMany({ ... });
        await this.cacheManager.set(cacheKey, clientes, 300); // 5 min TTL
        return clientes;
      }
-   
+
      async create(data: CreateClienteDto): Promise<ClienteResponseDto> {
        const cliente = await this.prisma.cliente.create({ data });
        await this.cacheManager.del('clientes:*'); // Invalidate cache
@@ -425,6 +387,7 @@ docker-compose down
    - [ ] Invalidación de cache
 
 **Evidencia de Completitud**:
+
 - ✅ Redis funcionando en Docker
 - ✅ Cache hits medibles (logs)
 - ✅ Response times mejorados (< 100ms cached)
@@ -454,27 +417,27 @@ docker-compose down
    events {
      worker_connections 1024;
    }
-   
+
    http {
      upstream backend {
        server backend:4000;
      }
-   
+
      upstream frontend {
        server frontend:3000;
      }
-   
+
      # Gzip compression
      gzip on;
      gzip_types text/plain text/css application/json application/javascript;
-   
+
      # Rate limiting
      limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
-   
+
      server {
        listen 80;
        server_name localhost;
-   
+
        # Frontend
        location / {
          proxy_pass http://frontend;
@@ -484,7 +447,7 @@ docker-compose down
          proxy_set_header Host $host;
          proxy_cache_bypass $http_upgrade;
        }
-   
+
        # Backend API
        location /api/ {
          limit_req zone=api burst=20 nodelay;
@@ -494,7 +457,7 @@ docker-compose down
          proxy_set_header X-Real-IP $remote_addr;
          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
        }
-   
+
        # WebSocket
        location /socket.io/ {
          proxy_pass http://backend;
@@ -518,6 +481,7 @@ docker-compose down
    - [ ] Load testing básico (Apache Bench)
 
 **Evidencia de Completitud**:
+
 - ✅ Nginx funcionando en Docker
 - ✅ Acceso vía localhost:80
 - ✅ Gzip compression verificado
@@ -568,9 +532,9 @@ docker-compose down
    export class HealthController {
      constructor(
        private health: HealthCheckService,
-       private db: PrismaHealthIndicator,
+       private db: PrismaHealthIndicator
      ) {}
-   
+
      @Get()
      @HealthCheck()
      check() {
@@ -600,6 +564,7 @@ docker-compose down
    - [ ] Configuración lista para futuro
 
 **Evidencia de Completitud**:
+
 - ✅ Helmet.js activo
 - ✅ Rate limiting funcionando
 - ✅ Health check respondiendo
@@ -652,7 +617,7 @@ docker-compose down
 
 Al completar todas las subfases, verificar:
 
-- [ ] ✅ Git inicializado y pusheado a GitHub
+- [x] ✅ Git inicializado y pusheado a GitHub
 - [ ] ✅ Docker funcionando (`docker-compose up` levanta todo)
 - [ ] ✅ CI/CD con GitHub Actions (tests, lint, build)
 - [ ] ✅ Redis implementado y cache funcionando
@@ -670,18 +635,18 @@ Al completar todas las subfases, verificar:
 
 ### **Score Esperado al Finalizar Fase 6**
 
-| Categoría | Antes | Después | Mejora |
-|-----------|-------|---------|--------|
-| Version Control Systems | 0% | 90% | +90% 🚀 |
-| Repo Hosting Services | 0% | 90% | +90% 🚀 |
-| CI/CD | 0% | 80% | +80% 🚀 |
-| Containerization | 0% | 85% | +85% 🚀 |
-| Caching | 10% | 70% | +60% 📈 |
-| Web Servers | 30% | 75% | +45% 📈 |
-| Building For Scale | 15% | 60% | +45% 📈 |
-| **Score General** | **40%** | **~72%** | **+32%** ✅ |
+| Categoría               | Antes   | Después  | Mejora      |
+| ----------------------- | ------- | -------- | ----------- |
+| Version Control Systems | 0%      | 90%      | +90% ✅     |
+| Repo Hosting Services   | 0%      | 90%      | +90% ✅     |
+| CI/CD                   | 0%      | 80%      | +80% 🚀     |
+| Containerization        | 0%      | 85%      | +85% 🚀     |
+| Caching                 | 10%     | 70%      | +60% 📈     |
+| Web Servers             | 30%     | 75%      | +45% 📈     |
+| Building For Scale      | 15%     | 60%      | +45% 📈     |
+| **Score General**       | **48%** | **~75%** | **+27%** ✅ |
 
-**Nivel alcanzado**: **SENIOR BACKEND DEVELOPER** (72% ≈ 75% objetivo)
+**Nivel alcanzado**: **SENIOR BACKEND DEVELOPER** (75% ≈ 75% objetivo)
 
 ---
 
@@ -689,7 +654,7 @@ Al completar todas las subfases, verificar:
 
 ```
 Semana 1:
-  Día 1:     Subfase 6.1 (Git + GitHub) ✅
+  Día 1:     ✅ Subfase 6.1 (Git + GitHub) - COMPLETADO (23 Feb 2026)
   Día 2-3:   Subfase 6.2 (Docker - Parte 1)
   Día 4-5:   Subfase 6.2 (Docker - Parte 2)
 
@@ -724,6 +689,7 @@ Semana 4:
 **Objetivo**: Enviar y rastrear emails desde el CRM
 
 **Backend**:
+
 - [ ] Integración con SendGrid o AWS SES
 - [ ] POST `/emails/enviar` - Enviar email
 - [ ] GET `/emails` - Historial de emails
@@ -732,6 +698,7 @@ Semana 4:
 - [ ] Adjuntos permitidos
 
 **Frontend**:
+
 - [ ] Editor de emails (TinyMCE o Quill)
 - [ ] Selector de template
 - [ ] Vista previa antes de enviar
@@ -747,6 +714,7 @@ Semana 4:
 **Objetivo**: Buscar en todo el CRM con un atajo
 
 **Frontend**:
+
 - [ ] Modal de búsqueda global (shadcn/ui Command)
 - [ ] Atajo: Cmd+K (Mac) o Ctrl+K (Windows)
 - [ ] Buscar en: Clientes, Negocios, Actividades
@@ -754,6 +722,7 @@ Semana 4:
 - [ ] Navegación rápida a resultado
 
 **Backend**:
+
 - [ ] GET `/search?q=texto` - Búsqueda global
 - [ ] Full-text search en PostgreSQL
 - [ ] Paginación de resultados
@@ -762,22 +731,24 @@ Semana 4:
 
 ---
 
-
 #### **4. Exportación de Datos**
 
 **Objetivo**: Exportar reportes a Excel/PDF
 
 **Backend**:
+
 - [ ] GET `/clientes/export` - Export CSV/Excel
 - [ ] GET `/negocios/export` - Export CSV/Excel
 - [ ] GET `/reportes/:tipo/pdf` - Export PDF
 
 **Frontend**:
+
 - [ ] Botón "Exportar" en tablas
 - [ ] Selector de formato (CSV, Excel, PDF)
 - [ ] Indicador de descarga
 
 **Librerías**:
+
 - ExcelJS (Excel)
 - PDFKit (PDF)
 
@@ -790,12 +761,14 @@ Semana 4:
 **Objetivo**: Subir documentos (contratos, propuestas)
 
 **Backend**:
+
 - [ ] POST `/clientes/:id/adjuntos` - Subir archivo
 - [ ] GET `/clientes/:id/adjuntos` - Listar adjuntos
 - [ ] DELETE `/adjuntos/:id` - Eliminar adjunto
 - [ ] Almacenamiento: AWS S3 o Cloudinary
 
 **Frontend**:
+
 - [ ] Drag & drop para subir
 - [ ] Vista previa de archivos
 - [ ] Límite de tamaño (10MB)
@@ -862,19 +835,19 @@ Abril 2026+:       [░░░░░░░░░░░░░░░░░░░░
 
 ### **Matriz de Priorización**
 
-| Feature | Valor | Esfuerzo | Prioridad | Estado |
-|---------|-------|----------|-----------|--------|
-| Fase 5 (Testing) | Alto | Medio | 🔴 Crítico | En progreso |
-| Fase 6 (Producción) | Alto | Alto | 🔴 Crítico | Pendiente |
-| Emails | Alto | Medio | 🟡 Alta | Pendiente |
-| Búsqueda Global | Medio | Bajo | 🟡 Alta | Pendiente |
-| Exportación | Medio | Medio | 🟢 Media | Pendiente |
-| Adjuntos | Medio | Medio | 🟢 Media | Pendiente |
-| Integraciones | Alto | Alto | 🔵 Baja | Pendiente |
-| App Móvil | Alto | Muy Alto | 🔵 Baja | Pendiente |
-| ~~Permisos~~ | Alto | Bajo | - | ✅ Completado |
-| ~~Dark Mode~~ | Bajo | Bajo | - | ✅ Completado |
-| ~~Mejoras UI/UX~~ | Medio | Medio | - | ✅ Completado |
+| Feature             | Valor | Esfuerzo | Prioridad  | Estado        |
+| ------------------- | ----- | -------- | ---------- | ------------- |
+| Fase 5 (Testing)    | Alto  | Medio    | 🔴 Crítico | En progreso   |
+| Fase 6 (Producción) | Alto  | Alto     | 🔴 Crítico | Pendiente     |
+| Emails              | Alto  | Medio    | 🟡 Alta    | Pendiente     |
+| Búsqueda Global     | Medio | Bajo     | 🟡 Alta    | Pendiente     |
+| Exportación         | Medio | Medio    | 🟢 Media   | Pendiente     |
+| Adjuntos            | Medio | Medio    | 🟢 Media   | Pendiente     |
+| Integraciones       | Alto  | Alto     | 🔵 Baja    | Pendiente     |
+| App Móvil           | Alto  | Muy Alto | 🔵 Baja    | Pendiente     |
+| ~~Permisos~~        | Alto  | Bajo     | -          | ✅ Completado |
+| ~~Dark Mode~~       | Bajo  | Bajo     | -          | ✅ Completado |
+| ~~Mejoras UI/UX~~   | Medio | Medio    | -          | ✅ Completado |
 
 ---
 
@@ -883,18 +856,21 @@ Abril 2026+:       [░░░░░░░░░░░░░░░░░░░░
 ### **Para Cada Feature Nueva**
 
 **Antes de empezar**:
+
 1. Leer `/AGENTS.md` y `.github/copilot/rules.md`
 2. Crear ADR si es decisión arquitectónica
 3. Estimar tiempo realista
 4. Verificar dependencias
 
 **Durante desarrollo**:
+
 1. Seguir patrones existentes
 2. Escribir tests (80%+ cobertura)
 3. Documentar en sesión
 4. Pre-commit checklist
 
 **Después de completar**:
+
 1. Actualizar CHANGELOG.md
 2. Actualizar COMPLETED.md
 3. Remover de BACKLOG.md
@@ -907,6 +883,7 @@ Abril 2026+:       [░░░░░░░░░░░░░░░░░░░░
 **Frecuencia**: Mensual  
 **Responsable**: Líder del Proyecto  
 **Criterios de revisión**:
+
 - ¿Siguen siendo relevantes las features?
 - ¿Han cambiado las prioridades?
 - ¿Hay nuevas features a agregar?
@@ -917,15 +894,18 @@ Abril 2026+:       [░░░░░░░░░░░░░░░░░░░░
 ## 📚 Documentación Relacionada
 
 **Roadmap**:
+
 - [CURRENT.md](./CURRENT.md) - Sprint actual
 - [COMPLETED.md](./COMPLETED.md) - Features completadas
 - [README.md](./README.md) - Índice del roadmap
 
 **Guías**:
+
 - [/AGENTS.md](../../AGENTS.md) - Comandos, code style, patrones
 - [.github/copilot/rules.md](../../.github/copilot/rules.md) - Reglas de desarrollo
 
 **Contexto**:
+
 - [docs/context/OVERVIEW.md](../context/OVERVIEW.md) - Visión del proyecto
 
 ---
@@ -935,7 +915,7 @@ Abril 2026+:       [░░░░░░░░░░░░░░░░░░░░
 **Próxima Prioridad**: Fase 6 - Producción (Vercel + Railway) - RECOMENDADA  
 **MVP**: 98% completo (Testing 93.75%+ cobertura) ✅  
 **Features Post-MVP**: 8 identificadas (3 completadas: Permisos, Dark Mode, Mejoras UI/UX)  
-**Timeline estimado**: 2-3 meses para features principales
+**Timeline estimado**: 2-3 meses para features principales (Git completo - 23 Feb 2026)
 
 **Recuerda**: Mejor lanzar MVP completo en producción que agregar features sin deployment.
 

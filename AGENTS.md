@@ -1,24 +1,27 @@
 # AGENTS.md - ClientPro CRM Development Guide
 
 > **Purpose**: This guide is for agentic coding assistants operating in this repository.
-> **Last Updated**: January 28, 2026
+> **Last Updated**: February 23, 2026
 
 ---
 
 ## 📦 Project Overview
 
 **ClientPro CRM** - Full-stack Customer Relationship Management System
+
 - **Backend**: NestJS 11 + Prisma 7 + PostgreSQL
 - **Frontend**: Next.js 16 (App Router) + TypeScript + Tailwind v4
 - **Real-time**: Socket.io 4.8 with JWT authentication
 - **State Management**: TanStack Query v5
 - **Testing**: Jest 30 + React Testing Library
+- **Version Control**: Git Flow with Husky hooks
 
 ---
 
 ## 🚀 Build, Lint, and Test Commands
 
 ### Development
+
 ```bash
 # Start both backend + frontend (RECOMMENDED)
 npm run dev                 # Root: concurrent dev with auto-restart
@@ -30,6 +33,7 @@ npm run frontend:dev        # Frontend only (port 3000)
 ```
 
 ### Production Build
+
 ```bash
 npm run build               # Build both
 npm run backend:build       # Backend only
@@ -37,6 +41,7 @@ npm run frontend:build      # Frontend only
 ```
 
 ### Linting
+
 ```bash
 npm run lint:backend        # ESLint backend
 npm run lint:frontend       # ESLint frontend
@@ -46,6 +51,7 @@ cd backend && npm run format # Prettier (backend)
 ### Testing
 
 #### Backend Tests
+
 ```bash
 cd backend
 npm test                    # Run all tests
@@ -56,6 +62,7 @@ npm run test:debug          # Debug mode
 ```
 
 #### Frontend Tests
+
 ```bash
 cd frontend
 npm test                    # Run all tests
@@ -71,6 +78,7 @@ npm test badge.test.tsx     # Run single test file
 ## 🎨 Code Style Guidelines
 
 ### TypeScript Configuration
+
 - **Strict mode**: Enabled on both backend and frontend
 - **Target**: ES2023 (backend), ES2017 (frontend)
 - **Module**: nodenext (backend), esnext (frontend)
@@ -80,6 +88,7 @@ npm test badge.test.tsx     # Run single test file
 ### Naming Conventions
 
 #### Backend (NestJS)
+
 ```typescript
 // Modules, Controllers, Services: PascalCase
 export class ClientesController {}
@@ -106,19 +115,20 @@ async findOne(id: number) {}
 ```
 
 #### Frontend (Next.js)
+
 ```typescript
 // Components: PascalCase
 export default function ClientesPage() {}
 export function ClienteForm() {}
 
 // Files: kebab-case
-cliente-form.tsx
-negocio-card.tsx
-notification-badge.tsx
+cliente - form.tsx;
+negocio - card.tsx;
+notification - badge.tsx;
 
 // Pages: page.tsx in folder
-app/clientes/page.tsx
-app/negocios/page.tsx
+app / clientes / page.tsx;
+app / negocios / page.tsx;
 
 // API functions: camelCase
 export async function getClientes() {}
@@ -128,35 +138,38 @@ export async function createCliente(data: CreateClienteDto) {}
 ### Import Order
 
 **Always follow this order** (both backend and frontend):
+
 ```typescript
 // 1. React/Next.js core
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // 2. External libraries
-import { useQuery, useMutation } from '@tanstack/react-query'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // 3. UI Components (shadcn/ui)
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 
 // 4. Custom components
-import ClienteForm from '@/components/cliente-form'
-import NotificationBadge from '@/components/notifications/notification-badge'
+import ClienteForm from '@/components/cliente-form';
+import NotificationBadge from '@/components/notifications/notification-badge';
 
 // 5. Types/Interfaces
-import { Cliente, CreateClienteDto } from '@/types/cliente'
+import { Cliente, CreateClienteDto } from '@/types/cliente';
 
 // 6. API/Utils
-import { getClientes, createCliente } from '@/lib/api/clientes'
-import { cn } from '@/lib/utils'
+import { getClientes, createCliente } from '@/lib/api/clientes';
+import { cn } from '@/lib/utils';
 ```
 
 ### Formatting (Prettier)
+
 **Backend** (`.prettierrc`):
+
 ```json
 {
   "singleQuote": true,
@@ -169,6 +182,7 @@ import { cn } from '@/lib/utils'
 ### TypeScript Types
 
 #### Prefer Interfaces for DTOs
+
 ```typescript
 // ✅ Good
 export interface Cliente {
@@ -193,6 +207,7 @@ export class CreateClienteDto {
 ```
 
 #### Always Define Return Types
+
 ```typescript
 // ✅ Good
 async findAll(): Promise<ClienteResponseDto[]> {
@@ -208,6 +223,7 @@ async findAll() {  // No return type
 ### Error Handling
 
 #### Backend (NestJS)
+
 ```typescript
 // Use built-in HTTP exceptions
 import { NotFoundException, BadRequestException } from '@nestjs/common';
@@ -230,6 +246,7 @@ export class CreateClienteDto {
 ```
 
 #### Frontend
+
 ```typescript
 // Use TanStack Query for API error handling
 const { data, error, isLoading } = useQuery({
@@ -308,6 +325,7 @@ Desarrollo-Wep/
 **8 Models**: Equipo, Usuario, Cliente, Negocio, Actividad, Email, Nota, Notificacion
 
 **5 Enums**:
+
 - `RolUsuario`: ADMIN, VENDEDOR, MANAGER
 - `EtapaNegocio`: PROSPECTO, CALIFICACION, PROPUESTA, NEGOCIACION, CERRADO_GANADO, CERRADO_PERDIDO
 - `TipoActividad`: LLAMADA, REUNION, EMAIL, TAREA, NOTA
@@ -319,22 +337,26 @@ Desarrollo-Wep/
 ## 🔍 Important Rules from .github/copilot/rules.md
 
 ### 1. Error Verification Workflow
+
 - **CRITICAL**: Use `get_errors` tool before running code (TypeScript validation)
 - If error persists after 2-3 attempts → **Change strategy** (don't repeat same approach)
 - Always read related files before proposing solution
 
 ### 2. Documentation
+
 - Document **ONLY at end of session** (not during)
 - Update `docs/SESION_<DATE>.md` with all changes
 - Include what solutions **DIDN'T work** (avoid future repetition)
 
 ### 3. Testing Standard
+
 - **Jest + React Testing Library** (official project standard)
 - Frontend tests: `.test.tsx` next to component
 - Backend tests: `.spec.ts` next to service/controller
 - Configuration complete, tests pending (Phase 5)
 
 ### 4. Module Structure Pattern (Backend)
+
 ```
 backend/src/<module>/
 ├── dto/
@@ -348,6 +370,7 @@ backend/src/<module>/
 ```
 
 ### 5. Prisma Integration
+
 - Always sync enums: Prisma schema → Backend DTOs → Frontend types
 - Use `include` for relations in response DTOs
 - Singular model names: `prisma.cliente`, `prisma.negocio`
@@ -357,6 +380,7 @@ backend/src/<module>/
 ## 🔌 MCP Configuration (.mcp.json)
 
 **6 MCPs Available**:
+
 1. **pgsql** - PostgreSQL (REQUIRED for DB work)
 2. **chrome-devtools** - Browser testing (REQUIRED for frontend)
 3. **next-devtools** - Next.js monitoring
@@ -366,26 +390,164 @@ backend/src/<module>/
 
 ---
 
+## 🔀 Git Workflow & Conventions
+
+### Branch Strategy (Git Flow)
+
+**Main Branches**:
+
+- `master` → Production (protected, requires PR with approval)
+- `staging` → Pre-production (requires PR from develop)
+- `develop` → Active development (default branch, requires PR with tests passing)
+
+**Working Branches**:
+
+```bash
+feature/<name>  # New functionality (from develop)
+bugfix/<name>   # Bug fixes (from develop)
+hotfix/<name>   # Critical production fixes (from master)
+release/<version> # Release preparation (from develop)
+```
+
+### Creating Branches
+
+```bash
+# Feature branch (most common)
+git checkout develop
+git pull origin develop
+git checkout -b feature/client-advanced-filters
+
+# Bugfix
+git checkout -b bugfix/notification-badge-count
+
+# Hotfix (urgent production fix)
+git checkout master
+git pull origin master
+git checkout -b hotfix/auth-token-expiration
+```
+
+### Commit Conventions (Conventional Commits)
+
+**Format**: `type(scope): subject`
+
+**Types**:
+
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation only
+- `refactor` - Code change without adding feature/fixing bug
+- `test` - Adding or updating tests
+- `chore` - Tooling, dependencies, configs
+- `perf` - Performance improvement
+- `style` - Code style/formatting (not CSS)
+
+**Examples**:
+
+```bash
+feat(clientes): add advanced filter functionality
+fix(auth): resolve token expiration issue
+docs(readme): update installation instructions
+refactor(negocios): extract Kanban logic to custom hook
+test(clientes): add unit tests for ClientesService
+chore(deps): update NestJS to v11.2
+```
+
+### Git Hooks (Husky)
+
+**CRITICAL**: These hooks run automatically and will block commits/pushes if they fail.
+
+**Pre-commit** (runs before `git commit`):
+
+- ✅ ESLint auto-fix on staged files (backend + frontend)
+- ✅ Prettier format on staged files
+- ✅ Only staged files are checked (via lint-staged)
+- **Impact**: May modify your files to fix formatting
+
+**Commit-msg** (validates commit message):
+
+- ✅ Validates Conventional Commits format
+- ✅ Blocks commit if format is invalid
+- **Impact**: You MUST use correct format or commit will fail
+
+**Pre-push** (runs before `git push`):
+
+- ✅ Blocks direct push to `master` (must use PR)
+- ✅ Runs TypeScript check on backend (`tsc --noEmit`)
+- ✅ Runs TypeScript check on frontend (`tsc --noEmit`)
+- ✅ Runs full build (`npm run build`)
+- **Impact**: Takes ~30-60 seconds, will block push if build fails
+
+### Common Git Workflows
+
+**Creating a Feature**:
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/my-feature
+# Work on feature, commit frequently
+git add .
+git commit -m "feat(scope): description"  # Pre-commit hook runs
+git push -u origin feature/my-feature     # Pre-push hook runs
+# Create PR on GitHub to merge into develop
+```
+
+**Merging to Develop** (via PR):
+
+```bash
+# After PR approval
+git checkout develop
+git pull origin develop
+# Delete feature branch (optional)
+git branch -d feature/my-feature
+```
+
+**Bypassing Hooks** (emergency only):
+
+```bash
+git commit --no-verify -m "emergency fix"
+git push --no-verify
+```
+
+⚠️ **WARNING**: Only use `--no-verify` in emergencies. Hooks exist for quality control.
+
+### Full Documentation
+
+See `docs/guides/git/GIT_WORKFLOW.md` for complete Git Flow guide and `docs/guides/git/GIT_HOOKS.md` for detailed hook documentation.
+
+---
+
 ## ✅ Pre-Commit Checklist
 
 Before committing, ensure:
+
 - [ ] `get_errors` shows 0 errors (TypeScript)
 - [ ] `npm run dev` runs without critical errors
 - [ ] All modified pages/endpoints tested manually
 - [ ] Imports follow the defined order
 - [ ] No `console.log` statements left (unless intentional)
 - [ ] Prisma enums synced across backend/frontend
-- [ ] No sensitive data (credentials, tokens) in code
+- [ ] Commit message follows Conventional Commits format
+- [ ] Working on correct branch (not `master` or `staging`)
 
-**Opcional (Fase de prueba - Semgrep)**:
-- [ ] `npm run scan` - Verificar calidad de código backend (0 errores críticos)
-- [ ] No sensitive data (credentials, tokens) in code
+**Optional (Testing Phase - Semgrep)**:
+
+- [ ] `npm run scan` - Verify backend code quality (0 critical errors)
+
+**Git Hooks Will Automatically Check**:
+
+- ✅ ESLint + Prettier formatting
+- ✅ Commit message format
+- ✅ TypeScript compilation (on push)
+- ✅ Build success (on push)
+- ✅ No direct push to `master`
 
 ---
 
 ## 🎯 Common Patterns
 
 ### API Client Pattern (Frontend)
+
 ```typescript
 // lib/api/clientes.ts
 export async function getClientes(): Promise<Cliente[]> {
@@ -395,6 +557,7 @@ export async function getClientes(): Promise<Cliente[]> {
 ```
 
 ### TanStack Query Hook Pattern
+
 ```typescript
 const { data: clientes, isLoading } = useQuery({
   queryKey: ['clientes'],
@@ -403,6 +566,7 @@ const { data: clientes, isLoading } = useQuery({
 ```
 
 ### NestJS Service Pattern
+
 ```typescript
 @Injectable()
 export class ClientesService {
@@ -415,6 +579,7 @@ export class ClientesService {
 ```
 
 ### shadcn/ui Component Usage
+
 ```typescript
 import { Button } from '@/components/ui/button';
 
@@ -438,11 +603,13 @@ import { Button } from '@/components/ui/button';
 ## 📚 Key Documentation Files
 
 **MUST READ before starting**:
+
 1. `docs/CONTEXTO_PROYECTO.md` - Complete project state
 2. `.github/copilot/rules.md` - Fixed development rules
 3. `docs/PROXIMOS_PASOS.md` - Roadmap and next steps
 
 **Reference when needed**:
+
 - `backend/prisma/schema.prisma` - Database schema
 - `docs/wireframe.md` - UI designs
 - Latest session doc in `docs/SESION_*.md`
