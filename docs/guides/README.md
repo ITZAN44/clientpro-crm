@@ -17,6 +17,13 @@ Guías rápidas para desarrolladores y usuarios del sistema.
   - [GIT_WORKFLOW.md](./git/GIT_WORKFLOW.md) - Estrategia de branching
   - [GIT_HOOKS.md](./git/GIT_HOOKS.md) - Hooks con Husky
 
+### 🚀 DevOps - Guías de Infraestructura
+
+- **[docker/](./docker/)** - Containerización con Docker
+  - [DOCKER.md](./docker/DOCKER.md) - Guía completa de Docker Compose
+- **[ci-cd/](./ci-cd/)** - Integración y Despliegue Continuo
+  - [GITHUB_ACTIONS.md](./ci-cd/GITHUB_ACTIONS.md) - Workflows de CI/CD
+
 ---
 
 ## 🚀 Inicio Rápido
@@ -25,6 +32,8 @@ Guías rápidas para desarrolladores y usuarios del sistema.
 
 1. Lee **[git/GIT_WORKFLOW.md](./git/GIT_WORKFLOW.md)** para entender el flujo de trabajo
 2. Lee **[git/GIT_HOOKS.md](./git/GIT_HOOKS.md)** para entender las validaciones automáticas
+3. Lee **[ci-cd/GITHUB_ACTIONS.md](./ci-cd/GITHUB_ACTIONS.md)** para entender CI/CD
+4. Lee **[docker/DOCKER.md](./docker/DOCKER.md)** si trabajas con contenedores
 
 ### Para Usuarios Finales
 
@@ -40,6 +49,8 @@ Si quieres agregar una nueva guía:
 1. **Determina la categoría**:
    - UX/UI → Raíz de `guides/`
    - Git/Development → `guides/git/`
+   - DevOps/Docker → `guides/docker/`
+   - CI/CD → `guides/ci-cd/`
    - Testing → Crear `guides/testing/` si es necesario
 
 2. **Usa el formato de nombre**:
@@ -57,5 +68,5 @@ Si quieres agregar una nueva guía:
 
 ---
 
-**Última actualización**: Febrero 23, 2026  
-**Versión**: 1.0.0
+**Última actualización**: Febrero 24, 2026  
+**Versión**: 1.1.0

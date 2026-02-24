@@ -1,7 +1,7 @@
 # Índice de Registros de Decisión Arquitectónica (ADRs)
 
 > **Propósito**: Documentar decisiones arquitectónicas clave y sus justificaciones
-> **Última actualización**: 30 de enero de 2026
+> **Última actualización**: 24 de febrero de 2026
 
 ---
 
@@ -109,6 +109,32 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 
 ---
 
+### **ADR-007: Docker para Containerización de la Aplicación**
+**Fecha**: 23/02/2026 | **Estado**: Aceptado | **Etiquetas**: infrastructure, devops, docker, containerization
+
+**Resumen**: Docker + Docker Compose elegido sobre Vagrant, Kubernetes, Docker Swarm, y Podman por balance óptimo entre facilidad de uso, reproducibilidad, y preparación para producción. Incluye 4 servicios (backend, frontend, postgres, adminer) con multi-stage builds y volúmenes persistentes.
+
+**Decisión clave**: Containerización completa del stack para entornos reproducibles y onboarding instantáneo.
+
+**Leer cuando**: Necesites entender arquitectura de contenedores, configurar Docker local, o preparar deployment.
+
+[Ver ADR completo →](./007-docker-containerization.md)
+
+---
+
+### **ADR-008: GitHub Actions para CI/CD Pipeline**
+**Fecha**: 24/02/2026 | **Estado**: Aceptado | **Etiquetas**: devops, cicd, automation, github-actions, testing
+
+**Resumen**: GitHub Actions elegido sobre Jenkins, GitLab CI, CircleCI, y Travis CI por integración nativa con GitHub, costo cero para repos públicos, y ecosistema maduro. Incluye 3 workflows (CI, Deploy Staging, Deploy Production), Dependabot, y branch protection rules.
+
+**Decisión clave**: Automatización completa de testing, build, y deployment con feedback rápido en cada PR.
+
+**Leer cuando**: Necesites entender pipeline de CI/CD, configurar workflows, o troubleshoot deployments.
+
+[Ver ADR completo →](./008-github-actions-cicd.md)
+
+---
+
 ## 🔄 Estados de ADR
 
 | Estado | Significado |
@@ -193,6 +219,8 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 - ADR-004 (Prisma) → `docs/context/DATABASE.md`
 - ADR-005 (shadcn/ui) → `docs/context/ARCHITECTURE.md` (Componentes)
 - ADR-006 (Semgrep) → `/AGENTS.md` (Comandos scan)
+- ADR-007 (Docker) → `/AGENTS.md` (Comandos Docker), `docker-compose.yml`
+- ADR-008 (GitHub Actions) → `.github/workflows/` (Workflows CI/CD)
 
 ### **ADRs → Implementación**
 - ADRs explican **por qué** se tomó la decisión
@@ -202,25 +230,21 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 
 ## 📊 Decisiones Pendientes
 
-**Próximos ADRs a crear** (Fase 5-6):
+**Próximos ADRs a crear** (Fase 5+):
 
-### **ADR-007: Testing Strategy (Pendiente)**
+### **ADR-009: Testing Strategy (Pendiente)**
 - Jest vs Vitest
 - React Testing Library vs Enzyme
 - E2E: Playwright vs Cypress
 - **Fecha estimada**: Fase 5
 
-### **ADR-008: Deployment Platform (Pendiente)**
-- Vercel + Railway vs Docker + VPS vs Kubernetes
-- **Fecha estimada**: Fase 6
+### **ADR-010: Deployment Platform (Pendiente)**
+- Railway vs Vercel + Railway vs Docker + VPS vs Kubernetes
+- **Fecha estimada**: Post-containerización (Fase 6+)
 
-### **ADR-009: Monitoring & Logging (Pendiente)**
+### **ADR-011: Monitoring & Logging (Pendiente)**
 - Sentry vs LogRocket vs Datadog
-- **Fecha estimada**: Fase 6
-
-### **ADR-010: CI/CD Pipeline (Pendiente)**
-- GitHub Actions vs GitLab CI vs CircleCI
-- **Fecha estimada**: Fase 6
+- **Fecha estimada**: Post-deployment (Fase 6+)
 
 ---
 
@@ -239,22 +263,23 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 
 ## ✅ Resumen
 
-**6 ADRs Documentados**:
+**8 ADRs Documentados**:
 1. NestJS como framework backend
 2. Next.js 16 App Router como framework frontend
 3. Socket.io para funcionalidades en tiempo real
 4. Prisma como ORM
 5. shadcn/ui para componentes UI
 6. Semgrep para análisis estático de código
+7. Docker para containerización
+8. GitHub Actions para CI/CD
 
-**4 ADRs Pendientes** (Fase 5-6):
-- Testing Strategy
-- Deployment Platform
-- Monitoring & Logging
-- CI/CD Pipeline
+**3 ADRs Pendientes** (Fase 5+):
+- Testing Strategy (E2E con Playwright/Cypress)
+- Deployment Platform (Railway/Vercel/AWS)
+- Monitoring & Logging (Sentry/Datadog)
 
 **Plantilla disponible**: `template.md` para nuevos ADRs
 
 ---
 
-**Fin de decisions/README.md** | ~200 líneas | Índice de decisiones arquitectónicas
+**Fin de decisions/README.md** | ~285 líneas | Índice de decisiones arquitectónicas | Actualizado 24/02/2026

@@ -2,8 +2,8 @@
 
 > **Descripción General del Proyecto**
 
-**Última actualización**: 4 Febrero 2026  
-**Estado actual**: ✅ **DARK MODE IMPLEMENTADO** - UI completa con soporte dark mode + Testing Backend/Frontend UI (65%)
+**Última actualización**: 24 Febrero 2026  
+**Estado actual**: ✅ **DOCKER + CI/CD IMPLEMENTADO** - Containerización completa + GitHub Actions workflows (Subfase 6.2, 6.3)
 
 ---
 
@@ -102,7 +102,23 @@
 - Sesiones persistentes
 - Usuarios con roles (ADMIN, MANAGER, VENDEDOR)
 
-### **9. Dark Mode Completo** ✅ NUEVO
+### **9. Containerización Completa** ✅ NUEVO
+- **Docker Compose** con 4 servicios orquestados
+- PostgreSQL 16 + Redis 7 containerizados
+- Backend NestJS con multi-stage builds
+- Frontend Next.js optimizado
+- Networking privado con healthchecks
+- Volúmenes persistentes para datos
+- Configuración lista para producción
+
+### **10. CI/CD Pipeline** ✅ NUEVO
+- **GitHub Actions** con 3 workflows automáticos
+- Testing automático (backend + frontend)
+- Linting y validación de código
+- Builds de producción validados
+- Dependabot para actualizaciones de seguridad
+- Triggers en branches protegidas (develop/staging/master)
+### **11. Dark Mode Completo** ✅
 - Soporte dark mode en todas las páginas
 - Toggle manual en header
 - Diseño consistente con Tailwind dark: classes
@@ -168,10 +184,27 @@
   - Páginas (/dashboard, /clientes, /negocios)
   - Tests E2E con Playwright
 
-### **Fase 6: Producción y Deploy** ⏳ FUTURO
-- Deployment a Vercel + Railway
-- CI/CD con GitHub Actions
-- Monitoreo con Sentry
+### **Fase 6: Producción y Deploy** 🔄 EN PROGRESO (65%)
+- ✅ **Subfase 6.2: Docker Containerization** (100%)
+  - 4 servicios containerizados (postgres, redis, backend, frontend)
+  - Docker Compose con networking y healthchecks
+  - Volúmenes persistentes para datos
+  - Comunicación inter-contenedor optimizada
+- ✅ **Subfase 6.3: CI/CD Pipeline** (100%)
+  - 3 workflows de GitHub Actions:
+    - Test workflow (backend + frontend tests)
+    - Lint workflow (ESLint + Prettier validation)
+    - Build workflow (producción multi-stage)
+  - Dependabot para actualizaciones automáticas
+  - Triggers en push a develop/staging/master
+- ⏳ **Subfase 6.4: Deployment** (0%)
+  - Deployment a Vercel (frontend)
+  - Deployment a Railway (backend + DB)
+  - Variables de entorno de producción
+- ⏳ **Subfase 6.5: Monitoreo** (0%)
+  - Sentry para error tracking
+  - Logs centralizados
+  - Alertas de uptime
 
 ---
 
@@ -186,17 +219,20 @@
 
 **Diferenciador clave**: 
 - Interfaz moderna y profesional (Tailwind v4 + shadcn/ui)
-- **Dark mode completo en toda la aplicación** ✨ NUEVO
+- **Dark mode completo en toda la aplicación** ✨
+- **Infraestructura containerizada con Docker** ✨ NUEVO
+- **CI/CD automatizado con GitHub Actions** ✨ NUEVO
 - Notificaciones en tiempo real (WebSocket)
 - Reportes visuales con gráficas interactivas
 - Drag & drop intuitivo en el Kanban
-- **Sistema de permisos granular por roles** ✨ NUEVO
+- **Sistema de permisos granular por roles** ✨
 
 ---
 
 ## 📈 Progreso General
 
 **MVP**: ~97% completado  
+**Producción**: ~65% completado (Docker ✅, CI/CD ✅, Deploy ⏳)  
 **Módulos Backend**: 8/8 (100%) - Agregado UsuariosModule  
 **Páginas Frontend**: 7/7 (100%) - Agregado /admin/usuarios  
 **Endpoints REST**: 36 totales (+2 usuarios)  
@@ -205,6 +241,8 @@
 **Tests**: 240/240 pasando ✅
 - Backend: 96 tests (96.25% coverage)
 - Frontend: 144 tests (93.75% coverage en UI básicos)
+**Docker Services**: 4 (postgres, redis, backend, frontend)  
+**CI/CD Workflows**: 3 (test, lint, build)
 
 ---
 
@@ -223,6 +261,10 @@
 
 ### **Iniciar aplicación**:
 ```bash
+# Con Docker (RECOMENDADO para producción)
+docker-compose up -d
+
+# Sin Docker (desarrollo local)
 npm run dev          # Inicia backend (4000) + frontend (3000)
 ```
 
@@ -249,7 +291,9 @@ npm run dev          # Inicia backend (4000) + frontend (3000)
 
 ---
 
-**Última revisión**: 4 Febrero 2026  
-**Versión del proyecto**: 0.6.0  
+**Última revisión**: 24 Febrero 2026  
+**Versión del proyecto**: 0.7.3  
 **Estado Testing**: Backend ✅ 96.25% | Frontend UI ✅ 93.75%  
-**Dark Mode**: ✅ Completo en 4 módulos (11 archivos)
+**Dark Mode**: ✅ Completo en 4 módulos (11 archivos)  
+**Docker**: ✅ 4 servicios containerizados  
+**CI/CD**: ✅ 3 workflows de GitHub Actions
