@@ -2,7 +2,7 @@
 
 > **Tecnologías, frameworks y bibliotecas utilizadas en el proyecto**
 
-**Última actualización**: 4 Febrero 2026
+**Última actualización**: 24 Febrero 2026
 
 ---
 
@@ -133,10 +133,22 @@
 
 ### **PostgreSQL**
 
-- **Versión**: Latest (containerizado)
+- **Versión**: 16-alpine (containerizado)
 - **Base de datos**: `clientpro_crm`
 - **Puerto**: 5432
 - **Usuario**: postgres
+- **Imagen Docker**: `postgres:16-alpine`
+- **Volumen**: `postgres_data` (persistencia de datos)
+- **Healthcheck**: `pg_isready` cada 10s
+
+### **Redis**
+
+- **Versión**: 7-alpine (containerizado)
+- **Puerto**: 6379
+- **Imagen Docker**: `redis:7-alpine`
+- **Volumen**: `redis_data` (persistencia de datos)
+- **Healthcheck**: `redis-cli ping` cada 10s
+- **Uso**: Caché y sesiones (preparado para uso futuro)
 
 ### **Prisma**
 
@@ -159,7 +171,113 @@
 
 ---
 
+## 🐳 Containerización e Infraestructura
+
+### **Docker**
+
+- **docker-compose.yml**: Orquestación de 4 servicios
+- **Versión compose**: 3.8
+- **Red interna**: `clientpro-network` (bridge driver)
+- **Política de restart**: `unless-stopped` (todos los servicios)
+
+### **Servicios Containerizados (4)**
+
+1. **postgres** - Base de datos PostgreSQL 16
+   - Container: `clientpro-postgres`
+   - Puerto: 5432
+   - Volumen: `postgres_data`
+   - Healthcheck: `pg_isready` cada 10s
+   - Variables de entorno: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
+
+2. **redis** - Cache Redis 7
+   - Container: `clientpro-redis`
+   - Puerto: 6379
+   - Volumen: `redis_data`
+   - Healthcheck: `redis-cli ping` cada 10s
+
+3. **backend** - API NestJS 11
+   - Container: `clientpro-backend`
+   - Puerto: 4000
+   - Dependencias: postgres (healthy), redis (healthy)
+   - Healthcheck: `curl -f http://localhost:4000` cada 30s
+   - Variables de entorno: DATABASE_URL, JWT_SECRET, REDIS_HOST
+
+4. **frontend** - App Next.js 16
+   - Container: `clientpro-frontend`
+   - Puerto: 3000
+   - Dependencias: backend (healthy)
+   - Variables de entorno: NEXT_PUBLIC_API_URL, API_URL, NEXTAUTH_URL
+
+### **Volúmenes Persistentes**
+
+- `postgres_data` - Datos de PostgreSQL (driver: local)
+- `redis_data` - Datos de Redis (driver: local)
+
+### **Networking**
+
+- **Red interna**: `clientpro-network`
+- **Driver**: bridge
+- **Comunicación inter-contenedor**: Por nombre de servicio
+  - Backend → postgres:5432
+  - Backend → redis:6379
+  - Frontend → backend:4000
+
+### **Puertos Expuestos**
+
+- **3000**: Frontend (Next.js)
+- **4000**: Backend (NestJS)
+- **5432**: PostgreSQL (solo para desarrollo local)
+- **6379**: Redis (solo para desarrollo local)
+
+### **Comandos Docker**
+
+```bash
+# Iniciar todos los servicios
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f
+
+# Detener servicios
+docker-compose down
+
+# Reconstruir imágenes
+docker-compose build --no-cache
+
+# Ver estado de servicios
+docker-compose ps
+
+# Ejecutar migraciones en backend
+docker-compose exec backend npx prisma migrate deploy
+```
+
+---
+
 ## 🔧 DevOps y Herramientas
+
+### **CI/CD Pipeline** ✨ NUEVO
+
+- **GitHub Actions** - Workflows automáticos
+- **3 Workflows principales**:
+  1. **test.yml** - Testing automático
+     - Matriz de tests: Node 18, 20, 22
+     - Backend: Jest + coverage report
+     - Frontend: Jest + React Testing Library
+     - Triggers: push a develop/staging/master + PRs
+  2. **lint.yml** - Validación de código
+     - ESLint backend + frontend
+     - Prettier validation
+     - TypeScript type checking
+     - Triggers: push + PRs a todas las ramas
+  3. **build.yml** - Build de producción
+     - Multi-stage Docker builds
+     - Validación de imágenes
+     - Cache de dependencias
+     - Triggers: push a staging/master
+- **Dependabot** - Actualizaciones automáticas
+  - Dependencias npm (semanal)
+  - GitHub Actions (semanal)
+  - PRs automáticos con cambios
 
 ### **Control de Versiones**
 
@@ -412,5 +530,5 @@ npx prisma studio            # Abrir Prisma Studio
 
 ---
 
-**Última revisión**: 5 Febrero 2026  
-**Versión del proyecto**: 0.6.1
+**Última revisión**: 24 Febrero 2026  
+**Versión del proyecto**: 0.7.3

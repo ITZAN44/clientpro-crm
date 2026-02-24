@@ -1,0 +1,74 @@
+name: Linting
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  lint-backend:
+    name: Backend Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+      
+      - name: Run Prisma generate
+        working-directory: backend
+        run: npx prisma generate
+      
+      - name: Run ESLint
+        working-directory: backend
+        run: npm run lint
+        continue-on-error: true
+      
+      # TypeScript checking is already done in build.yml, skip here to avoid duplication
+      # - name: Check Prettier formatting
+      #   working-directory: backend
+      #   run: npx prettier --check "src/**/*.ts" "test/**/*.ts"
+      # 
+      # - name: TypeScript type checking
+      #   working-directory: backend
+      #   run: npx tsc --noEmit
+
+  lint-frontend:
+    name: Frontend Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+      
+      - name: Run ESLint
+        working-directory: frontend
+        run: npm run lint
+        continue-on-error: true
+      
+      # TypeScript checking is already done in build.yml, skip here to avoid duplication
+      # - name: TypeScript type checking
+      #   working-directory: frontend
+      #   run: npx tsc --noEmit

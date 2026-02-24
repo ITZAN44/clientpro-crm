@@ -15,7 +15,9 @@ export const authOptions = {
         }
 
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+          // Use API_URL for server-side calls (Docker internal) or fallback to NEXT_PUBLIC_API_URL
+          const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL;
+          const response = await fetch(`${apiUrl}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

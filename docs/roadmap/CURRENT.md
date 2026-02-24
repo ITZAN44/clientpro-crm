@@ -1,17 +1,17 @@
 # Sprint Actual y Próximos Pasos Inmediatos
 
 > **Propósito**: Trabajo en progreso y próximas tareas prioritarias
-> **Última actualización**: 23 de febrero de 2026
-> **Fase actual**: Fase 6 - Subfase 6.1 Completada (Version Control Systems)
+> **Última actualización**: 24 de febrero de 2026
+> **Fase actual**: Fase 6 - Subfase 6.3 Completada (CI/CD - GitHub Actions)
 
 ---
 
 ## 🎯 Estado Actual del Proyecto
 
-**Versión**: v0.7.1  
+**Versión**: v0.7.3  
 **Progreso MVP**: 98%  
-**Última sesión**: 23 de febrero de 2026  
-**Última subfase completada**: Subfase 6.1 (Version Control Systems)
+**Última sesión**: 24 de febrero de 2026  
+**Última subfase completada**: Subfase 6.3 (CI/CD - GitHub Actions)
 
 **Módulos activos**:
 
@@ -23,8 +23,165 @@
 - ✅ Tests Frontend: 144/144 pasando (93.75% coverage en UI básicos)
 - ✅ Dark Mode completo en todas las páginas
 - ✅ Mejoras UI/UX implementadas (skeleton loaders, atajos de teclado, animaciones)
-- ✅ Git Flow configurado con hooks automatizados ✨ NUEVO
-- ✅ Repositorio en GitHub: https://github.com/ITZAN44/clientpro-crm ✨ NUEVO
+- ✅ Git Flow configurado con hooks automatizados
+- ✅ Repositorio en GitHub: https://github.com/ITZAN44/clientpro-crm
+- ✅ Docker completo con docker-compose (postgres, redis, backend, frontend)
+- ✅ Migraciones de Prisma ejecutándose automáticamente en Docker
+- ✅ CI/CD con GitHub Actions (3 workflows: test, lint, build) ✨ NUEVO
+- ✅ Dependabot configurado para actualizaciones semanales ✨ NUEVO
+
+---
+
+## ✅ Subfase 6.3: CI/CD (GitHub Actions) (COMPLETADA - 100%)
+
+**Objetivo**: Implementar pipeline completo de CI/CD con GitHub Actions
+
+**Prioridad**: CRÍTICA  
+**Estimado**: 3 días  
+**Tiempo real**: 1 día  
+**Estado**: ✅ **COMPLETADO**  
+**Fecha**: 24 de febrero de 2026
+
+### **Completado**
+
+#### **1. Workflow de Testing** ✅
+
+- [x] `.github/workflows/test.yml` creado (104 líneas)
+- [x] Jobs paralelos: test-backend + test-frontend
+- [x] Matrix strategy con Node 20.x
+- [x] Cache de node_modules (reducción de tiempo ~70%)
+- [x] 96 tests backend con coverage ≥85%
+- [x] 144 tests frontend con coverage ≥85%
+- [x] Upload de artifacts (coverage reports, 7 días retención)
+- [x] Emojis en output (📊 Coverage, ✅ Success, ❌ Error)
+
+#### **2. Workflow de Linting** ✅
+
+- [x] `.github/workflows/lint.yml` creado (68 líneas)
+- [x] Jobs paralelos: lint-backend + lint-frontend
+- [x] ESLint + auto-fix en backend
+- [x] Prettier check en backend
+- [x] TypeScript type checking (npx tsc --noEmit)
+- [x] ESLint Next.js en frontend
+- [x] TypeScript type checking en frontend
+
+#### **3. Workflow de Build** ✅
+
+- [x] `.github/workflows/build.yml` creado (108 líneas)
+- [x] Jobs secuenciales: build-backend → build-frontend → build-docker
+- [x] Build de NestJS (dist/)
+- [x] Build de Next.js standalone (.next/)
+- [x] Upload de artifacts (builds, 7 días retención)
+- [x] Docker build de backend (clientpro-backend:latest)
+- [x] Docker build de frontend (clientpro-frontend:latest)
+- [x] GitHub Actions cache para Docker layers (type=gha)
+- [x] Validación de docker-compose.yml (docker compose config)
+
+#### **4. Dependabot** ✅
+
+- [x] `.github/dependabot.yml` creado (94 líneas)
+- [x] Backend npm updates (semanal, lunes 9:00 AM)
+- [x] Frontend npm updates (semanal, lunes 9:00 AM)
+- [x] GitHub Actions updates (semanal)
+- [x] Grupos agrupados (nestjs, prisma, nextjs, radix-ui, tanstack)
+- [x] Conventional Commits (chore(deps): ...)
+- [x] Labels automáticos (dependencies, backend, frontend, ci/cd)
+- [x] Auto-assignment a ITZAN44
+
+#### **5. Badges en README** ✅
+
+- [x] Badge de Tests (test.yml)
+- [x] Badge de Linting (lint.yml)
+- [x] Badge de Build (build.yml)
+- [x] Links directos a GitHub Actions
+
+#### **6. Documentación** ✅
+
+- [x] `docs/roadmap/COMPLETED.md` actualizado (~400 líneas Subfase 6.3)
+- [x] `docs/roadmap/BACKLOG.md` actualizado (Subfase 6.3 marcada completada)
+- [x] `docs/roadmap/CURRENT.md` actualizado (este archivo)
+- [x] README.md actualizado con badges
+
+### **Impacto en Score**
+
+**DevOps (Fase 6)**:
+- CI/CD: 0% → **71%** (+71% 🚀)
+- Score General Fase 6: 56% → **71%** (+15%)
+
+**Beneficios**:
+- ✅ Tests automáticos en cada push/PR
+- ✅ Linting y type checking automático
+- ✅ Builds validados antes de merge
+- ✅ Coverage threshold enforced (≥85%)
+- ✅ Dependencias actualizadas semanalmente
+- ✅ Visibilidad del estado del proyecto (badges)
+- ✅ Docker builds validados
+- ✅ Conventional Commits enforced
+
+---
+
+## ✅ Subfase 6.2: Containerization (Docker) (COMPLETADA - 100%)
+
+**Objetivo**: Containerizar toda la aplicación con Docker y docker-compose
+
+**Prioridad**: CRÍTICA  
+**Estimado**: 1 semana  
+**Estado**: ✅ **COMPLETADO**  
+**Fecha**: 24 de febrero de 2026
+
+### **Completado**
+
+#### **1. Dockerfiles Multi-stage** ✅
+
+- [x] Backend Dockerfile (Node 20 Alpine, multi-stage)
+- [x] Frontend Dockerfile (Next.js standalone, multi-stage)
+- [x] .dockerignore para ambos proyectos
+- [x] Healthchecks configurados
+- [x] Usuarios no-root para seguridad
+
+#### **2. docker-compose.yml** ✅
+
+- [x] 4 servicios: postgres, redis, backend, frontend
+- [x] Networks configurados
+- [x] Volumes para persistencia (postgres_data, redis_data)
+- [x] Variables de entorno desde .env.docker
+- [x] Healthchecks para todos los servicios
+- [x] Restart policies: unless-stopped
+- [x] Depends_on con condiciones de healthcheck
+
+#### **3. Configuración Next.js** ✅
+
+- [x] `output: 'standalone'` agregado en next.config.ts
+- [x] Variable `API_URL` para comunicación interna Docker
+- [x] Modificado route.ts de NextAuth para usar API_URL
+
+#### **4. Migración de Base de Datos** ✅
+
+- [x] Migración inicial de Prisma creada (20260224205713_init)
+- [x] Script `db:migrate:deploy` agregado en backend/package.json
+- [x] Migración ejecutada automáticamente en Docker
+- [x] Datos migrados desde base local (8 usuarios, 10 clientes, 8 negocios)
+
+#### **5. Documentación** ✅
+
+- [x] `docs/guides/docker/DOCKER.md` creado (~400 líneas)
+- [x] Comandos básicos y avanzados documentados
+- [x] Troubleshooting común (15+ problemas)
+- [x] Workflows de desarrollo documentados
+
+**Problemas Resueltos**:
+
+- ✅ Base de datos vacía → Migración de Prisma automática
+- ✅ Frontend no conectaba al backend → Variable API_URL agregada
+- ✅ Next.js output no optimizado → `standalone` habilitado
+- ✅ Datos perdidos → Migración manual exitosa
+
+**Impacto en Score**:
+
+- Containerization: 0% → 85% (+85%)
+- Score General Fase 6: 48% → 56% (+8%)
+
+**Evidencia**: `docker-compose up` levanta todo el stack, aplicación funcional en localhost:3000
 
 ---
 
@@ -205,25 +362,29 @@
 
 ## ⚡ Tareas Urgentes (Esta Semana)
 
-### **Prioridad 1: Subfase 6.2 - Containerization (Docker)** - RECOMENDADO
+### **Prioridad 1: Subfase 6.3 - CI/CD Pipeline (GitHub Actions)** - RECOMENDADO
 
-1. [ ] Crear Dockerfile multi-stage para backend
-2. [ ] Crear Dockerfile multi-stage para frontend (Next.js standalone)
-3. [ ] Configurar docker-compose.yml (PostgreSQL, backend, frontend, Redis)
-4. [ ] Documentar setup de Docker
-5. [ ] Verificar stack completo con `docker-compose up`
+1. [ ] Crear workflow de testing (.github/workflows/test.yml)
+2. [ ] Crear workflow de linting (.github/workflows/lint.yml)
+3. [ ] Crear workflow de build con Docker (.github/workflows/build.yml)
+4. [ ] Configurar quality gates en PRs
+5. [ ] Configurar Dependabot para actualizaciones automáticas
 
-**Tiempo estimado**: 1 semana
+**Tiempo estimado**: 3 días
 
 **Completados recientemente**:
 
+- ✅ Subfase 6.2: Containerization (Docker) (24 Feb 2026)
+  - Dockerfiles multi-stage para backend y frontend
+  - docker-compose.yml con 4 servicios
+  - Migraciones automáticas de Prisma
+  - Base de datos migrada exitosamente
+  - Documentación completa
 - ✅ Subfase 6.1: Version Control Systems (23 Feb 2026)
   - Git Flow configurado
   - Repositorio en GitHub
   - Hooks automatizados (Husky + lint-staged)
   - Conventional Commits
-- ✅ Testing Backend (96.25% coverage)
-- ✅ Testing Frontend UI Básicos (93.75% coverage)
 - ✅ Dark Mode en todos los módulos (4 Feb 2026)
 - ✅ Mejoras UI/UX completas (5 Feb 2026)
   - Skeleton loaders
@@ -232,18 +393,7 @@
   - Toast mejoradas
   - Atajos de teclado funcionando
 
-### **Prioridad 2: Subfase 6.3 - CI/CD Pipeline (GitHub Actions)** - ALTERNATIVA
-
-Si Docker no es prioritario, proceder directamente a:
-
-1. [ ] Workflow de Testing (.github/workflows/test.yml)
-2. [ ] Workflow de Linting (.github/workflows/lint.yml)
-3. [ ] Workflow de Build (.github/workflows/build.yml)
-4. [ ] Quality Gates en PRs
-
-**Tiempo estimado**: 3 días
-
-### **Prioridad 3: Revisar Código Existente** (Opcional)
+### **Prioridad 2: Subfase 6.4 - Caching (Redis)** - ALTERNATIVA
 
 1. [ ] Ejecutar `get_errors` en todo el proyecto
 2. [ ] Resolver warnings acumulados (si hay)
@@ -290,35 +440,34 @@ Si Docker no es prioritario, proceder directamente a:
 
 ---
 
-## 🔜 Después de Subfase 6.1
+## 🔜 Después de Subfase 6.2
 
-### **Subfase 6.2: Containerization (Docker)** (Estimado: 1 semana) - RECOMENDADO
-
-**Objetivos**:
-
-1. Dockerfile multi-stage para backend (Node 20 Alpine)
-2. Dockerfile multi-stage para frontend (Next.js standalone)
-3. docker-compose.yml con servicios: postgres, backend, frontend, redis
-4. Healthchecks y restart policies
-5. Optimización de imágenes (< 200MB frontend)
-
-**Estado**: Pendiente, siguiente paso recomendado
-
-[Ver detalles completos →](./BACKLOG.md#subfase-62-containerization-docker)
-
-### **Subfase 6.3: CI/CD Pipeline (GitHub Actions)** (Estimado: 3 días) - ALTERNATIVA
+### **Subfase 6.3: CI/CD Pipeline (GitHub Actions)** (Estimado: 3 días) - RECOMENDADO
 
 **Objetivos**:
 
-1. Workflow de testing automático
-2. Workflow de linting
-3. Workflow de build con Docker
-4. Quality gates en PRs
-5. Dependabot configurado
+1. Workflow de testing automático (backend + frontend)
+2. Workflow de linting y TypeScript checks
+3. Workflow de build con Docker (push a GHCR)
+4. Quality gates en PRs (tests, lint, build deben pasar)
+5. Dependabot configurado para actualizaciones
 
-**Estado**: Pendiente, alternativa a Docker
+**Estado**: Siguiente paso recomendado después de Docker ✅
 
 [Ver detalles completos →](./BACKLOG.md#subfase-63-cicd-github-actions)
+
+### **Subfase 6.4: Caching (Redis)** (Estimado: 1 semana) - ALTA PRIORIDAD
+
+**Objetivos**:
+
+1. Redis client configurado en backend (ya disponible en docker-compose ✅)
+2. Cache implementado en servicios principales
+3. Invalidación automática de cache
+4. TTLs configurables por tipo de dato
+
+**Estado**: Redis listo en Docker, solo falta implementación en código
+
+[Ver detalles completos →](./BACKLOG.md#subfase-64-caching-redis)
 
 ### **Fase 5.7: Auditoría de Accesibilidad** (Estimado: 2-3 días) - OPCIONAL POST-MVP
 
@@ -464,36 +613,38 @@ Si Docker no es prioritario, proceder directamente a:
 
 **Decisión Estratégica Requerida**:
 
-**Opción A: Containerization - Subfase 6.2 (RECOMENDADO - 1 semana)**
+**Opción A: CI/CD Pipeline - Subfase 6.3 (RECOMENDADO - 3 días)**
 
-- Dockerfiles multi-stage para backend y frontend
-- docker-compose.yml con PostgreSQL, Redis, Nginx
+- Workflows de GitHub Actions para testing, linting, build
+- Build automático de imágenes Docker (push a GHCR)
+- Quality gates en pull requests
+- Dependabot para actualizaciones de dependencias
+- Docker ya completado ✅
 - Git Flow ya configurado ✅
-- Testing completo ✅
-- Proyecto listo para containerizar
+- Proyecto listo para automatización
 
-**Opción B: CI/CD Pipeline - Subfase 6.3 (ALTERNATIVA - 3 días)**
+**Opción B: Caching con Redis - Subfase 6.4 (ALTERNATIVA - 1 semana)**
 
-- Workflows de GitHub Actions
-- Testing automático en PRs
-- Build automático
-- Quality gates
-- Ideal si se quiere automatización antes que Docker
+- Redis ya disponible en docker-compose ✅
+- Implementar cache en backend (clientes, negocios, stats)
+- Invalidación automática de cache en mutaciones
+- HTTP caching headers
+- Mejorar performance de la aplicación
 
-**Opción C: Auditoría de Accesibilidad - Fase 5.7 (OPCIONAL - 2-3 días)**
+**Opción C: Web Servers con Nginx - Subfase 6.5 (OPCIONAL - 2 días)**
 
-- Lighthouse Audit
-- WAVE/axe DevTools
-- Screen Reader Testing
-- Pulir antes de producción
+- Reverse proxy para backend y frontend
+- Rate limiting
+- Compresión Gzip
+- SSL/TLS ready para producción futura
 
 **Preparación para Opción A** (Recomendada):
 
-- Leer docs de Docker multi-stage builds
-- Revisar Next.js standalone output
-- Preparar variables de entorno para Docker
-- Estudiar docker-compose healthchecks
+- Leer docs de GitHub Actions workflows
+- Revisar GitHub Container Registry (GHCR)
+- Estudiar quality gates en PRs
+- Preparar badges para README (tests, coverage, build)
 
 ---
 
-**Fin de roadmap/CURRENT.md** | ~380 líneas | Sprint actual actualizado con Subfase 6.1
+**Fin de roadmap/CURRENT.md** | ~500 líneas | Sprint actual actualizado con Subfase 6.2

@@ -1,5 +1,9 @@
 # 🚀 ClientPro CRM
 
+[![Tests](https://github.com/ITZAN44/clientpro-crm/actions/workflows/test.yml/badge.svg)](https://github.com/ITZAN44/clientpro-crm/actions/workflows/test.yml)
+[![Linting](https://github.com/ITZAN44/clientpro-crm/actions/workflows/lint.yml/badge.svg)](https://github.com/ITZAN44/clientpro-crm/actions/workflows/lint.yml)
+[![Build](https://github.com/ITZAN44/clientpro-crm/actions/workflows/build.yml/badge.svg)](https://github.com/ITZAN44/clientpro-crm/actions/workflows/build.yml)
+
 Sistema de gestión de clientes (CRM) construido con tecnologías modernas.
 
 ## 📦 Stack Tecnológico
@@ -236,11 +240,21 @@ refactor(negocios): extract Kanban logic to hook
 
 Ver la carpeta `docs/` para documentación completa:
 
+### Contexto General
 - **[CONTEXTO_PROYECTO.md](docs/CONTEXTO_PROYECTO.md)** - 🎯 **Lee esto primero** - Stack, tablas, MCPs, pendientes
 - **[PROXIMOS_PASOS.md](docs/PROXIMOS_PASOS.md)** - 🚀 Roadmap y checklist de desarrollo
 - **[wireframe.md](docs/wireframe.md)** - 🎨 Diseños UI de todas las pantallas
-- **[GIT_WORKFLOW.md](docs/guides/git/GIT_WORKFLOW.md)** - 🔀 Estrategia de branching y convenciones Git
-- **[GIT_HOOKS.md](docs/guides/git/GIT_HOOKS.md)** - 🪝 Hooks automáticos con Husky
+
+### Guías de Desarrollo
+- **[Git Workflow](docs/guides/git/GIT_WORKFLOW.md)** - 🔀 Estrategia de branching y convenciones
+- **[Git Hooks](docs/guides/git/GIT_HOOKS.md)** - 🪝 Hooks automáticos con Husky
+- **[GitHub Actions](docs/guides/ci-cd/GITHUB_ACTIONS.md)** - ⚙️ CI/CD workflows y Dependabot
+- **[Docker](docs/guides/docker/DOCKER.md)** - 🐳 Containerización y deployment
+
+### Guías de UX/UI
+- **[Accesibilidad](docs/guides/ACCESSIBILITY.md)** - ♿ WCAG 2.1 compliance
+- **[Atajos de Teclado](docs/guides/KEYBOARD_SHORTCUTS.md)** - ⌨️ Shortcuts del sistema
+
 
 ## �📄 Licencia
 
