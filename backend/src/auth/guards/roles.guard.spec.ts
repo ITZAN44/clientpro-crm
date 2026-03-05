@@ -12,7 +12,10 @@ describe('RolesGuard', () => {
     guard = new RolesGuard(reflector);
   });
 
-  const mockExecutionContext = (user: any, roles?: RolUsuario[]): ExecutionContext => {
+  const mockExecutionContext = (
+    user: any,
+    roles?: RolUsuario[],
+  ): ExecutionContext => {
     const context = {
       switchToHttp: () => ({
         getRequest: () => ({ user }),
@@ -32,8 +35,11 @@ describe('RolesGuard', () => {
 
   describe('canActivate', () => {
     it('should allow access when no roles are required', () => {
-      const context = mockExecutionContext({ userId: '1', rol: RolUsuario.VENDEDOR });
-      
+      const context = mockExecutionContext({
+        userId: '1',
+        rol: RolUsuario.VENDEDOR,
+      });
+
       expect(guard.canActivate(context)).toBe(true);
     });
 
@@ -71,7 +77,9 @@ describe('RolesGuard', () => {
       const context = mockExecutionContext(null, [RolUsuario.ADMIN]);
 
       expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
-      expect(() => guard.canActivate(context)).toThrow('Usuario no autenticado');
+      expect(() => guard.canActivate(context)).toThrow(
+        'Usuario no autenticado',
+      );
     });
 
     it('should deny access when VENDEDOR tries to access ADMIN-only route', () => {

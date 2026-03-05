@@ -2,10 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { NegociosService } from './negocios.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisCacheService } from '../redis/redis-cache.service';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway';
 import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import { EtapaNegocio, TipoMoneda } from '@prisma/client';
-import { createMockPrismaService, MockPrismaService } from '../testing/prisma.mock';
+import {
+  createMockPrismaService,
+  MockPrismaService,
+} from '../testing/prisma.mock';
 
 describe('NegociosService', () => {
   let service: NegociosService;
@@ -86,6 +90,13 @@ describe('NegociosService', () => {
       }),
     };
 
+    const mockCacheService = {
+      get: jest.fn().mockResolvedValue(null),
+      set: jest.fn().mockResolvedValue(undefined),
+      del: jest.fn().mockResolvedValue(undefined),
+      delPattern: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NegociosService,
@@ -100,6 +111,10 @@ describe('NegociosService', () => {
         {
           provide: NotificacionesService,
           useValue: mockNotificacionesService,
+        },
+        {
+          provide: RedisCacheService,
+          useValue: mockCacheService,
         },
       ],
     }).compile();
@@ -152,8 +167,11 @@ describe('NegociosService', () => {
     it('debe asignar usuario actual como propietario cuando no se proporciona propietarioId', async () => {
       // Arrange
       const usuarioId = 'user-2';
-      const dtoSinPropietario = { ...mockCreateNegocioDto };
-      delete dtoSinPropietario.propietarioId;
+      const dtoSinPropietario = { ...mockCreateNegocioDto } as Omit<
+        typeof mockCreateNegocioDto,
+        'propietarioId'
+      > & { propietarioId?: string };
+      dtoSinPropietario.propietarioId = undefined;
 
       prisma.cliente.findUnique.mockResolvedValue(mockCliente as any);
       prisma.negocio.create.mockResolvedValue({
@@ -179,12 +197,12 @@ describe('NegociosService', () => {
       prisma.cliente.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.create(mockCreateNegocioDto, usuarioId)).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.create(mockCreateNegocioDto, usuarioId)).rejects.toThrow(
-        'El cliente especificado no existe',
-      );
+      await expect(
+        service.create(mockCreateNegocioDto, usuarioId),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.create(mockCreateNegocioDto, usuarioId),
+      ).rejects.toThrow('El cliente especificado no existe');
       expect(prisma.negocio.create).not.toHaveBeenCalled();
     });
   });
@@ -310,7 +328,9 @@ describe('NegociosService', () => {
       prisma.negocio.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.findOne(negocioId)).rejects.toThrow(NotFoundException);
+      await expect(service.findOne(negocioId)).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.findOne(negocioId)).rejects.toThrow(
         `Negocio con ID ${negocioId} no encontrado`,
       );
@@ -329,7 +349,11 @@ describe('NegociosService', () => {
       } as any);
 
       // Act
-      const result = await service.update(negocioId, mockUpdateNegocioDto, usuarioId);
+      const result = await service.update(
+        negocioId,
+        mockUpdateNegocioDto,
+        usuarioId,
+      );
 
       // Assert
       expect(prisma.negocio.findUnique).toHaveBeenCalledWith({
@@ -377,12 +401,12 @@ describe('NegociosService', () => {
       prisma.negocio.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.update(negocioId, mockUpdateNegocioDto, usuarioId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.update(negocioId, mockUpdateNegocioDto, usuarioId)).rejects.toThrow(
-        `Negocio con ID ${negocioId} no encontrado`,
-      );
+      await expect(
+        service.update(negocioId, mockUpdateNegocioDto, usuarioId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update(negocioId, mockUpdateNegocioDto, usuarioId),
+      ).rejects.toThrow(`Negocio con ID ${negocioId} no encontrado`);
       expect(prisma.negocio.update).not.toHaveBeenCalled();
     });
   });
@@ -401,7 +425,11 @@ describe('NegociosService', () => {
       } as any);
 
       // Act
-      const result = await service.cambiarEtapa(negocioId, nuevaEtapa, usuarioId);
+      const result = await service.cambiarEtapa(
+        negocioId,
+        nuevaEtapa,
+        usuarioId,
+      );
 
       // Assert
       expect(prisma.negocio.update).toHaveBeenCalledWith({
@@ -428,7 +456,11 @@ describe('NegociosService', () => {
       } as any);
 
       // Act
-      const result = await service.cambiarEtapa(negocioId, nuevaEtapa, usuarioId);
+      const result = await service.cambiarEtapa(
+        negocioId,
+        nuevaEtapa,
+        usuarioId,
+      );
 
       // Assert
       expect(prisma.negocio.update).toHaveBeenCalledWith({
@@ -439,7 +471,9 @@ describe('NegociosService', () => {
         },
         include: expect.any(Object),
       });
-      expect(notificacionesGateway.emitirNegocioActualizado).toHaveBeenCalledWith(
+      expect(
+        notificacionesGateway.emitirNegocioActualizado,
+      ).toHaveBeenCalledWith(
         negocioId,
         expect.objectContaining({
           etapa: nuevaEtapa,
@@ -467,7 +501,11 @@ describe('NegociosService', () => {
       } as any);
 
       // Act
-      const result = await service.cambiarEtapa(negocioId, nuevaEtapa, usuarioId);
+      const result = await service.cambiarEtapa(
+        negocioId,
+        nuevaEtapa,
+        usuarioId,
+      );
 
       // Assert
       expect(prisma.negocio.update).toHaveBeenCalledWith({
@@ -524,7 +562,9 @@ describe('NegociosService', () => {
       prisma.negocio.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.cambiarEtapa(negocioId, nuevaEtapa)).rejects.toThrow(NotFoundException);
+      await expect(service.cambiarEtapa(negocioId, nuevaEtapa)).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.cambiarEtapa(negocioId, nuevaEtapa)).rejects.toThrow(
         `Negocio con ID ${negocioId} no encontrado`,
       );
@@ -557,7 +597,9 @@ describe('NegociosService', () => {
       prisma.negocio.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.remove(negocioId)).rejects.toThrow(NotFoundException);
+      await expect(service.remove(negocioId)).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.remove(negocioId)).rejects.toThrow(
         `Negocio con ID ${negocioId} no encontrado`,
       );

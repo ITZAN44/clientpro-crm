@@ -5,7 +5,10 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RolUsuario } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { createMockPrismaService, MockPrismaService } from '../testing/prisma.mock';
+import {
+  createMockPrismaService,
+  MockPrismaService,
+} from '../testing/prisma.mock';
 
 // Mock de bcrypt
 jest.mock('bcrypt');

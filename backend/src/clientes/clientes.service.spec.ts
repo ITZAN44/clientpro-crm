@@ -1,9 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { ClientesService } from './clientes.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisCacheService } from '../redis/redis-cache.service';
 import { RolUsuario } from '@prisma/client';
-import { createMockPrismaService, MockPrismaService } from '../testing/prisma.mock';
+import {
+  createMockPrismaService,
+  MockPrismaService,
+} from '../testing/prisma.mock';
 
 describe('ClientesService', () => {
   let service: ClientesService;
@@ -59,6 +67,12 @@ describe('ClientesService', () => {
 
   beforeEach(async () => {
     const mockPrismaService = createMockPrismaService();
+    const mockCacheService = {
+      get: jest.fn().mockResolvedValue(null),
+      set: jest.fn().mockResolvedValue(undefined),
+      del: jest.fn().mockResolvedValue(undefined),
+      delPattern: jest.fn().mockResolvedValue(undefined),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -66,6 +80,10 @@ describe('ClientesService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: RedisCacheService,
+          useValue: mockCacheService,
         },
       ],
     }).compile();
@@ -118,7 +136,10 @@ describe('ClientesService', () => {
         ...mockCreateClienteDto,
         propietarioId: 'user-2',
       };
-      prisma.usuario.findUnique.mockResolvedValue({ id: 'user-2', nombre: 'Otro Usuario' } as any);
+      prisma.usuario.findUnique.mockResolvedValue({
+        id: 'user-2',
+        nombre: 'Otro Usuario',
+      } as any);
       prisma.cliente.create.mockResolvedValue({
         ...mockCliente,
         propietarioId: 'user-2',
@@ -146,12 +167,12 @@ describe('ClientesService', () => {
       prisma.usuario.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.create(mockCreateClienteDto, usuarioId)).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.create(mockCreateClienteDto, usuarioId)).rejects.toThrow(
-        'El propietario especificado no existe',
-      );
+      await expect(
+        service.create(mockCreateClienteDto, usuarioId),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.create(mockCreateClienteDto, usuarioId),
+      ).rejects.toThrow('El propietario especificado no existe');
 
       expect(prisma.cliente.create).not.toHaveBeenCalled();
     });
@@ -215,7 +236,9 @@ describe('ClientesService', () => {
 
     it('debe filtrar solo clientes propios cuando el usuario es VENDEDOR', async () => {
       // Arrange
-      const vendedorClientes = [{ ...mockCliente, propietarioId: 'vendedor-1' }];
+      const vendedorClientes = [
+        { ...mockCliente, propietarioId: 'vendedor-1' },
+      ];
       prisma.cliente.findMany.mockResolvedValue(vendedorClientes as any);
       prisma.cliente.count.mockResolvedValue(1);
 
@@ -232,7 +255,10 @@ describe('ClientesService', () => {
 
     it('debe retornar todos los clientes cuando el usuario es ADMIN', async () => {
       // Arrange
-      const todosClientes = [mockCliente, { ...mockCliente, id: 'cliente-2', propietarioId: 'otro-user' }];
+      const todosClientes = [
+        mockCliente,
+        { ...mockCliente, id: 'cliente-2', propietarioId: 'otro-user' },
+      ];
       prisma.cliente.findMany.mockResolvedValue(todosClientes as any);
       prisma.cliente.count.mockResolvedValue(2);
 
@@ -256,7 +282,7 @@ describe('ClientesService', () => {
       const result = await service.findAll(1, 10);
 
       // Assert
-      expect(result.meta.totalPages).toBe(3); // ceil(25 / 10)
+      expect((result as any).meta.totalPages).toBe(3); // ceil(25 / 10)
     });
   });
 
@@ -290,7 +316,9 @@ describe('ClientesService', () => {
       prisma.cliente.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.findOne('cliente-999')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('cliente-999')).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.findOne('cliente-999')).rejects.toThrow(
         'Cliente con ID cliente-999 no encontrado',
       );
@@ -318,12 +346,12 @@ describe('ClientesService', () => {
       } as any);
 
       // Act & Assert
-      await expect(service.findOne('cliente-1', mockUsuarioVendedor)).rejects.toThrow(
-        ForbiddenException,
-      );
-      await expect(service.findOne('cliente-1', mockUsuarioVendedor)).rejects.toThrow(
-        'No tienes permiso para ver este cliente',
-      );
+      await expect(
+        service.findOne('cliente-1', mockUsuarioVendedor),
+      ).rejects.toThrow(ForbiddenException);
+      await expect(
+        service.findOne('cliente-1', mockUsuarioVendedor),
+      ).rejects.toThrow('No tienes permiso para ver este cliente');
     });
 
     it('debe permitir a VENDEDOR ver su propio cliente', async () => {
@@ -398,7 +426,9 @@ describe('ClientesService', () => {
         propietarioId: 'nuevo-propietario',
       };
       prisma.cliente.findUnique.mockResolvedValueOnce(mockCliente as any); // Cliente existe
-      prisma.usuario.findUnique.mockResolvedValue({ id: 'nuevo-propietario' } as any); // Propietario existe
+      prisma.usuario.findUnique.mockResolvedValue({
+        id: 'nuevo-propietario',
+      } as any); // Propietario existe
       prisma.cliente.update.mockResolvedValue({
         ...mockCliente,
         propietarioId: 'nuevo-propietario',
@@ -423,12 +453,12 @@ describe('ClientesService', () => {
       prisma.usuario.findUnique.mockResolvedValue(null); // Propietario no existe
 
       // Act & Assert
-      await expect(service.update('cliente-1', updateConPropietarioInvalido)).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.update('cliente-1', updateConPropietarioInvalido)).rejects.toThrow(
-        'El propietario especificado no existe',
-      );
+      await expect(
+        service.update('cliente-1', updateConPropietarioInvalido),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.update('cliente-1', updateConPropietarioInvalido),
+      ).rejects.toThrow('El propietario especificado no existe');
 
       expect(prisma.cliente.update).not.toHaveBeenCalled();
     });
@@ -455,7 +485,9 @@ describe('ClientesService', () => {
       prisma.cliente.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.remove('cliente-999')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('cliente-999')).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.remove('cliente-999')).rejects.toThrow(
         'Cliente con ID cliente-999 no encontrado',
       );
