@@ -2,7 +2,7 @@
 
 > **Tecnologías, frameworks y bibliotecas utilizadas en el proyecto**
 
-**Última actualización**: 24 Febrero 2026
+**Última actualización**: 05 Marzo 2026
 
 ---
 
@@ -94,7 +94,7 @@
 ### **Base de Datos**
 
 - **PostgreSQL** - Base de datos relacional
-- **Prisma 7.2.0** - ORM con type-safety
+- **Prisma 7.4.2** - ORM con type-safety
   - Prisma Client
   - Prisma Migrate
   - Prisma Studio
@@ -106,12 +106,20 @@
 - **passport-jwt** - Estrategia JWT
 - **@nestjs/jwt** - Módulo JWT de NestJS
 - **bcrypt** - Hash de contraseñas (10 rounds)
+- **helmet** - HTTP security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy, etc.)
+- **@nestjs/throttler** - Rate limiting (ThrottlerModule + ThrottlerGuard global, 5 req/min en login endpoint)
 
 ### **Validación**
 
 - **class-validator** - Validación de DTOs
-- **class-transformer** - Transformación de datos
+- **class-transformer** - Transformación de datos + `@Transform` para input sanitization (13 campos en 3 DTOs: create-cliente, create-negocio, create-actividad)
 - Mensajes de error en español
+
+### **Observability** ✨ NUEVO
+
+- **@nestjs/terminus** - Health checks (`GET /health`: DB + Redis + Memory 150MB heap)
+- **winston** + **nest-winston** - Structured JSON logging (timestamp, context, level); reemplaza console.log
+- **MetricsInterceptor** (custom) - Basic metrics (`GET /metrics`: totalRequests, errors, avgResponseTimeMs)
 
 ### **Real-Time**
 
@@ -126,6 +134,20 @@
 
 - **Axios** - HTTP client
 - **CORS** - Configurado para desarrollo
+
+### **Caching**
+
+- **Redis 7** - In-memory data store
+- **ioredis 5.10.0** - Cliente Redis de alto rendimiento
+- **RedisCacheService** - Servicio personalizado de caching
+  - Bypass de @nestjs/cache-manager (incompatible con v7)
+  - Métodos: get<T>(), set<T>(), del(), delPattern(), reset(), getStats()
+  - TTL configurables: 300s (datos), 120s (stats)
+  - Logging: [CACHE HIT], [CACHE MISS], [CACHE DEL]
+- **Cache implementado en**:
+  - ClientesService (findAll, findOne)
+  - NegociosService (findAll, findOne, cambiarEtapa)
+  - StatsService (getGeneralStats, getDistribucionPorEtapa)
 
 ---
 
@@ -148,7 +170,9 @@
 - **Imagen Docker**: `redis:7-alpine`
 - **Volumen**: `redis_data` (persistencia de datos)
 - **Healthcheck**: `redis-cli ping` cada 10s
-- **Uso**: Caché y sesiones (preparado para uso futuro)
+- **Uso**: Caching activo (ClientesService, NegociosService, StatsService)
+- **Implementación**: RedisCacheService con ioredis directo (bypassing cache-manager v7)
+- **Performance**: 18-41% mejoras en response time
 
 ### **Prisma**
 
@@ -175,38 +199,46 @@
 
 ### **Docker**
 
-- **docker-compose.yml**: Orquestación de 4 servicios
+- **docker-compose.yml**: Orquestación de 5 servicios
 - **Versión compose**: 3.8
 - **Red interna**: `clientpro-network` (bridge driver)
 - **Política de restart**: `unless-stopped` (todos los servicios)
 
-### **Servicios Containerizados (4)**
+### **Servicios Containerizados (5)**
 
-1. **postgres** - Base de datos PostgreSQL 16
+1. **nginx** - Reverse proxy Nginx 1.25-alpine ✨ NUEVO
+   - Container: `clientpro-nginx`
+   - Puerto: 80 (entry point principal)
+   - Dependencias: frontend (healthy), backend (healthy)
+   - Healthcheck: `curl -f http://localhost/` cada 30s
+   - Archivos: `nginx/nginx.conf`, `nginx/Dockerfile`
+
+2. **postgres** - Base de datos PostgreSQL 16
+3. **postgres** - Base de datos PostgreSQL 16
    - Container: `clientpro-postgres`
    - Puerto: 5432
    - Volumen: `postgres_data`
    - Healthcheck: `pg_isready` cada 10s
    - Variables de entorno: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
 
-2. **redis** - Cache Redis 7
+4. **redis** - Cache Redis 7
    - Container: `clientpro-redis`
    - Puerto: 6379
    - Volumen: `redis_data`
    - Healthcheck: `redis-cli ping` cada 10s
 
-3. **backend** - API NestJS 11
+5. **backend** - API NestJS 11
    - Container: `clientpro-backend`
-   - Puerto: 4000
+   - Puerto: 4000 (interno, acceso vía nginx en producción)
    - Dependencias: postgres (healthy), redis (healthy)
    - Healthcheck: `curl -f http://localhost:4000` cada 30s
    - Variables de entorno: DATABASE_URL, JWT_SECRET, REDIS_HOST
 
-4. **frontend** - App Next.js 16
+6. **frontend** - App Next.js 16
    - Container: `clientpro-frontend`
-   - Puerto: 3000
+   - Puerto: 3000 (interno, acceso vía nginx en producción)
    - Dependencias: backend (healthy)
-   - Variables de entorno: NEXT_PUBLIC_API_URL, API_URL, NEXTAUTH_URL
+   - Variables de entorno: NEXT_PUBLIC_API_URL, NEXT_PUBLIC_SOCKET_URL, API_URL, NEXTAUTH_URL
 
 ### **Volúmenes Persistentes**
 
@@ -218,14 +250,17 @@
 - **Red interna**: `clientpro-network`
 - **Driver**: bridge
 - **Comunicación inter-contenedor**: Por nombre de servicio
+  - Nginx → frontend:3000
+  - Nginx → backend:4000
   - Backend → postgres:5432
   - Backend → redis:6379
   - Frontend → backend:4000
 
 ### **Puertos Expuestos**
 
-- **3000**: Frontend (Next.js)
-- **4000**: Backend (NestJS)
+- **80**: Nginx (reverse proxy, entry point principal) ✨ NUEVO
+- **3000**: Frontend (Next.js) - interno en Docker, directo en dev local
+- **4000**: Backend (NestJS) - interno en Docker, directo en dev local
 - **5432**: PostgreSQL (solo para desarrollo local)
 - **6379**: Redis (solo para desarrollo local)
 
@@ -377,13 +412,18 @@ docker-compose exec backend npx prisma migrate deploy
   "@nestjs/common": "^11.0.6",
   "@nestjs/websockets": "^11.0.6",
   "@nestjs/platform-socket.io": "^11.0.6",
+  "@nestjs/throttler": "^6.x",
+  "@nestjs/terminus": "^11.x",
   "typescript": "5.7.3",
-  "prisma": "^7.2.0",
-  "@prisma/client": "^7.2.0",
+  "prisma": "^7.4.2",
+  "@prisma/client": "^7.4.2",
   "socket.io": "^4.8.0",
   "passport-jwt": "^4.x",
   "bcrypt": "^5.x",
-  "class-validator": "^0.14.x"
+  "class-validator": "^0.14.x",
+  "helmet": "^8.x",
+  "winston": "^3.x",
+  "nest-winston": "^1.x"
 }
 ```
 
@@ -391,7 +431,7 @@ docker-compose exec backend npx prisma migrate deploy
 
 ## 📡 APIs y Endpoints
 
-### **REST API** (36 endpoints)
+### **REST API** (37 endpoints)
 
 - **Auth**: 2 endpoints (login, register)
 - **Clientes**: 5 endpoints (CRUD + list)
@@ -401,6 +441,7 @@ docker-compose exec backend npx prisma migrate deploy
 - **Reportes**: 3 endpoints (conversión, comparativas, rendimiento)
 - **Notificaciones**: 6 endpoints (CRUD + marcar leída + marcar todas)
 - **Usuarios**: 2 endpoints (list, cambiar rol) ✨ NUEVO
+- **Redis**: 1 endpoint (stats) ✨ NUEVO
 
 ### **WebSocket** (5 eventos)
 
@@ -458,8 +499,14 @@ docker-compose exec backend npx prisma migrate deploy
 
 - class-validator en todos los DTOs
 - Zod schemas en frontend
-- Sanitización de inputs
+- Sanitización de inputs con `@Transform` (class-transformer, 13 campos en 3 DTOs)
 - CORS configurado
+
+### **HTTP Security** ✨ NUEVO
+
+- **Helmet.js** — CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy
+- **Rate Limiting** — `@nestjs/throttler` v6: 5 req/min en `/auth/login` (HTTP 429 en 6to intento)
+- **Input Sanitization** — `@Transform` en create-cliente, create-negocio, create-actividad (13 campos)
 
 ### **Base de Datos**
 
@@ -530,5 +577,5 @@ npx prisma studio            # Abrir Prisma Studio
 
 ---
 
-**Última revisión**: 24 Febrero 2026  
-**Versión del proyecto**: 0.7.3
+**Última revisión**: 05 Marzo 2026  
+**Versión del proyecto**: 0.7.6

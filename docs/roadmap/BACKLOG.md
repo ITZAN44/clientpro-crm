@@ -1,7 +1,7 @@
 # Backlog de Features y Próximas Fases
 
 > **Propósito**: Listado priorizado de features futuras y mejoras planificadas
-> **Última actualización**: 24 de febrero de 2026
+> **Última actualización**: 05 de marzo de 2026
 > **Estado**: Planificación post-MVP (98% completo)
 
 ---
@@ -9,7 +9,7 @@
 ## 🎯 Visión General del Backlog
 
 **Prioridad actual**: Fase 6 (Producción) - EN PROGRESO  
-**Subfase completada**: 6.2 - Containerization (Docker) ✅  
+**Subfase completada**: 6.2 - Containerization (Docker) ✅ | 6.5 - Web Servers (Nginx) ✅  
 **Features adicionales**: Post-MVP  
 **Timeline estimado**: Marzo - Abril 2026  
 **MVP**: 98% completo ✅
@@ -21,7 +21,7 @@
 **Prioridad**: CRÍTICA  
 **Estimado**: 3-4 semanas  
 **Dependencia**: Fase 5 completada (Testing 96%+ cobertura) ✅  
-**Objetivo**: Alcanzar 75-80% en Backend Developer Roadmap (roadmap.sh/backend)
+**Objetivo**: Alcanzar 75-80% en Backend Developer Roadmap (roadmap.sh/backend) - **LOGRADO** ✅
 
 **Nota**: Esta fase NO incluye hosting en producción (proyecto de práctica para portfolio)
 
@@ -31,12 +31,12 @@
 | ----------------------- | ------- | ---------- | ------------- |
 | Version Control Systems | 90%     | 90%        | ✅ COMPLETADO |
 | Repo Hosting Services   | 90%     | 90%        | ✅ COMPLETADO |
-| CI/CD                   | 0%      | 80%        | 🔴 CRÍTICO    |
+| CI/CD                   | 71%     | 80%        | 🟢 Casi       |
 | Containerization        | 85%     | 85%        | ✅ COMPLETADO |
-| Caching                 | 10%     | 70%        | 🟡 Alta       |
-| Web Servers             | 30%     | 75%        | 🟡 Alta       |
-| Building For Scale      | 15%     | 60%        | 🟡 Media      |
-| **Score General**       | **56%** | **75-80%** | **Senior**    |
+| Caching                 | 70%     | 70%        | ✅ COMPLETADO |
+| Web Servers             | 75%     | 75%        | ✅ COMPLETADO |
+| Building For Scale      | 60%     | 60%        | ✅ COMPLETADO |
+| **Score General**       | **87%** | **75-80%** | **✅ Senior** |
 
 ---
 
@@ -44,10 +44,10 @@
 
 1. ~~**Inicializar Version Control (Git + GitHub)**~~ - ✅ COMPLETADO (23 Feb 2026)
 2. ~~**Implementar Containerization (Docker)**~~ - ✅ COMPLETADO (24 Feb 2026)
-3. **Configurar CI/CD (GitHub Actions)** - CRÍTICO
-4. **Implementar Caching (Redis)** - Alta Prioridad
-5. **Configurar Web Server (Nginx)** - Alta Prioridad
-6. **Mejorar Security & Observability** - Media Prioridad
+3. ~~**Configurar CI/CD (GitHub Actions)**~~ - ✅ COMPLETADO (24 Feb 2026)
+4. ~~**Implementar Caching (Redis)**~~ - ✅ COMPLETADO (27 Feb 2026)
+5. ~~**Configurar Web Server (Nginx)**~~ - ✅ COMPLETADO (04 Mar 2026)
+6. ~~**Mejorar Security & Observability**~~ - ✅ COMPLETADO (05 Mar 2026)
 
 ---
 
@@ -231,251 +231,184 @@
 
 ---
 
-#### **Subfase 6.4: Caching (Redis)** 🟡 Alta Prioridad
+#### **Subfase 6.4: Caching (Redis)** ✅ COMPLETADA
 
 **Tiempo estimado**: 1 semana  
-**Objetivo**: Caching 10% → 70%
+**Tiempo real**: 1 día (27 Feb 2026)  
+**Objetivo**: Caching 10% → 70% (logrado 70%)  
+**Estado**: ✅ **COMPLETADO** (27 de febrero de 2026)
 
 **Tareas**:
 
 1. **Instalar Redis** (30 min)
-   - [ ] `npm install ioredis @nestjs/cache-manager cache-manager-redis-yet`
-   - [ ] Configurar Redis en docker-compose (ya está)
-   - [ ] Crear `backend/src/redis/redis.module.ts`
+   - [x] Redis ya está en docker-compose ✅
+   - [x] Crear `backend/src/redis/redis-cache.service.ts` ✅
+   - [x] Bypass de @nestjs/cache-manager (problema con v7) ✅
 
-2. **Implementar Caching en Backend** (2 días)
-   - [ ] Cache de queries frecuentes (clientes, negocios)
-   - [ ] TTL configurables
-   - [ ] Invalidación en mutations
-   - [ ] Cache de estadísticas del dashboard
-   - [ ] Interceptor de cache automático
-
-   ```typescript
-   // backend/src/clientes/clientes.service.ts
-   @Injectable()
-   export class ClientesService {
-     constructor(
-       private prisma: PrismaService,
-       @Inject(CACHE_MANAGER) private cacheManager: Cache,
-     ) {}
-
-     async findAll(query: QueryClientesDto): Promise<ClienteResponseDto[]> {
-       const cacheKey = `clientes:${JSON.stringify(query)}`;
-       const cached = await this.cacheManager.get(cacheKey);
-
-       if (cached) {
-         return cached as ClienteResponseDto[];
-       }
-
-       const clientes = await this.prisma.cliente.findMany({ ... });
-       await this.cacheManager.set(cacheKey, clientes, 300); // 5 min TTL
-       return clientes;
-     }
-
-     async create(data: CreateClienteDto): Promise<ClienteResponseDto> {
-       const cliente = await this.prisma.cliente.create({ data });
-       await this.cacheManager.del('clientes:*'); // Invalidate cache
-       return cliente;
-     }
-   }
-   ```
+2. **Implementar Caching en Backend** (2 días → 1 día)
+   - [x] Cache en ClientesService (TTL 300s) ✅
+   - [x] Cache en NegociosService (TTL 300s) ✅
+   - [x] Cache en StatsService (TTL 120s) ✅
+   - [x] Invalidación automática en mutations ✅
+   - [x] Método `delPattern()` para limpieza ✅
 
 3. **HTTP Caching Headers** (1 día)
-   - [ ] Cache-Control headers en responses
-   - [ ] ETags para recursos estáticos
-   - [ ] Configurar en NestJS
+   - [x] CacheControlInterceptor con ETags ✅
+   - [x] Cache-Control headers configurados ✅
+   - [x] Soporte If-None-Match (304 responses) ✅
 
-4. **Documentación** (1 hora)
-   - [ ] Estrategia de caching documentada
-   - [ ] TTLs explicados
-   - [ ] Invalidación de cache
+4. **Compresión Gzip** (30 min)
+   - [x] Compression middleware habilitado ✅
+   - [x] Threshold 1KB configurado ✅
+
+5. **Documentación** (1 hora)
+   - [x] docs/guides/CACHING.md creado (775 líneas) ✅
+   - [x] Estrategia de caching documentada ✅
+   - [x] TTLs explicados ✅
+   - [x] Troubleshooting (15+ problemas) ✅
+
+**Problemas Críticos Resueltos**:
+
+- ✅ cache-manager v7 no funciona con custom Redis stores → Bypass con ioredis directo
+- ✅ 5 intentos fallidos con diferentes stores documentados
+- ✅ Redis no persistía datos → Volumen configurado en docker-compose
+- ✅ Kanban drag & drop no invalidaba cache → `delPattern()` en `updateEtapa()`
 
 **Evidencia de Completitud**:
 
-- ✅ Redis funcionando en Docker
-- ✅ Cache hits medibles (logs)
-- ✅ Response times mejorados (< 100ms cached)
-- ✅ Invalidación funcionando
+- ✅ Redis funcionando en Docker (port 6379)
+- ✅ Cache hits medibles (logs + Redis CLI: `KEYS '*'`)
+- ✅ Response times mejorados:
+  - Clientes: 118ms → 70ms (41% más rápido)
+  - Negocios: 72ms → 59ms (18% más rápido)
+  - Stats: 115ms → 68ms (41% más rápido)
+- ✅ Invalidación funcionando (create/update/delete limpian cache)
+- ✅ HTTP caching con ETags (304 responses)
+- ✅ Compresión gzip activa (responses ~60-70% más pequeños)
+- ✅ Endpoint GET /redis/stats para monitoreo
 
-**Impacto en Score**: Caching 10% → 70%
+**Impacto en Score**: Caching 10% → 70% (+60% 🚀)
+
+**Archivos creados/modificados**: Ver [COMPLETED.md](./COMPLETED.md#subfase-64-redis-caching-completada)
 
 ---
 
-#### **Subfase 6.5: Web Servers (Nginx)** 🟡 Alta Prioridad
+#### **Subfase 6.5: Web Servers (Nginx)** ✅ COMPLETADA
 
 **Tiempo estimado**: 2 días  
-**Objetivo**: Web Servers 30% → 75%
+**Tiempo real**: 1 sesión (04 Mar 2026)  
+**Objetivo**: Web Servers 30% → 75% ✅  
+**Estado**: ✅ **COMPLETADO** (04 de marzo de 2026)
 
 **Tareas**:
 
 1. **Configurar Nginx** (3 horas)
-   - [ ] Crear `nginx/nginx.conf`
-   - [ ] Reverse proxy para backend
-   - [ ] Servir frontend estático
-   - [ ] Compresión Gzip habilitada
-   - [ ] Rate limiting configurado
-   - [ ] SSL/TLS ready (para producción futura)
-
-   ```nginx
-   # nginx/nginx.conf
-   events {
-     worker_connections 1024;
-   }
-
-   http {
-     upstream backend {
-       server backend:4000;
-     }
-
-     upstream frontend {
-       server frontend:3000;
-     }
-
-     # Gzip compression
-     gzip on;
-     gzip_types text/plain text/css application/json application/javascript;
-
-     # Rate limiting
-     limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
-
-     server {
-       listen 80;
-       server_name localhost;
-
-       # Frontend
-       location / {
-         proxy_pass http://frontend;
-         proxy_http_version 1.1;
-         proxy_set_header Upgrade $http_upgrade;
-         proxy_set_header Connection 'upgrade';
-         proxy_set_header Host $host;
-         proxy_cache_bypass $http_upgrade;
-       }
-
-       # Backend API
-       location /api/ {
-         limit_req zone=api burst=20 nodelay;
-         proxy_pass http://backend/;
-         proxy_http_version 1.1;
-         proxy_set_header Host $host;
-         proxy_set_header X-Real-IP $remote_addr;
-         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       }
-
-       # WebSocket
-       location /socket.io/ {
-         proxy_pass http://backend;
-         proxy_http_version 1.1;
-         proxy_set_header Upgrade $http_upgrade;
-         proxy_set_header Connection "upgrade";
-       }
-     }
-   }
-   ```
+   - [x] Crear `nginx/nginx.conf` ✅
+   - [x] Reverse proxy para backend ✅
+   - [x] Servir frontend estático ✅
+   - [x] Compresión Gzip habilitada ✅
+   - [x] Rate limiting configurado ✅
+   - [x] SSL/TLS ready (para producción futura) ✅
 
 2. **Integrar Nginx en docker-compose** (1 hora)
-   - [ ] Agregar servicio nginx
-   - [ ] Configurar volúmenes
-   - [ ] Puerto 80 expuesto
+   - [x] Agregar servicio nginx (5to servicio) ✅
+   - [x] `nginx/Dockerfile` (nginx:1.25-alpine) ✅
+   - [x] Puerto 80 expuesto ✅
 
-3. **Testing de Nginx** (30 min)
-   - [ ] Verificar reverse proxy funciona
-   - [ ] Verificar compression
-   - [ ] Verificar rate limiting
-   - [ ] Load testing básico (Apache Bench)
+3. **Variables de entorno y Frontend** (1 hora)
+   - [x] `frontend/Dockerfile` modificado para bakear `NEXT_PUBLIC_*` en build ✅
+   - [x] `frontend/src/lib/socket.ts` usa `NEXT_PUBLIC_SOCKET_URL` ✅
+   - [x] `.env.docker` y `.env` actualizados ✅
+
+4. **Testing de Nginx** (30 min)
+   - [x] Verificar reverse proxy funciona (GET / → 200 OK) ✅
+   - [x] Verificar compression (Content-Encoding: gzip) ✅
+   - [x] Verificar rate limiting (30 req paralelos → 429) ✅
+   - [x] Security headers presentes en responses ✅
 
 **Evidencia de Completitud**:
 
-- ✅ Nginx funcionando en Docker
-- ✅ Acceso vía localhost:80
-- ✅ Gzip compression verificado
-- ✅ Rate limiting verificado
+- ✅ GET / vía nginx puerto 80 → 200 OK, frontend responde
+- ✅ Content-Encoding: gzip activo
+- ✅ GET /api/clientes sin token → 401 (nginx proxea a backend, strip /api/)
+- ✅ GET /api/auth/session → 200 (NextAuth en frontend, no rompió)
+- ✅ Rate limiting 30 req paralelos → 429 activado
+- ✅ Security headers presentes en responses
 
-**Impacto en Score**: Web Servers 30% → 75%
+**Impacto en Score**: Web Servers 30% → 75% (+45% 🚀)
+
+**Archivos creados/modificados**: Ver [COMPLETED.md](./COMPLETED.md#subfase-65-web-servers-nginx-completada)
 
 ---
 
-#### **Subfase 6.6: Security & Observability** 🟡 Media Prioridad
+#### **Subfase 6.6: Security & Observability** ✅ COMPLETADA
 
 **Tiempo estimado**: 1 semana  
-**Objetivo**: Building For Scale 15% → 60%
+**Tiempo real**: 1 sesión (05 Mar 2026)  
+**Objetivo**: Building For Scale 15% → 60%  
+**Estado**: ✅ **COMPLETADO** (05 de marzo de 2026)
 
 **Tareas de Seguridad**:
 
 1. **Helmet.js** (30 min)
-   - [ ] `npm install helmet`
-   - [ ] Configurar en `main.ts`
-   - [ ] Headers de seguridad habilitados
+   - [x] `npm install helmet`
+   - [x] Configurar en `main.ts`
+   - [x] Headers de seguridad habilitados
 
 2. **Rate Limiting en NestJS** (1 hora)
-   - [ ] `npm install @nestjs/throttler`
-   - [ ] Configurar ThrottlerModule
-   - [ ] Limitar login a 5/min
-   - [ ] Limitar endpoints públicos
+   - [x] `npm install @nestjs/throttler`
+   - [x] Configurar ThrottlerModule
+   - [x] Limitar login a 5/min
+   - [x] Limitar endpoints públicos
 
 3. **Input Sanitization** (2 horas)
-   - [ ] Instalar `class-sanitizer`
-   - [ ] Sanitizar inputs en DTOs
-   - [ ] Prevenir XSS adicional
+   - [x] Sanitizar inputs en DTOs (13 campos, 3 DTOs con @Transform)
+   - [x] Prevenir XSS adicional
 
 4. **Audit de Dependencias** (1 hora)
-   - [ ] `npm audit fix`
-   - [ ] Actualizar dependencias críticas
-   - [ ] Verificar sin vulnerabilidades HIGH
+   - [x] `npm audit fix`
+   - [x] Actualizar dependencias críticas
+   - [x] Sincronizar @prisma/client a 7.4.2
 
 **Tareas de Observability**:
 
 1. **Health Check Endpoint** (1 hora)
-   - [ ] `npm install @nestjs/terminus`
-   - [ ] Crear `backend/src/health/health.controller.ts`
-   - [ ] Checks: database, redis, memory
-   - [ ] Endpoint: GET `/health`
-
-   ```typescript
-   @Controller('health')
-   export class HealthController {
-     constructor(
-       private health: HealthCheckService,
-       private db: PrismaHealthIndicator
-     ) {}
-
-     @Get()
-     @HealthCheck()
-     check() {
-       return this.health.check([
-         () => this.db.pingCheck('database'),
-         () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
-       ]);
-     }
-   }
-   ```
+   - [x] `npm install @nestjs/terminus`
+   - [x] Crear `backend/src/health/health.controller.ts`
+   - [x] Checks: database, redis, memory (heap < 150MB)
+   - [x] Endpoint: GET `/health`
 
 2. **Structured Logging con Winston** (2 días)
-   - [ ] `npm install winston nest-winston`
-   - [ ] Reemplazar console.log
-   - [ ] Niveles: error, warn, info, debug
-   - [ ] Logs a archivo en desarrollo
-   - [ ] JSON format para producción
+   - [x] `npm install winston nest-winston`
+   - [x] JSON estructurado con timestamp+context+level
+   - [x] Reemplaza NestJS Logger default
 
 3. **Basic Metrics** (1 día)
-   - [ ] Crear endpoint `/metrics` (básico)
-   - [ ] Request counter
-   - [ ] Response time histogram
-   - [ ] Error rate
+   - [x] Crear endpoint `/metrics` (MetricsInterceptor custom)
+   - [x] Request counter (totalRequests)
+   - [x] Response time (avgResponseTimeMs)
+   - [x] Error rate (errors)
 
-4. **Error Tracking** (1 hora) - Opcional sin hosting
-   - [ ] Preparar integración con Sentry (sin activar)
-   - [ ] Configuración lista para futuro
+4. **nginx.conf actualizado**
+   - [x] location `/health` → backend
+   - [x] location `/metrics` → backend
+
+**Problemas Críticos Resueltos**:
+
+- ✅ **Prisma version mismatch**: `npm audit fix` desalineó prisma@7.4.2 vs @prisma/client@7.2.0 → Fix: `npm install @prisma/client@7.4.2`
+- ✅ **ThrottlerGuard no como APP_GUARD**: ThrottlerModule sin APP_GUARD hacía que @Throttle no tuviera efecto → Fix: `{ provide: APP_GUARD, useClass: ThrottlerGuard }` en providers
+- ✅ **Throttler sin nombre en v6**: En @nestjs/throttler v6 sin `name`, el throttler se llama `throttler-0` y no hace match con `@Throttle({ default: ... })` → Fix: `ThrottlerModule.forRoot([{ name: 'default', ... }])`
 
 **Evidencia de Completitud**:
 
-- ✅ Helmet.js activo
-- ✅ Rate limiting funcionando
-- ✅ Health check respondiendo
-- ✅ Logs estructurados con Winston
-- ✅ npm audit sin HIGH vulnerabilities
+- ✅ Helmet.js activo (Content-Security-Policy, HSTS, X-Frame-Options)
+- ✅ Rate limiting verificado: HTTP 429 en 6to intento de login
+- ✅ Input sanitization: 13 campos en 3 DTOs con @Transform
+- ✅ Health check respondiendo: GET /health → 200 (DB + Redis + Memory)
+- ✅ Logs estructurados JSON con Winston
+- ✅ Metrics endpoint: GET /metrics → totalRequests, errors, avgResponseTimeMs
 
-**Impacto en Score**: Building For Scale 15% → 60%
+**Impacto en Score**: Building For Scale 15% → 60% (+45% 🚀), Score General 82% → 87%
 
 ---
 
@@ -525,10 +458,10 @@ Al completar todas las subfases, verificar:
 - [x] ✅ Docker funcionando (`docker-compose up` levanta todo) (24 Feb 2026)
 - [ ] ✅ CI/CD con GitHub Actions (tests, lint, build)
 - [ ] ✅ Redis implementado y cache funcionando
-- [ ] ✅ Nginx configurado como reverse proxy
-- [ ] ✅ Helmet.js + Rate Limiting activos
-- [ ] ✅ Health check endpoint funcionando
-- [ ] ✅ Winston logging implementado
+- [x] ✅ Nginx configurado como reverse proxy (04 Mar 2026)
+- [x] ✅ Helmet.js + Rate Limiting activos (05 Mar 2026)
+- [x] ✅ Health check endpoint funcionando (05 Mar 2026)
+- [x] ✅ Winston logging implementado (05 Mar 2026)
 - [ ] ✅ Swagger docs disponibles en `/api/docs`
 - [ ] ✅ README actualizado con badges
 - [ ] ✅ Documentación completa en `docs/`
@@ -722,7 +655,7 @@ Semana 4:
 ```
 Enero 2026:        [████████████████████] 100% - Fases 1-4 ✅
 Febrero 2026:      [███████████████████░]  98% - Fase 5 (Testing + UI/UX) ✅
-Marzo 2026:        [░░░░░░░░░░░░░░░░░░░░]   0% - Fase 6 (Producción)
+Marzo 2026:        [███████████░░░░░░░░░]  55% - Fase 6 (6.1-6.6 completadas ✅)
 Abril 2026+:       [░░░░░░░░░░░░░░░░░░░░]   0% - Features Post-MVP
 ```
 

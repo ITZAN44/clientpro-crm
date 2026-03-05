@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
@@ -37,8 +41,11 @@ export class AuthService {
     }
 
     // Verificar contraseña
-    const passwordMatch = await bcrypt.compare(loginDto.password, usuario.passwordHash);
-    
+    const passwordMatch = await bcrypt.compare(
+      loginDto.password,
+      usuario.passwordHash,
+    );
+
     if (!passwordMatch) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
@@ -50,10 +57,10 @@ export class AuthService {
     });
 
     // Generar JWT
-    const payload = { 
-      sub: usuario.id, 
-      email: usuario.email, 
-      rol: usuario.rol 
+    const payload = {
+      sub: usuario.id,
+      email: usuario.email,
+      rol: usuario.rol,
     };
 
     return {
@@ -100,10 +107,10 @@ export class AuthService {
     });
 
     // Generar JWT
-    const payload = { 
-      sub: usuario.id, 
-      email: usuario.email, 
-      rol: usuario.rol 
+    const payload = {
+      sub: usuario.id,
+      email: usuario.email,
+      rol: usuario.rol,
     };
 
     return {

@@ -1,6 +1,10 @@
 import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+// NEXT_PUBLIC_SOCKET_URL apunta al root del servidor (sin /api/)
+// para que Socket.io use el path /socket.io/ correcto a través de nginx.
+// NEXT_PUBLIC_API_URL apunta a /api/ (con prefijo) para las llamadas REST.
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_SOCKET_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 /**
  * Crear conexión Socket.io para notificaciones en tiempo real

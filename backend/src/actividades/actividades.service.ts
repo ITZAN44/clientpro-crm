@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateActividadDto, TipoActividad } from './dto/create-actividad.dto';
 import { UpdateActividadDto } from './dto/update-actividad.dto';
@@ -10,7 +14,9 @@ export class ActividadesService {
   async create(createActividadDto: CreateActividadDto, userId: string) {
     // Validar que tenga al menos negocioId o clienteId
     if (!createActividadDto.negocioId && !createActividadDto.clienteId) {
-      throw new BadRequestException('La actividad debe estar asociada a un negocio o a un cliente');
+      throw new BadRequestException(
+        'La actividad debe estar asociada a un negocio o a un cliente',
+      );
     }
 
     // Si se proporciona negocioId, validar que existe
@@ -19,7 +25,9 @@ export class ActividadesService {
         where: { id: createActividadDto.negocioId },
       });
       if (!negocio) {
-        throw new NotFoundException(`Negocio con ID ${createActividadDto.negocioId} no encontrado`);
+        throw new NotFoundException(
+          `Negocio con ID ${createActividadDto.negocioId} no encontrado`,
+        );
       }
     }
 
@@ -29,7 +37,9 @@ export class ActividadesService {
         where: { id: createActividadDto.clienteId },
       });
       if (!cliente) {
-        throw new NotFoundException(`Cliente con ID ${createActividadDto.clienteId} no encontrado`);
+        throw new NotFoundException(
+          `Cliente con ID ${createActividadDto.clienteId} no encontrado`,
+        );
       }
     }
 
@@ -40,7 +50,9 @@ export class ActividadesService {
         where: { id: createActividadDto.asignadoA },
       });
       if (!usuario) {
-        throw new NotFoundException(`Usuario con ID ${createActividadDto.asignadoA} no encontrado`);
+        throw new NotFoundException(
+          `Usuario con ID ${createActividadDto.asignadoA} no encontrado`,
+        );
       }
     }
 
@@ -93,14 +105,17 @@ export class ActividadesService {
     return this.mapActividadToResponse(actividad);
   }
 
-  async findAll(userId: string, query: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    tipo?: string;
-    completada?: string;
-    asignadoA?: string;
-  }) {
+  async findAll(
+    userId: string,
+    query: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      tipo?: string;
+      completada?: string;
+      asignadoA?: string;
+    },
+  ) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
     const skip = (page - 1) * limit;
@@ -177,7 +192,7 @@ export class ActividadesService {
     ]);
 
     return {
-      data: actividades.map(act => this.mapActividadToResponse(act)),
+      data: actividades.map((act) => this.mapActividadToResponse(act)),
       meta: {
         total,
         page,
@@ -231,7 +246,11 @@ export class ActividadesService {
     return this.mapActividadToResponse(actividad);
   }
 
-  async update(id: string, updateActividadDto: UpdateActividadDto, userId: string) {
+  async update(
+    id: string,
+    updateActividadDto: UpdateActividadDto,
+    userId: string,
+  ) {
     // Verificar que existe
     await this.findOne(id);
 
@@ -241,7 +260,9 @@ export class ActividadesService {
         where: { id: updateActividadDto.negocioId },
       });
       if (!negocio) {
-        throw new NotFoundException(`Negocio con ID ${updateActividadDto.negocioId} no encontrado`);
+        throw new NotFoundException(
+          `Negocio con ID ${updateActividadDto.negocioId} no encontrado`,
+        );
       }
     }
 
@@ -250,7 +271,9 @@ export class ActividadesService {
         where: { id: updateActividadDto.clienteId },
       });
       if (!cliente) {
-        throw new NotFoundException(`Cliente con ID ${updateActividadDto.clienteId} no encontrado`);
+        throw new NotFoundException(
+          `Cliente con ID ${updateActividadDto.clienteId} no encontrado`,
+        );
       }
     }
 
@@ -259,7 +282,9 @@ export class ActividadesService {
         where: { id: updateActividadDto.asignadoA },
       });
       if (!usuario) {
-        throw new NotFoundException(`Usuario con ID ${updateActividadDto.asignadoA} no encontrado`);
+        throw new NotFoundException(
+          `Usuario con ID ${updateActividadDto.asignadoA} no encontrado`,
+        );
       }
     }
 

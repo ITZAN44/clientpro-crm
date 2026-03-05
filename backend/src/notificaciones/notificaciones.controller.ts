@@ -26,9 +26,17 @@ export class NotificacionesController {
   async listar(
     @Request() req,
     @Query() query: QueryNotificacionesDto,
-  ): Promise<{ notificaciones: NotificacionResponseDto[]; total: number; pagina: number; limite: number }> {
+  ): Promise<{
+    notificaciones: NotificacionResponseDto[];
+    total: number;
+    pagina: number;
+    limite: number;
+  }> {
     const usuarioId = req.user.userId;
-    const { notificaciones, total } = await this.notificacionesService.listar(usuarioId, query);
+    const { notificaciones, total } = await this.notificacionesService.listar(
+      usuarioId,
+      query,
+    );
 
     return {
       notificaciones,
@@ -77,7 +85,9 @@ export class NotificacionesController {
    */
   @Patch('marcar-todas-leidas')
   @HttpCode(HttpStatus.OK)
-  async marcarTodasComoLeidas(@Request() req): Promise<{ actualizado: number }> {
+  async marcarTodasComoLeidas(
+    @Request() req,
+  ): Promise<{ actualizado: number }> {
     const usuarioId = req.user.userId;
     return this.notificacionesService.marcarTodasComoLeidas(usuarioId);
   }

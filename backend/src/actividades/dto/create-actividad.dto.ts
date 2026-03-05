@@ -1,4 +1,14 @@
-import { IsString, IsNotEmpty, IsEnum, IsOptional, IsUUID, IsBoolean, IsDateString, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsOptional,
+  IsUUID,
+  IsBoolean,
+  IsDateString,
+  MaxLength,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export enum TipoActividad {
   LLAMADA = 'LLAMADA',
@@ -9,20 +19,31 @@ export enum TipoActividad {
 }
 
 export class CreateActividadDto {
-  @IsEnum(TipoActividad, { message: 'El tipo debe ser LLAMADA, EMAIL, REUNION, TAREA o NOTA' })
+  @IsEnum(TipoActividad, {
+    message: 'El tipo debe ser LLAMADA, EMAIL, REUNION, TAREA o NOTA',
+  })
   @IsNotEmpty({ message: 'El tipo de actividad es obligatorio' })
   tipo: TipoActividad;
 
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : value,
+  )
   @IsString({ message: 'El título debe ser un texto' })
   @IsNotEmpty({ message: 'El título es obligatorio' })
   @MaxLength(255, { message: 'El título no puede exceder 255 caracteres' })
   titulo: string;
 
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : value,
+  )
   @IsString({ message: 'La descripción debe ser un texto' })
   @IsOptional()
   descripcion?: string;
 
-  @IsDateString({}, { message: 'La fecha de vencimiento debe ser una fecha válida' })
+  @IsDateString(
+    {},
+    { message: 'La fecha de vencimiento debe ser una fecha válida' },
+  )
   @IsOptional()
   fechaVencimiento?: string;
 

@@ -1,5 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisCacheService } from '../redis/redis-cache.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { ClienteResponseDto } from './dto/cliente-response.dto';
@@ -7,9 +13,17 @@ import { RolUsuario } from '@prisma/client';
 
 @Injectable()
 export class ClientesService {
-  constructor(private prisma: PrismaService) {}
+  private readonly CACHE_TTL = 300; // 5 minutos en segundos
 
-  async create(createClienteDto: CreateClienteDto, usuarioId: string): Promise<ClienteResponseDto> {
+  constructor(
+    private prisma: PrismaService,
+    private cache: RedisCacheService,
+  ) {}
+
+  async create(
+    createClienteDto: CreateClienteDto,
+    usuarioId: string,
+  ): Promise<ClienteResponseDto> {
     try {
       // Si no se proporciona propietarioId, usar el usuario autenticado
       const propietarioId = createClienteDto.propietarioId || usuarioId;
@@ -48,9 +62,15 @@ export class ClientesService {
         },
       });
 
+      // Invalidar cache de listados
+      await this.invalidateListCache();
+
       return this.mapToResponseDto(cliente);
     } catch (error) {
-      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
       throw new BadRequestException('Error al crear el cliente');
@@ -58,6 +78,15 @@ export class ClientesService {
   }
 
   async findAll(page = 1, limit = 10, search?: string, user?: any) {
+    // Generar cache key basado en parámetros de query
+    const cacheKey = `clientes:all:${JSON.stringify({ page, limit, search, userId: user?.userId, rol: user?.rol })}`;
+
+    // Intentar obtener desde cache
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const skip = (page - 1) * limit;
 
     // Construir filtro base
@@ -73,9 +102,7 @@ export class ClientesService {
 
     // Si es VENDEDOR, solo ver sus propios clientes
     const roleFilter =
-      user?.rol === RolUsuario.VENDEDOR
-        ? { propietarioId: user.userId }
-        : {};
+      user?.rol === RolUsuario.VENDEDOR ? { propietarioId: user.userId } : {};
 
     const where = { ...searchFilter, ...roleFilter };
 
@@ -100,7 +127,7 @@ export class ClientesService {
       this.prisma.cliente.count({ where }),
     ]);
 
-    return {
+    const result = {
       data: clientes.map((cliente) => this.mapToResponseDto(cliente)),
       meta: {
         total,
@@ -109,9 +136,29 @@ export class ClientesService {
         totalPages: Math.ceil(total / limit),
       },
     };
+
+    // Guardar en cache
+    await this.cache.set(cacheKey, result, this.CACHE_TTL);
+
+    return result;
   }
 
   async findOne(id: string, user?: any): Promise<ClienteResponseDto> {
+    const cacheKey = `clientes:${id}`;
+
+    // Intentar obtener desde cache
+    const cached = await this.cache.get<ClienteResponseDto>(cacheKey);
+    if (cached) {
+      // Validar permisos también con cache
+      if (
+        user?.rol === RolUsuario.VENDEDOR &&
+        cached.propietarioId !== user.userId
+      ) {
+        throw new ForbiddenException('No tienes permiso para ver este cliente');
+      }
+      return cached;
+    }
+
     const cliente = await this.prisma.cliente.findUnique({
       where: { id },
       include: {
@@ -130,14 +177,25 @@ export class ClientesService {
     }
 
     // Si es VENDEDOR, solo puede ver sus propios clientes
-    if (user?.rol === RolUsuario.VENDEDOR && cliente.propietarioId !== user.userId) {
+    if (
+      user?.rol === RolUsuario.VENDEDOR &&
+      cliente.propietarioId !== user.userId
+    ) {
       throw new ForbiddenException('No tienes permiso para ver este cliente');
     }
 
-    return this.mapToResponseDto(cliente);
+    const responseDto = this.mapToResponseDto(cliente);
+
+    // Guardar en cache
+    await this.cache.set(cacheKey, responseDto, this.CACHE_TTL);
+
+    return responseDto;
   }
 
-  async update(id: string, updateClienteDto: UpdateClienteDto): Promise<ClienteResponseDto> {
+  async update(
+    id: string,
+    updateClienteDto: UpdateClienteDto,
+  ): Promise<ClienteResponseDto> {
     // Verificar que el cliente existe
     const clienteExiste = await this.prisma.cliente.findUnique({
       where: { id },
@@ -176,6 +234,10 @@ export class ClientesService {
         },
       });
 
+      // Invalidar cache específico y listados
+      await this.cache.del(`clientes:${id}`);
+      await this.invalidateListCache();
+
       return this.mapToResponseDto(cliente);
     } catch (error) {
       throw new BadRequestException('Error al actualizar el cliente');
@@ -197,10 +259,23 @@ export class ClientesService {
         where: { id },
       });
 
+      // Invalidar cache específico y listados
+      await this.cache.del(`clientes:${id}`);
+      await this.invalidateListCache();
+
       return { message: 'Cliente eliminado correctamente' };
     } catch (error) {
       throw new BadRequestException('Error al eliminar el cliente');
     }
+  }
+
+  /**
+   * Invalida todos los caches de listados de clientes
+   * Busca todas las keys que comienzan con 'clientes:all:' y las elimina
+   */
+  private async invalidateListCache(): Promise<void> {
+    await this.cache.delPattern('clientes:all:*');
+    await this.cache.delPattern('stats:*');
   }
 
   private mapToResponseDto(cliente: any): ClienteResponseDto {

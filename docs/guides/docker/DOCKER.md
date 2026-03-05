@@ -1,21 +1,26 @@
 # Docker - Guía de Containerización
 
-> **Última actualización**: 24 de febrero de 2026  
-> **Versión Docker**: v3.8  
+> **Última actualización**: 4 de marzo de 2026
+> **Versión Docker**: v3.8
 > **Estado**: Producción Ready ✅
 
 ---
 
 ## 📦 Servicios Dockerizados
 
-ClientPro CRM está completamente containerizado con 4 servicios principales:
+ClientPro CRM está completamente containerizado con **5 servicios** (incluye nginx desde Subfase 6.5):
 
-| Servicio   | Imagen              | Puerto | Estado  | Healthcheck |
-| ---------- | ------------------- | ------ | ------- | ----------- |
-| Backend    | Node 20 Alpine      | 4000   | Running | ✅ Healthy  |
-| Frontend   | Node 20 Alpine      | 3000   | Running | N/A         |
-| PostgreSQL | Postgres 16 Alpine  | 5432   | Running | ✅ Healthy  |
-| Redis      | Redis 7 Alpine      | 6379   | Running | ✅ Healthy  |
+| Servicio   | Imagen             | Puerto externo | Estado  | Healthcheck |
+| ---------- | ------------------ | -------------- | ------- | ----------- |
+| **Nginx**  | nginx:1.25-alpine  | **80** (entry) | Running | ✅ Healthy  |
+| Backend    | Node 20 Alpine     | _(interno)_    | Running | ✅ Healthy  |
+| Frontend   | Node 20 Alpine     | _(interno)_    | Running | ✅ Healthy  |
+| PostgreSQL | Postgres 16 Alpine | 5432           | Running | ✅ Healthy  |
+| Redis      | Redis 7 Alpine     | 6379           | Running | ✅ Healthy  |
+
+> **Entry point principal**: `http://localhost` (puerto 80 vía nginx).
+> Los puertos 3000 y 4000 ya **no están expuestos** al host directamente.
+> Ver [nginx/NGINX.md](../nginx/NGINX.md) para detalles de routing.
 
 ---
 
@@ -26,7 +31,7 @@ ClientPro CRM está completamente containerizado con 4 servicios principales:
 - Docker Desktop instalado y corriendo
 - Git (para clonar el repositorio)
 - 4GB RAM mínimo disponible
-- Puertos 3000, 4000, 5432, 6379 libres
+- Puertos **80**, 5432, 6379 libres (puertos 3000 y 4000 son internos a Docker)
 
 ### Instalación
 
@@ -61,10 +66,13 @@ docker-compose logs -f
 
 Una vez levantados los servicios, verifica:
 
-- **Backend**: http://localhost:4000 (debe mostrar "Hello World!")
-- **Frontend**: http://localhost:3000 (debe cargar la interfaz de login)
+- **App (via nginx)**: http://localhost (debe cargar la interfaz de login)
+- **API (via nginx)**: http://localhost/api/health (debe mostrar `{"status":"ok"}`)
+- **Backend directo** _(interno, no expuesto)_: accesible solo dentro de Docker como `http://backend:4000`
+- **Frontend directo** _(interno, no expuesto)_: accesible solo dentro de Docker como `http://frontend:3000`
 - **PostgreSQL**: `docker-compose exec postgres psql -U postgres -d clientpro_crm`
-- **Redis**: `docker-compose exec redis redis-cli ping` (debe responder "PONG")
+- **Redis**: `docker exec clientpro-redis redis-cli ping` (debe responder "PONG")
+- **Redis Cache**: `docker exec clientpro-redis redis-cli KEYS "*"` (debe mostrar cache keys)
 
 ---
 
@@ -168,6 +176,25 @@ docker-compose exec backend npx prisma migrate status
 docker-compose exec backend npx prisma db seed
 ```
 
+### Verificación de Redis Cache
+
+```bash
+# Ver keys de cache
+docker exec clientpro-redis redis-cli KEYS "*"
+
+# Ver stats de Redis
+docker exec clientpro-redis redis-cli INFO stats
+
+# Ver memoria usada
+docker exec clientpro-redis redis-cli INFO memory | grep "used_memory_human"
+
+# Monitorear comandos en tiempo real
+docker exec clientpro-redis redis-cli MONITOR
+
+# Limpiar cache (útil para testing)
+docker exec clientpro-redis redis-cli FLUSHALL
+```
+
 ### Backups de PostgreSQL
 
 ```bash
@@ -265,28 +292,29 @@ docker-compose exec postgres psql -U postgres -d clientpro_crm -c "SELECT versio
 # Ver logs del frontend
 docker-compose logs -f frontend
 
-# Verificar que el backend esté healthy
-docker-compose ps backend
+# Verificar que nginx y el backend estén healthy
+docker-compose ps
 
 # Verificar NEXT_PUBLIC_API_URL en .env
-echo $NEXT_PUBLIC_API_URL  # Debe ser http://localhost:4000
+# Valor correcto (Subfase 6.5+): http://localhost/api  (NO http://localhost:4000)
+echo $NEXT_PUBLIC_API_URL
 ```
 
 ### Problema: "Credenciales inválidas" en login (NextAuth)
 
-**Causa**: NextAuth no puede conectarse al backend porque usa `API_URL` (servidor)
+**Causa**: NextAuth no puede conectarse al backend porque usa `API_URL` (servidor), o `NEXTAUTH_URL` apunta al puerto incorrecto.
 
 ```bash
 # Verificar que API_URL apunte al contenedor, NO a localhost
 docker-compose exec frontend sh -c 'echo $API_URL'
 # Debe mostrar: http://backend:4000
 
-# Si muestra localhost o está vacío, editar docker-compose.yml:
-# environment:
-#   API_URL: http://backend:4000  # DEBE ser "backend", no "localhost"
+# Verificar NEXTAUTH_URL apunta a nginx (no a :3000)
+docker-compose exec frontend sh -c 'echo $NEXTAUTH_URL'
+# Debe mostrar: http://localhost  (NO http://localhost:3000)
 
-# Reiniciar frontend
-docker-compose restart frontend
+# Si alguno está mal, editar .env y rebuild:
+docker-compose build --no-cache frontend && docker-compose up -d frontend
 ```
 
 ### Problema: Base de datos vacía (sin tablas)
@@ -305,6 +333,40 @@ docker-compose exec postgres psql -U postgres -d clientpro_crm -c "\dt"
 
 # (Opcional) Cargar datos de prueba
 docker-compose exec backend npx prisma db seed
+```
+
+### Problema: Cache no funciona (Redis con 0 keys)
+
+**Síntomas**:
+
+```bash
+# Backend logs muestran [CACHE SET] pero Redis está vacío
+docker exec clientpro-redis redis-cli KEYS "*"
+# (empty array)
+```
+
+**Causa**: Backend NO está usando RedisCacheService correctamente
+
+```bash
+# Verificar que backend se conectó a Redis
+docker logs clientpro-backend | grep REDIS
+# Debe mostrar: [REDIS] Conectado exitosamente
+
+# Verificar REDIS_HOST
+docker-compose exec backend sh -c 'echo $REDIS_HOST'
+# Debe mostrar: redis (NO localhost)
+
+# Si muestra localhost, editar docker-compose.yml:
+# environment:
+#   REDIS_HOST: redis  # DEBE ser "redis", no "localhost"
+
+# Reiniciar backend
+docker-compose restart backend
+
+# Hacer request y verificar keys
+curl http://localhost/api/clientes
+docker exec clientpro-redis redis-cli KEYS "*"
+# Debe mostrar: clientes:all:*
 ```
 
 ### Problema: Build falla por falta de memoria
@@ -327,6 +389,10 @@ clientpro-crm/
 ├── docker-compose.yml          # Orquestación de servicios
 ├── .env.docker                 # Template de variables (commiteado)
 ├── .env                        # Variables locales (gitignored)
+│
+├── nginx/
+│   ├── nginx.conf              # Configuración del reverse proxy
+│   └── Dockerfile              # FROM nginx:1.25-alpine
 │
 ├── backend/
 │   ├── Dockerfile              # Multi-stage build NestJS
@@ -353,17 +419,27 @@ POSTGRES_PASSWORD=cambiar-en-produccion
 POSTGRES_DB=clientpro_crm
 POSTGRES_USER=postgres
 
-# URLs del Frontend (IMPORTANTE: 2 variables diferentes)
-NEXT_PUBLIC_API_URL=http://localhost:4000  # Para el navegador
-API_URL=http://backend:4000                # Para NextAuth (servidor)
-NEXTAUTH_URL=http://localhost:3000
+# URLs del Frontend (IMPORTANTE: variables separadas por propósito)
+NEXT_PUBLIC_API_URL=http://localhost/api   # Para el navegador (pasa por nginx)
+NEXT_PUBLIC_SOCKET_URL=http://localhost   # Para Socket.io cliente (pasa por nginx)
+API_URL=http://backend:4000               # Para NextAuth (servidor, interno Docker)
+NEXTAUTH_URL=http://localhost             # Base URL de NextAuth (apunta a nginx)
 ```
 
 **⚠️ IMPORTANTE - Variables de Frontend:**
 
-- `NEXT_PUBLIC_API_URL`: URL del backend accesible desde el **navegador** del usuario
-- `API_URL`: URL del backend accesible desde el **contenedor frontend** (NextAuth, SSR)
-- Si NextAuth no funciona, verificar que `API_URL=http://backend:4000` (NO localhost)
+- `NEXT_PUBLIC_API_URL`: URL del backend accesible desde el **navegador** (via nginx en `/api`)
+- `NEXT_PUBLIC_SOCKET_URL`: URL base del socket (nginx hace el upgrade a WebSocket)
+- `API_URL`: URL del backend accesible desde el **contenedor frontend** (NextAuth, SSR) — nunca cambia
+- `NEXTAUTH_URL`: Ahora apunta a nginx (`http://localhost`), no al frontend directo
+
+**⚠️ CRÍTICO - Variables `NEXT_PUBLIC_*` se bakean en build:**
+
+Next.js incrusta las variables `NEXT_PUBLIC_*` en el bundle JS en **tiempo de build**. Cambiar `.env` y reiniciar el contenedor **no es suficiente**. Siempre rebuildar frontend después de cambiar estas variables:
+
+```bash
+docker-compose build --no-cache frontend && docker-compose up -d frontend
+```
 
 ### Generar Secretos Seguros
 
@@ -445,7 +521,7 @@ services:
   backend:
     build:
       context: ./backend
-      target: production  # Usa imagen optimizada
+      target: production # Usa imagen optimizada
     restart: unless-stopped
 ```
 
@@ -453,8 +529,8 @@ services:
 
 Para producción, considera:
 
-- **Reverse Proxy**: Nginx delante de Backend y Frontend
-- **HTTPS**: Certificados SSL/TLS
+- **Nginx ya incluido**: Reverse proxy operativo desde Subfase 6.5 (ver [nginx/NGINX.md](../nginx/NGINX.md))
+- **HTTPS**: Activar SSL/TLS en nginx (configuración preparada, ver guía nginx)
 - **Secrets**: Docker Secrets o AWS Secrets Manager
 - **Replicas**: Múltiples instancias del backend
 - **Monitoring**: Prometheus + Grafana

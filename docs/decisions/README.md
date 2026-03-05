@@ -1,7 +1,7 @@
 # Índice de Registros de Decisión Arquitectónica (ADRs)
 
 > **Propósito**: Documentar decisiones arquitectónicas clave y sus justificaciones
-> **Última actualización**: 24 de febrero de 2026
+> **Última actualización**: 05 de marzo de 2026
 
 ---
 
@@ -10,6 +10,7 @@
 Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónica importante tomada en el proyecto.
 
 **Propósito**:
+
 - Explicar **por qué** se tomó una decisión, no solo **qué** se decidió
 - Preservar contexto para futuros desarrolladores
 - Evitar revisitar decisiones ya tomadas sin razón
@@ -17,12 +18,14 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 - Facilitar onboarding de nuevos miembros del equipo
 
 **Cuándo crear un ADR**:
+
 - Elección de framework o tecnología principal
 - Cambios arquitectónicos significativos
 - Decisiones que afectan múltiples módulos
 - Trade-offs importantes entre opciones
 
 **Cuándo NO crear un ADR**:
+
 - Decisiones tácticas pequeñas
 - Configuraciones menores
 - Decisiones fácilmente reversibles
@@ -32,6 +35,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ## 📋 ADRs Existentes
 
 ### **ADR-001: Elegir NestJS como Framework Backend**
+
 **Fecha**: 06/01/2026 | **Estado**: Aceptado | **Etiquetas**: backend, framework
 
 **Resumen**: NestJS elegido sobre Express.js, Fastify, Adonis.js, y tRPC por su arquitectura modular, excelente soporte TypeScript, e integración con Prisma y Socket.io.
@@ -45,6 +49,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ---
 
 ### **ADR-002: Elegir Next.js 16 con App Router para Frontend**
+
 **Fecha**: 06/01/2026 | **Estado**: Aceptado | **Etiquetas**: frontend, framework
 
 **Resumen**: Next.js 16 App Router elegido sobre Pages Router, Vite+React Router, Remix, y CRA por Server Components, SSR, y optimizaciones automáticas.
@@ -58,6 +63,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ---
 
 ### **ADR-003: Elegir Socket.io para Funcionalidades en Tiempo Real**
+
 **Fecha**: 18/01/2026 | **Estado**: Aceptado | **Etiquetas**: backend, frontend, real-time, websockets
 
 **Resumen**: Socket.io elegido sobre WebSocket nativo, SSE, polling, y Firebase por fallback automático, rooms, y excelente integración con NestJS.
@@ -71,6 +77,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ---
 
 ### **ADR-004: Elegir Prisma como ORM para Base de Datos**
+
 **Fecha**: 06/01/2026 | **Estado**: Aceptado | **Etiquetas**: backend, database, orm
 
 **Resumen**: Prisma elegido sobre TypeORM, Sequelize, Kysely, y Drizzle por type-safety completo, schema declarativo, y migraciones automáticas.
@@ -84,6 +91,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ---
 
 ### **ADR-005: Elegir shadcn/ui para Componentes de Interfaz**
+
 **Fecha**: 09/01/2026 | **Estado**: Aceptado | **Etiquetas**: frontend, ui, components
 
 **Resumen**: shadcn/ui elegido sobre MUI, Ant Design, Headless UI, y construcción desde cero por control total, accesibilidad, y cero vendor lock-in.
@@ -97,6 +105,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ---
 
 ### **ADR-006: Elegir Semgrep para Análisis Estático de Código**
+
 **Fecha**: 03/02/2026 | **Estado**: Aceptado | **Etiquetas**: backend, devops, code-quality, static-analysis
 
 **Resumen**: Semgrep elegido sobre ESLint custom rules, SonarQube, CodeQL, y Checkmarx por reglas personalizadas simples, integración MCP, y soporte para patrones específicos de NestJS.
@@ -110,6 +119,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ---
 
 ### **ADR-007: Docker para Containerización de la Aplicación**
+
 **Fecha**: 23/02/2026 | **Estado**: Aceptado | **Etiquetas**: infrastructure, devops, docker, containerization
 
 **Resumen**: Docker + Docker Compose elegido sobre Vagrant, Kubernetes, Docker Swarm, y Podman por balance óptimo entre facilidad de uso, reproducibilidad, y preparación para producción. Incluye 4 servicios (backend, frontend, postgres, adminer) con multi-stage builds y volúmenes persistentes.
@@ -123,6 +133,7 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ---
 
 ### **ADR-008: GitHub Actions para CI/CD Pipeline**
+
 **Fecha**: 24/02/2026 | **Estado**: Aceptado | **Etiquetas**: devops, cicd, automation, github-actions, testing
 
 **Resumen**: GitHub Actions elegido sobre Jenkins, GitLab CI, CircleCI, y Travis CI por integración nativa con GitHub, costo cero para repos públicos, y ecosistema maduro. Incluye 3 workflows (CI, Deploy Staging, Deploy Production), Dependabot, y branch protection rules.
@@ -135,13 +146,53 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 
 ---
 
+### **ADR-009: RedisCacheService con ioredis para Caching**
+
+**Fecha**: 27/02/2026 | **Estado**: Aceptado | **Etiquetas**: backend, performance, caching, redis
+
+**Resumen**: Solución personalizada con ioredis directo elegida sobre @nestjs/cache-manager después de descubrir incompatibilidad crítica con cache-manager v7. Implementación de RedisCacheService como @Global() module con invalidación inteligente y logging detallado.
+
+**Decisión clave**: Bypass completo de cache-manager debido a reescritura v7 que rompió compatibilidad con stores Redis personalizados.
+
+**Leer cuando**: Necesites entender sistema de caching, agregar cache a nuevos servicios, o troubleshoot problemas de cache.
+
+[Ver ADR completo →](./009-redis-caching-ioredis.md)
+
+---
+
+### **ADR-010: Nginx como Reverse Proxy — Single Entry Point**
+
+**Fecha**: 04/03/2026 | **Estado**: Aceptado | **Etiquetas**: infrastructure, devops, nginx, reverse-proxy, docker
+
+**Resumen**: Nginx añadido como quinto servicio Docker Compose para proveer un único entry point en puerto 80, con ruteo transparente hacia backend NestJS (`/api/*`) y frontend Next.js (`/*`), WebSocket proxying para Socket.io, y gzip/rate limiting centralizados. Incluye resolución del problema crítico de `NEXT_PUBLIC_*` vars que deben pasarse como build ARGs en el Dockerfile, no como environment en runtime.
+
+**Decisión clave**: Las variables `NEXT_PUBLIC_*` de Next.js se "bakean" en el bundle durante `next build` — deben declararse como `ARG`+`ENV` en el stage builder del Dockerfile y pasarse via `build args` en Docker Compose.
+
+**Leer cuando**: Necesites entender el entry point del stack Docker, modificar el ruteo Nginx, agregar SSL/TLS, o debuggear problemas de NEXT*PUBLIC*\* vars en builds containerizados.
+
+[Ver ADR completo →](./010-nginx-reverse-proxy.md)
+
+### **ADR-011: Security & Observability Stack — Helmet, Throttler, Winston, Terminus**
+
+**Fecha**: 05/03/2026 | **Estado**: Aceptado | **Etiquetas**: backend, security, observability, monitoring
+
+**Resumen**: Stack de cuatro componentes para production-readiness del backend NestJS: Helmet.js (security headers), @nestjs/throttler v6 (rate limiting granular por endpoint), nest-winston (structured JSON logging), y @nestjs/terminus (health checks DB + Redis + Memory). MetricsInterceptor custom para métricas básicas sin overhead de Prometheus. Incluye resolución de 3 bugs críticos: ThrottlerGuard faltante, throttler sin nombre explícito en v6, y Prisma version mismatch tras `npm audit fix`.
+
+**Decisión clave**: Rate limiting en aplicación NestJS (no solo en Nginx) para granularidad por ruta; MetricsInterceptor custom sobre Prometheus para eliminar overhead innecesario en proyecto portfolio.
+
+**Leer cuando**: Necesites entender security headers configurados, añadir rate limiting a nuevos endpoints, troubleshoot logs en producción, o entender el endpoint `/health`.
+
+[Ver ADR completo →](./011-security-observability.md)
+
+---
+
 ## 🔄 Estados de ADR
 
-| Estado | Significado |
-|--------|-------------|
-| **Propuesto** | Decisión propuesta, aún no implementada |
-| **Aceptado** | Decisión aprobada e implementada |
-| **Deprecado** | Ya no se usa, pero aún en el código |
+| Estado          | Significado                              |
+| --------------- | ---------------------------------------- |
+| **Propuesto**   | Decisión propuesta, aún no implementada  |
+| **Aceptado**    | Decisión aprobada e implementada         |
+| **Deprecado**   | Ya no se usa, pero aún en el código      |
 | **Reemplazado** | Reemplazado por otro ADR (link al nuevo) |
 
 ---
@@ -149,27 +200,32 @@ Un **Architecture Decision Record (ADR)** documenta una decisión arquitectónic
 ## 📝 Cómo Crear un Nuevo ADR
 
 ### **Paso 1: Copiar Template**
+
 ```bash
 cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 ```
 
 ### **Paso 2: Completar Secciones**
+
 - **Contexto**: ¿Qué problema estamos resolviendo? ¿Por qué ahora?
 - **Decisión**: ¿Qué elegimos? ¿Por qué esta opción?
 - **Consecuencias**: ¿Qué se vuelve más fácil/difícil?
 - **Alternativas**: ¿Qué más consideramos? ¿Por qué rechazamos?
 
 ### **Paso 3: Revisar con Equipo** (si aplica)
+
 - Discutir pros/contras
 - Validar que alternativas sean justas
 - Asegurar consenso
 
 ### **Paso 4: Actualizar Este README**
+
 - Agregar entrada en sección "ADRs Existentes"
 - Incluir resumen breve
 - Link al ADR completo
 
 ### **Paso 5: Referenciar en Código**
+
 ```typescript
 // En código donde se usa la decisión:
 // Ver ADR-006 para justificación de este patrón
@@ -182,6 +238,7 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 ### **Al Escribir ADRs**
 
 **SÍ hacer**:
+
 - ✅ Explicar el **contexto** completo
 - ✅ Listar **pros y contras** de forma justa
 - ✅ Documentar **alternativas realmente consideradas**
@@ -189,6 +246,7 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 - ✅ Incluir **referencias** a docs/discusiones
 
 **NO hacer**:
+
 - ❌ Justificar decisión después del hecho
 - ❌ Solo listar pros de la opción elegida
 - ❌ Inventar alternativas solo para descartarlas
@@ -198,11 +256,13 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 ### **Al Actualizar ADRs**
 
 **Cuándo actualizar**:
+
 - Nueva información invalida decisión original
 - Implementación revela problemas no anticipados
 - Decisión necesita ser revertida o modificada
 
 **Cómo actualizar**:
+
 - NO borrar contenido original
 - Agregar sección "Actualización" con fecha
 - Si se reemplaza, cambiar estado a "Reemplazado" y linkar nuevo ADR
@@ -213,6 +273,7 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 ## 🔗 Referencias Cruzadas
 
 ### **ADRs → Documentación Técnica**
+
 - ADR-001 (NestJS) → `docs/context/STACK.md` (Backend)
 - ADR-002 (Next.js) → `docs/context/STACK.md` (Frontend)
 - ADR-003 (Socket.io) → `docs/context/STACK.md` (WebSocket)
@@ -221,8 +282,12 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 - ADR-006 (Semgrep) → `/AGENTS.md` (Comandos scan)
 - ADR-007 (Docker) → `/AGENTS.md` (Comandos Docker), `docker-compose.yml`
 - ADR-008 (GitHub Actions) → `.github/workflows/` (Workflows CI/CD)
+- ADR-009 (Redis Cache) → `backend/src/redis/` (RedisCacheService), `docs/guides/CACHING.md`
+- ADR-010 (Nginx) → `nginx/nginx.conf`, `frontend/Dockerfile` (build ARGs), `docker-compose.yml`
+- ADR-011 (Security & Observability) → `backend/src/main.ts`, `backend/src/common/interceptors/`, `backend/src/health/`
 
 ### **ADRs → Implementación**
+
 - ADRs explican **por qué** se tomó la decisión
 - `/AGENTS.md` y `docs/context/` explican **cómo** usarlas
 
@@ -232,29 +297,29 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 
 **Próximos ADRs a crear** (Fase 5+):
 
-### **ADR-009: Testing Strategy (Pendiente)**
+### **ADR-012: Testing Strategy (Pendiente)**
+
 - Jest vs Vitest
 - React Testing Library vs Enzyme
 - E2E: Playwright vs Cypress
 - **Fecha estimada**: Fase 5
 
-### **ADR-010: Deployment Platform (Pendiente)**
+### **ADR-013: Deployment Platform (Pendiente)**
+
 - Railway vs Vercel + Railway vs Docker + VPS vs Kubernetes
 - **Fecha estimada**: Post-containerización (Fase 6+)
-
-### **ADR-011: Monitoring & Logging (Pendiente)**
-- Sentry vs LogRocket vs Datadog
-- **Fecha estimada**: Post-deployment (Fase 6+)
 
 ---
 
 ## 📚 Documentación Relacionada
 
 **Contexto Padre**:
+
 - `docs/README.md` - Índice maestro de documentación
 - `docs/context/README.md` - Contexto del proyecto
 
 **Relacionado**:
+
 - `/AGENTS.md` - Cómo aplicar las decisiones (comandos, patrones)
 - `docs/sessions/` - Registro de decisiones tácticas en sesiones
 - `CHANGELOG.md` - Historial de cambios técnicos
@@ -263,7 +328,8 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 
 ## ✅ Resumen
 
-**8 ADRs Documentados**:
+**11 ADRs Documentados**:
+
 1. NestJS como framework backend
 2. Next.js 16 App Router como framework frontend
 3. Socket.io para funcionalidades en tiempo real
@@ -272,14 +338,17 @@ cp docs/decisions/template.md docs/decisions/006-titulo-decision.md
 6. Semgrep para análisis estático de código
 7. Docker para containerización
 8. GitHub Actions para CI/CD
+9. RedisCacheService con ioredis para caching
+10. Nginx como reverse proxy — single entry point
+11. Security & Observability Stack (Helmet, Throttler, Winston, Terminus)
 
-**3 ADRs Pendientes** (Fase 5+):
-- Testing Strategy (E2E con Playwright/Cypress)
-- Deployment Platform (Railway/Vercel/AWS)
-- Monitoring & Logging (Sentry/Datadog)
+**2 ADRs Pendientes** (Fase 5+):
+
+- Testing Strategy (E2E con Playwright/Cypress) → ADR-012
+- Deployment Platform (Railway/Vercel/AWS) → ADR-013
 
 **Plantilla disponible**: `template.md` para nuevos ADRs
 
 ---
 
-**Fin de decisions/README.md** | ~285 líneas | Índice de decisiones arquitectónicas | Actualizado 24/02/2026
+**Fin de decisions/README.md** | ~330 líneas | Índice de decisiones arquitectónicas | Actualizado 04/03/2026

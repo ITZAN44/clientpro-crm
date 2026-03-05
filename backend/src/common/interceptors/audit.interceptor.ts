@@ -23,7 +23,7 @@ export class AuditInterceptor implements NestInterceptor {
           const responseTime = Date.now() - now;
           const userId = user?.userId || 'anonymous';
           const userRole = user?.rol || 'N/A';
-          
+
           this.logger.log(
             `[${method}] ${url} | User: ${userId} (${userRole}) | ${responseTime}ms`,
           );
@@ -32,7 +32,7 @@ export class AuditInterceptor implements NestInterceptor {
           const responseTime = Date.now() - now;
           const userId = user?.userId || 'anonymous';
           const userRole = user?.rol || 'N/A';
-          
+
           this.logger.error(
             `[${method}] ${url} | User: ${userId} (${userRole}) | ${responseTime}ms | Error: ${error.message}`,
           );

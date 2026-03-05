@@ -25,7 +25,9 @@ import { CreateNotificacionDto } from './dto/create-notificacion.dto';
   },
   namespace: '/notificaciones',
 })
-export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotificacionesGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
@@ -43,7 +45,9 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
   async handleConnection(client: Socket) {
     try {
       // Extraer token JWT del handshake
-      const token = client.handshake.auth.token || client.handshake.headers.authorization?.split(' ')[1];
+      const token =
+        client.handshake.auth.token ||
+        client.handshake.headers.authorization?.split(' ')[1];
 
       if (!token) {
         this.logger.warn(`Cliente ${client.id} rechazado: sin token`);
@@ -62,7 +66,9 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
       await client.join(`user:${userId}`);
 
       this.logger.log(`Cliente ${client.id} conectado (Usuario: ${userId})`);
-      this.logger.log(`Total clientes conectados: ${this.connectedClients.size}`);
+      this.logger.log(
+        `Total clientes conectados: ${this.connectedClients.size}`,
+      );
 
       // Enviar evento de bienvenida
       client.emit('conectado', {
@@ -90,7 +96,9 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
    */
   async emitirNotificacionAUsuario(usuarioId: string, notificacion: any) {
     this.server.to(`user:${usuarioId}`).emit('nuevaNotificacion', notificacion);
-    this.logger.log(`Notificación emitida al usuario ${usuarioId}: ${notificacion.titulo}`);
+    this.logger.log(
+      `Notificación emitida al usuario ${usuarioId}: ${notificacion.titulo}`,
+    );
   }
 
   /**
@@ -106,7 +114,9 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
    */
   async emitirNegocioActualizado(negocioId: string, data: any) {
     this.server.emit('negocioActualizado', { negocioId, ...data });
-    this.logger.log(`Evento negocioActualizado emitido para negocio ${negocioId}`);
+    this.logger.log(
+      `Evento negocioActualizado emitido para negocio ${negocioId}`,
+    );
   }
 
   /**
@@ -114,7 +124,9 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
    */
   async emitirActividadVencida(actividadId: string, data: any) {
     this.server.emit('actividadVencida', { actividadId, ...data });
-    this.logger.log(`Evento actividadVencida emitido para actividad ${actividadId}`);
+    this.logger.log(
+      `Evento actividadVencida emitido para actividad ${actividadId}`,
+    );
   }
 
   /**
@@ -131,14 +143,19 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
         return { error: 'Usuario no autenticado' };
       }
 
-      await this.notificacionesService.marcarComoLeida(data.notificacionId, userId);
-      
+      await this.notificacionesService.marcarComoLeida(
+        data.notificacionId,
+        userId,
+      );
+
       // Emitir confirmación
       client.emit('notificacionLeida', { notificacionId: data.notificacionId });
-      
+
       return { success: true };
     } catch (error) {
-      this.logger.error(`Error al marcar notificación como leída: ${error.message}`);
+      this.logger.error(
+        `Error al marcar notificación como leída: ${error.message}`,
+      );
       return { error: error.message };
     }
   }
@@ -155,9 +172,9 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
       }
 
       const { count } = await this.notificacionesService.contarNoLeidas(userId);
-      
+
       client.emit('contadorNoLeidas', { count });
-      
+
       return { count };
     } catch (error) {
       this.logger.error(`Error al obtener contador: ${error.message}`);

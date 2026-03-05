@@ -1,24 +1,38 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisCacheService } from '../redis/redis-cache.service';
 import { CreateNegocioDto } from './dto/create-negocio.dto';
 import { UpdateNegocioDto } from './dto/update-negocio.dto';
-import { NegocioResponseDto, NegociosResponseDto } from './dto/negocio-response.dto';
+import {
+  NegocioResponseDto,
+  NegociosResponseDto,
+} from './dto/negocio-response.dto';
 import { EtapaNegocio, Prisma, TipoNotificacion } from '@prisma/client';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway';
 import { NotificacionesService } from '../notificaciones/notificaciones.service';
 
 @Injectable()
 export class NegociosService {
+  private readonly CACHE_TTL = 300; // 5 minutos en segundos
+
   constructor(
     private prisma: PrismaService,
     private notificacionesGateway: NotificacionesGateway,
     private notificacionesService: NotificacionesService,
+    private cache: RedisCacheService,
   ) {}
 
   /**
    * Crear un nuevo negocio
    */
-  async create(createNegocioDto: CreateNegocioDto, userId: string): Promise<NegocioResponseDto> {
+  async create(
+    createNegocioDto: CreateNegocioDto,
+    userId: string,
+  ): Promise<NegocioResponseDto> {
     try {
       // Si no se especifica propietario, asignar al usuario actual
       const propietarioId = createNegocioDto.propietarioId || userId;
@@ -69,12 +83,17 @@ export class NegociosService {
         },
       });
 
+      // Invalidar cache de listados
+      await this.invalidarCacheListados();
+
       return this.mapToResponseDto(negocio);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new BadRequestException('Error al crear el negocio: ' + error.message);
+      throw new BadRequestException(
+        'Error al crear el negocio: ' + error.message,
+      );
     }
   }
 
@@ -88,8 +107,18 @@ export class NegociosService {
     etapa?: EtapaNegocio,
     propietarioId?: string,
   ): Promise<NegociosResponseDto> {
+    // Generar cache key basada en los parámetros de búsqueda
+    const query = { page, limit, search, etapa, propietarioId };
+    const cacheKey = `negocios:all:${JSON.stringify(query)}`;
+
+    // Intentar obtener del cache
+    const cached = await this.cache.get<NegociosResponseDto>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const skip = (page - 1) * limit;
-    
+
     // Construir filtros
     const where: Prisma.NegocioWhereInput = {};
 
@@ -141,7 +170,7 @@ export class NegociosService {
       this.prisma.negocio.count({ where }),
     ]);
 
-    return {
+    const result = {
       data: negocios.map(this.mapToResponseDto),
       meta: {
         total,
@@ -150,12 +179,25 @@ export class NegociosService {
         totalPages: Math.ceil(total / limit),
       },
     };
+
+    // Guardar en cache
+    await this.cache.set(cacheKey, result, this.CACHE_TTL);
+
+    return result;
   }
 
   /**
    * Obtener un negocio por ID
    */
   async findOne(id: string): Promise<NegocioResponseDto> {
+    const cacheKey = `negocios:${id}`;
+
+    // Intentar obtener del cache
+    const cached = await this.cache.get<NegocioResponseDto>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const negocio = await this.prisma.negocio.findUnique({
       where: { id },
       include: {
@@ -182,13 +224,22 @@ export class NegociosService {
       throw new NotFoundException(`Negocio con ID ${id} no encontrado`);
     }
 
-    return this.mapToResponseDto(negocio);
+    const result = this.mapToResponseDto(negocio);
+
+    // Guardar en cache
+    await this.cache.set(cacheKey, result, this.CACHE_TTL);
+
+    return result;
   }
 
   /**
    * Actualizar un negocio
    */
-  async update(id: string, updateNegocioDto: UpdateNegocioDto, userId: string): Promise<NegocioResponseDto> {
+  async update(
+    id: string,
+    updateNegocioDto: UpdateNegocioDto,
+    userId: string,
+  ): Promise<NegocioResponseDto> {
     // Verificar que el negocio existe
     const negocioExistente = await this.prisma.negocio.findUnique({
       where: { id },
@@ -203,7 +254,9 @@ export class NegociosService {
 
       // Convertir fechas si existen
       if (updateNegocioDto.fechaCierreEsperada) {
-        updateData.fechaCierreEsperada = new Date(updateNegocioDto.fechaCierreEsperada);
+        updateData.fechaCierreEsperada = new Date(
+          updateNegocioDto.fechaCierreEsperada,
+        );
       }
 
       if (updateNegocioDto.fechaCierreReal) {
@@ -213,7 +266,8 @@ export class NegociosService {
       // Si se cambia a GANADO o PERDIDO, actualizar cerradoEn
       if (
         updateNegocioDto.etapa &&
-        (updateNegocioDto.etapa === 'GANADO' || updateNegocioDto.etapa === 'PERDIDO') &&
+        (updateNegocioDto.etapa === 'GANADO' ||
+          updateNegocioDto.etapa === 'PERDIDO') &&
         negocioExistente.etapa !== updateNegocioDto.etapa
       ) {
         updateData.cerradoEn = new Date();
@@ -242,9 +296,14 @@ export class NegociosService {
         },
       });
 
+      // Invalidar cache del negocio específico y listados
+      await this.invalidarCacheNegocio(id);
+
       return this.mapToResponseDto(negocio);
     } catch (error) {
-      throw new BadRequestException('Error al actualizar el negocio: ' + error.message);
+      throw new BadRequestException(
+        'Error al actualizar el negocio: ' + error.message,
+      );
     }
   }
 
@@ -264,12 +323,19 @@ export class NegociosService {
     await this.prisma.negocio.delete({
       where: { id },
     });
+
+    // Invalidar cache del negocio específico y listados
+    await this.invalidarCacheNegocio(id);
   }
 
   /**
    * Cambiar etapa de un negocio
    */
-  async cambiarEtapa(id: string, etapa: EtapaNegocio, usuarioActualId?: string): Promise<NegocioResponseDto> {
+  async cambiarEtapa(
+    id: string,
+    etapa: EtapaNegocio,
+    usuarioActualId?: string,
+  ): Promise<NegocioResponseDto> {
     try {
       const negocio = await this.prisma.negocio.findUnique({
         where: { id },
@@ -282,7 +348,10 @@ export class NegociosService {
       const updateData: any = { etapa };
 
       // Si se mueve a GANADO o PERDIDO, registrar fecha de cierre
-      if ((etapa === 'GANADO' || etapa === 'PERDIDO') && negocio.etapa !== etapa) {
+      if (
+        (etapa === 'GANADO' || etapa === 'PERDIDO') &&
+        negocio.etapa !== etapa
+      ) {
         updateData.cerradoEn = new Date();
       }
 
@@ -325,16 +394,19 @@ export class NegociosService {
         titulo: negocioActualizado.titulo,
       });
 
+      // Invalidar cache del negocio específico y listados
+      await this.invalidarCacheNegocio(id);
+
       // Crear notificaciones para el cambio de etapa
       const esGanadoOPerdido = etapa === 'GANADO' || etapa === 'PERDIDO';
-      
+
       // Solo crear notificaciones si se cambia la etapa
       if (negocio.etapa !== etapa) {
         // Determinar tipo de notificación y mensajes
         let tipoPropietario: TipoNotificacion;
         let tipoUsuario: TipoNotificacion;
         let accion: string;
-        
+
         if (etapa === 'GANADO') {
           tipoPropietario = TipoNotificacion.NEGOCIO_GANADO;
           tipoUsuario = TipoNotificacion.NEGOCIO_GANADO;
@@ -353,7 +425,7 @@ export class NegociosService {
         // 1. Notificación para el propietario del negocio
         const notificacionPropietario = await this.notificacionesService.crear({
           tipo: tipoPropietario,
-          titulo: esGanadoOPerdido 
+          titulo: esGanadoOPerdido
             ? `Negocio ${accion}: ${negocioActualizado.titulo}`
             : `Negocio movido a ${this.formatearEtapa(etapa)}: ${negocioActualizado.titulo}`,
           mensaje: esGanadoOPerdido
@@ -371,7 +443,10 @@ export class NegociosService {
         );
 
         // 2. Notificación para el usuario que hizo el cambio (si es diferente del propietario)
-        if (usuarioActualId && usuarioActualId !== negocioActualizado.propietarioId) {
+        if (
+          usuarioActualId &&
+          usuarioActualId !== negocioActualizado.propietarioId
+        ) {
           const notificacionUsuario = await this.notificacionesService.crear({
             tipo: tipoUsuario,
             titulo: esGanadoOPerdido
@@ -398,7 +473,9 @@ export class NegociosService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException(`Error al cambiar etapa del negocio: ${error.message}`);
+      throw new BadRequestException(
+        `Error al cambiar etapa del negocio: ${error.message}`,
+      );
     }
   }
 
@@ -415,6 +492,26 @@ export class NegociosService {
       PERDIDO: 'Perdido',
     };
     return nombres[etapa] || etapa;
+  }
+
+  /**
+   * Invalidar cache de un negocio específico y todos los listados
+   */
+  private async invalidarCacheNegocio(id: string): Promise<void> {
+    const cacheKey = `negocios:${id}`;
+    await this.cache.del(cacheKey);
+
+    // Invalidar todos los listados
+    await this.invalidarCacheListados();
+  }
+
+  /**
+   * Invalidar cache de todos los listados de negocios
+   * Nota: En Redis, usamos un patrón para eliminar todas las keys que empiecen con 'negocios:all:'
+   */
+  private async invalidarCacheListados(): Promise<void> {
+    await this.cache.delPattern('negocios:all:*');
+    await this.cache.delPattern('stats:*');
   }
 
   /**

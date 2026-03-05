@@ -18,6 +18,14 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy all source files
 COPY . .
 
+# Build-time arguments para variables NEXT_PUBLIC_*
+# Estas variables se bakean en el bundle de JavaScript durante el build.
+# Deben pasarse como ARG (no solo como ENV en runtime) para que next build las incluya.
+ARG NEXT_PUBLIC_API_URL=http://localhost/api
+ARG NEXT_PUBLIC_SOCKET_URL=http://localhost
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_SOCKET_URL=$NEXT_PUBLIC_SOCKET_URL
+
 # Build the application
 RUN npm run build
 

@@ -5,7 +5,7 @@ export class UsuarioResponseDto {
   nombre: string;
   email: string;
   rol: RolUsuario;
-  estaActivo: boolean;  // Cambiado de 'activo' a 'estaActivo' (coincide con Prisma)
+  estaActivo: boolean; // Cambiado de 'activo' a 'estaActivo' (coincide con Prisma)
   creadoEn: Date;
   actualizadoEn: Date;
 }

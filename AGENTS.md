@@ -1,7 +1,7 @@
 # AGENTS.md - ClientPro CRM Development Guide
 
 > **Purpose**: This guide is for agentic coding assistants operating in this repository.
-> **Last Updated**: February 23, 2026
+> **Last Updated**: February 27, 2026
 
 ---
 
@@ -9,11 +9,13 @@
 
 **ClientPro CRM** - Full-stack Customer Relationship Management System
 
-- **Backend**: NestJS 11 + Prisma 7 + PostgreSQL
+- **Backend**: NestJS 11 + Prisma 7 + PostgreSQL + Redis Cache
 - **Frontend**: Next.js 16 (App Router) + TypeScript + Tailwind v4
 - **Real-time**: Socket.io 4.8 with JWT authentication
+- **Caching**: Redis 7.4 (via ioredis) with custom RedisCacheService
 - **State Management**: TanStack Query v5
 - **Testing**: Jest 30 + React Testing Library
+- **DevOps**: Docker Compose (PostgreSQL + Redis containers)
 - **Version Control**: Git Flow with Husky hooks
 
 ---
@@ -23,6 +25,10 @@
 ### Development
 
 ```bash
+# Start infrastructure (PostgreSQL + Redis)
+docker-compose up -d        # Start containers in background
+docker-compose down         # Stop and remove containers
+
 # Start both backend + frontend (RECOMMENDED)
 npm run dev                 # Root: concurrent dev with auto-restart
 npm run dev:auto            # Aggressive mode (10 restart attempts)
@@ -31,6 +37,8 @@ npm run dev:auto            # Aggressive mode (10 restart attempts)
 npm run backend:dev         # Backend only (port 4000)
 npm run frontend:dev        # Frontend only (port 3000)
 ```
+
+**Note**: Docker containers must be running before starting backend.
 
 ### Production Build
 
@@ -275,12 +283,14 @@ Desarrollo-Wep/
 ├── backend/                    # NestJS API
 │   ├── src/
 │   │   ├── auth/              # JWT authentication
-│   │   ├── clientes/          # Clients CRUD
-│   │   ├── negocios/          # Deals CRUD + Kanban
+│   │   ├── clientes/          # Clients CRUD (cached)
+│   │   ├── negocios/          # Deals CRUD + Kanban (cached)
 │   │   ├── actividades/       # Activities CRUD
 │   │   ├── reportes/          # Reports module
-│   │   ├── stats/             # Dashboard statistics
+│   │   ├── stats/             # Dashboard statistics (cached)
 │   │   ├── notificaciones/    # Notifications + WebSocket Gateway
+│   │   ├── redis/             # Redis cache service (@Global module)
+│   │   ├── common/            # Interceptors (cache-control, compression)
 │   │   ├── prisma/            # Prisma service
 │   │   ├── app.module.ts
 │   │   └── main.ts
@@ -313,7 +323,8 @@ Desarrollo-Wep/
 ├── .github/copilot/           # Copilot configuration
 │   ├── instructions.md        # Session startup checklist
 │   └── rules.md               # Development rules (677 lines)
-└── database/                  # SQL scripts
+├── database/                  # SQL scripts
+└── docker-compose.yml         # PostgreSQL + Redis containers
 ```
 
 ---
@@ -570,12 +581,46 @@ const { data: clientes, isLoading } = useQuery({
 ```typescript
 @Injectable()
 export class ClientesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cache: RedisCacheService // Global cache service
+  ) {}
 
   async findAll(): Promise<ClienteResponseDto[]> {
-    return this.prisma.cliente.findMany();
+    const cacheKey = 'clientes:all';
+    const cached = await this.cache.get<ClienteResponseDto[]>(cacheKey);
+    if (cached) return cached;
+
+    const clientes = await this.prisma.cliente.findMany();
+    await this.cache.set(cacheKey, clientes, 300); // 5 min TTL
+    return clientes;
   }
 }
+```
+
+### Redis Cache Pattern
+
+```typescript
+// Import (available globally via @Global() RedisModule)
+constructor(private cache: RedisCacheService) {}
+
+// Get with type safety
+const data = await this.cache.get<Cliente[]>('clientes:all');
+
+// Set with TTL (seconds)
+await this.cache.set('clientes:all', clientes, 300); // 5 minutes
+
+// Delete single key
+await this.cache.del('clientes:1');
+
+// Delete pattern (invalidate all client caches)
+await this.cache.delPattern('clientes:*');
+
+// Clear all caches
+await this.cache.reset();
+
+// Get statistics
+const stats = await this.cache.getStats();
 ```
 
 ### shadcn/ui Component Usage
@@ -593,10 +638,13 @@ import { Button } from '@/components/ui/button';
 ## 🚨 Critical Notes
 
 1. **Warnings to ignore**: Tailwindcss resolution warnings (it's in `frontend/node_modules`, not root)
-2. **Port conflicts**: Check `netstat -ano | Select-String ":3000|:4000"` before starting
-3. **WebSocket auth**: JWT token required in Socket.io handshake (see `socket.ts`)
-4. **Concurrently prefixes**: `[BACKEND]` and `[FRONTEND]` in console output
-5. **First load slow**: Next.js compiles on-demand (~10-15s), then fast
+2. **Port conflicts**: Check `netstat -ano | Select-String ":3000|:4000|:5432|:6379"` before starting
+3. **Docker requirement**: Backend requires PostgreSQL (5432) and Redis (6379) running via Docker Compose
+4. **Redis connection**: Check `REDIS_HOST` and `REDIS_PORT` in `.env` (default: localhost:6379)
+5. **WebSocket auth**: JWT token required in Socket.io handshake (see `socket.ts`)
+6. **Concurrently prefixes**: `[BACKEND]` and `[FRONTEND]` in console output
+7. **First load slow**: Next.js compiles on-demand (~10-15s), then fast
+8. **Cache-manager v7 issue**: `@nestjs/cache-manager` with `cache-manager@7.x` does NOT work with custom Redis stores. This project uses custom `RedisCacheService` with `ioredis` directly (bypasses cache-manager entirely). DO NOT attempt to use cache-manager Redis stores.
 
 ---
 
@@ -604,15 +652,17 @@ import { Button } from '@/components/ui/button';
 
 **MUST READ before starting**:
 
-1. `docs/CONTEXTO_PROYECTO.md` - Complete project state
+1. `docs/context/OVERVIEW.md` - Complete project state (updated structure)
 2. `.github/copilot/rules.md` - Fixed development rules
-3. `docs/PROXIMOS_PASOS.md` - Roadmap and next steps
+3. `docs/roadmap/BACKLOG.md` - Current roadmap and tasks
 
 **Reference when needed**:
 
 - `backend/prisma/schema.prisma` - Database schema
+- `docs/guides/CACHING.md` - Redis caching implementation guide (775 lines)
+- `docs/guides/docker/DOCKER.md` - Docker setup and troubleshooting (495 lines)
 - `docs/wireframe.md` - UI designs
-- Latest session doc in `docs/SESION_*.md`
+- Latest session doc in `docs/sessions/2026/02-FEBRERO/`
 
 ---
 

@@ -20,9 +20,13 @@ Guías rápidas para desarrolladores y usuarios del sistema.
 ### 🚀 DevOps - Guías de Infraestructura
 
 - **[docker/](./docker/)** - Containerización con Docker
-  - [DOCKER.md](./docker/DOCKER.md) - Guía completa de Docker Compose
+  - [DOCKER.md](./docker/DOCKER.md) - Guía completa de Docker Compose (5 servicios)
+- **[nginx/](./nginx/)** - Reverse proxy y entry point único
+  - [NGINX.md](./nginx/NGINX.md) - Routing, rate limiting, SSL/TLS, troubleshooting
 - **[ci-cd/](./ci-cd/)** - Integración y Despliegue Continuo
   - [GITHUB_ACTIONS.md](./ci-cd/GITHUB_ACTIONS.md) - Workflows de CI/CD
+- **[security/](./security/)** — Seguridad y observability del backend
+  - [SECURITY.md](./security/SECURITY.md) — Helmet, Rate Limiting, Health Check, Winston, Metrics
 
 ---
 
@@ -34,6 +38,8 @@ Guías rápidas para desarrolladores y usuarios del sistema.
 2. Lee **[git/GIT_HOOKS.md](./git/GIT_HOOKS.md)** para entender las validaciones automáticas
 3. Lee **[ci-cd/GITHUB_ACTIONS.md](./ci-cd/GITHUB_ACTIONS.md)** para entender CI/CD
 4. Lee **[docker/DOCKER.md](./docker/DOCKER.md)** si trabajas con contenedores
+5. Lee **[nginx/NGINX.md](./nginx/NGINX.md)** para entender el routing y entry point único (puerto 80)
+6. Lee **[security/SECURITY.md](./security/SECURITY.md)** para entender Helmet, rate limiting, sanitización y observabilidad
 
 ### Para Usuarios Finales
 
@@ -68,5 +74,5 @@ Si quieres agregar una nueva guía:
 
 ---
 
-**Última actualización**: Febrero 24, 2026  
-**Versión**: 1.1.0
+**Última actualización**: Marzo 5, 2026
+**Versión**: 1.3.0

@@ -1,18 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RedisCacheService } from '../redis/redis-cache.service';
 import { EtapaNegocio } from '@prisma/client';
 
 @Injectable()
 export class StatsService {
-  constructor(private prisma: PrismaService) {}
+  private readonly CACHE_TTL = 120; // 2 minutos en segundos
+
+  constructor(
+    private prisma: PrismaService,
+    private cache: RedisCacheService,
+  ) {}
 
   /**
    * Obtener estadísticas generales del dashboard
    */
   async getGeneralStats(userId: string) {
+    const cacheKey = `stats:general:${userId}`;
+    const cached = await this.cache.get(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const firstDayOfLastMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      1,
+    );
     const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
     // Total de clientes
@@ -38,9 +55,14 @@ export class StatsService {
     });
 
     // Calcular porcentaje de crecimiento de clientes
-    const porcentajeCrecimientoClientes = clientesNuevosMesPasado > 0
-      ? Math.round(((clientesNuevosEsteMes - clientesNuevosMesPasado) / clientesNuevosMesPasado) * 100)
-      : 0;
+    const porcentajeCrecimientoClientes =
+      clientesNuevosMesPasado > 0
+        ? Math.round(
+            ((clientesNuevosEsteMes - clientesNuevosMesPasado) /
+              clientesNuevosMesPasado) *
+              100,
+          )
+        : 0;
 
     // Total de negocios activos (no GANADO ni PERDIDO)
     const negociosActivos = await this.prisma.negocio.count({
@@ -83,9 +105,14 @@ export class StatsService {
     });
 
     // Calcular porcentaje de crecimiento de negocios
-    const porcentajeCrecimientoNegocios = negociosActivosMesPasado > 0
-      ? Math.round(((negociosActivos - negociosActivosMesPasado) / negociosActivosMesPasado) * 100)
-      : 0;
+    const porcentajeCrecimientoNegocios =
+      negociosActivosMesPasado > 0
+        ? Math.round(
+            ((negociosActivos - negociosActivosMesPasado) /
+              negociosActivosMesPasado) *
+              100,
+          )
+        : 0;
 
     // Ventas del mes (negocios GANADOS este mes)
     const ventasDelMes = await this.prisma.negocio.aggregate({
@@ -117,15 +144,22 @@ export class StatsService {
     // Calcular porcentaje de crecimiento de ventas
     const ventasEsteMesValor = Number(ventasDelMes._sum.valor || 0);
     const ventasMesPasadoValor = Number(ventasMesPasado._sum.valor || 0);
-    const porcentajeCrecimientoVentas = ventasMesPasadoValor > 0
-      ? Math.round(((ventasEsteMesValor - ventasMesPasadoValor) / ventasMesPasadoValor) * 100)
-      : 0;
+    const porcentajeCrecimientoVentas =
+      ventasMesPasadoValor > 0
+        ? Math.round(
+            ((ventasEsteMesValor - ventasMesPasadoValor) /
+              ventasMesPasadoValor) *
+              100,
+          )
+        : 0;
 
     // Objetivo mensual (hardcoded por ahora, se puede hacer configurable)
     const objetivoMensual = 100000; // $100,000
-    const porcentajeObjetivo = Math.round((ventasEsteMesValor / objetivoMensual) * 100);
+    const porcentajeObjetivo = Math.round(
+      (ventasEsteMesValor / objetivoMensual) * 100,
+    );
 
-    return {
+    const stats = {
       clientes: {
         total: totalClientes,
         nuevosEsteMes: clientesNuevosEsteMes,
@@ -143,12 +177,22 @@ export class StatsService {
         porcentajeObjetivo,
       },
     };
+
+    await this.cache.set(cacheKey, stats, this.CACHE_TTL);
+    return stats;
   }
 
   /**
    * Obtener distribución de negocios por etapa
    */
   async getDistribucionPorEtapa() {
+    const cacheKey = 'stats:distribucion_etapa';
+    const cached = await this.cache.get(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
     const negocios = await this.prisma.negocio.groupBy({
       by: ['etapa'],
       _count: {
@@ -159,10 +203,13 @@ export class StatsService {
       },
     });
 
-    return negocios.map((item) => ({
+    const result = negocios.map((item) => ({
       etapa: item.etapa,
       cantidad: item._count.id,
       valorTotal: Number(item._sum.valor || 0),
     }));
+
+    await this.cache.set(cacheKey, result, this.CACHE_TTL);
+    return result;
   }
 }

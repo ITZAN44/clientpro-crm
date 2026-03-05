@@ -14,7 +14,7 @@ export interface ActividadResponseDto {
   creadoPor: string;
   creadoEn: Date;
   actualizadoEn: Date;
-  
+
   // Relaciones opcionales
   negocio?: {
     id: string;

@@ -25,7 +25,10 @@ export class UsuariosService {
    * Actualizar el rol de un usuario
    * Solo para ADMIN
    */
-  async updateRol(id: string, updateRolDto: UpdateRolDto): Promise<UsuarioResponseDto> {
+  async updateRol(
+    id: string,
+    updateRolDto: UpdateRolDto,
+  ): Promise<UsuarioResponseDto> {
     // Verificar que el usuario existe
     const usuario = await this.prisma.usuario.findUnique({
       where: { id },

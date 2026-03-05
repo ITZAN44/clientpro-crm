@@ -1,6 +1,6 @@
 /**
  * Mock Factory para PrismaService
- * 
+ *
  * Proporciona mocks reutilizables para todos los modelos de Prisma
  * Uso: const mockPrisma = createMockPrismaService();
  */

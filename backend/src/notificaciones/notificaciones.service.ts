@@ -107,7 +107,10 @@ export class NotificacionesService {
   /**
    * Obtener una notificación por ID
    */
-  async obtenerPorId(id: string, usuarioId: string): Promise<NotificacionResponseDto> {
+  async obtenerPorId(
+    id: string,
+    usuarioId: string,
+  ): Promise<NotificacionResponseDto> {
     const notificacion = await this.prisma.notificacion.findFirst({
       where: { id, usuarioId },
       include: {
@@ -144,7 +147,10 @@ export class NotificacionesService {
   /**
    * Marcar notificación como leída
    */
-  async marcarComoLeida(id: string, usuarioId: string): Promise<NotificacionResponseDto> {
+  async marcarComoLeida(
+    id: string,
+    usuarioId: string,
+  ): Promise<NotificacionResponseDto> {
     const notificacion = await this.prisma.notificacion.updateMany({
       where: { id, usuarioId },
       data: { leida: true },
@@ -160,7 +166,9 @@ export class NotificacionesService {
   /**
    * Marcar todas las notificaciones como leídas
    */
-  async marcarTodasComoLeidas(usuarioId: string): Promise<{ actualizado: number }> {
+  async marcarTodasComoLeidas(
+    usuarioId: string,
+  ): Promise<{ actualizado: number }> {
     const resultado = await this.prisma.notificacion.updateMany({
       where: { usuarioId, leida: false },
       data: { leida: true },
