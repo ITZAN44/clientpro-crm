@@ -116,7 +116,7 @@ export function ClienteFormDialog({
               <User className="h-4 w-4" />
               Información Personal
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
                 <Label htmlFor="nombre" className="text-muted-foreground text-sm">
@@ -124,7 +124,7 @@ export function ClienteFormDialog({
                 </Label>
                 <Input
                   id="nombre"
-                  {...register("nombre", { required: "El nombre es requerido" })}
+                  {...register('nombre', { required: 'El nombre es requerido' })}
                   placeholder="Juan Pérez"
                   className="mt-1.5 bg-input border-border text-foreground"
                 />
@@ -142,7 +142,7 @@ export function ClienteFormDialog({
                   <Input
                     id="email"
                     type="email"
-                    {...register("email")}
+                    {...register('email')}
                     placeholder="juan@empresa.com"
                     className="pl-9 bg-input border-border text-foreground"
                   />
@@ -157,42 +157,9 @@ export function ClienteFormDialog({
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="telefono"
-                    {...register("telefono")}
-                    placeholder="+52 55 1234 5678"
-                    className="pl-9 bg-input border-border text-foreground"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-              <div>
-                <Label htmlFor="email" className="text-stone-700 dark:text-stone-300">
-                  Email
-                </Label>
-                <div className="relative mt-1.5">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register('email')}
-                    placeholder="juan@empresa.com"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="telefono" className="text-stone-700 dark:text-stone-300">
-                  Teléfono
-                </Label>
-                <div className="relative mt-1.5">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
-                  <Input
-                    id="telefono"
                     {...register('telefono')}
                     placeholder="+52 55 1234 5678"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="pl-9 bg-input border-border text-foreground"
                   />
                 </div>
               </div>
@@ -205,7 +172,7 @@ export function ClienteFormDialog({
               <Building2 className="h-4 w-4" />
               Información Empresarial
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="empresa" className="text-muted-foreground text-sm">
@@ -213,7 +180,7 @@ export function ClienteFormDialog({
                 </Label>
                 <Input
                   id="empresa"
-                  {...register("empresa")}
+                  {...register('empresa')}
                   placeholder="Acme Corporation"
                   className="mt-1.5 bg-input border-border text-foreground"
                 />
@@ -227,7 +194,7 @@ export function ClienteFormDialog({
                   <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="puesto"
-                    {...register("puesto")}
+                    {...register('puesto')}
                     placeholder="Director General"
                     className="pl-9 bg-input border-border text-foreground"
                   />
@@ -242,41 +209,9 @@ export function ClienteFormDialog({
                   <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="sitioWeb"
-                    {...register("sitioWeb")}
-                    placeholder="https://www.ejemplo.com"
-                    className="pl-9 bg-input border-border text-foreground"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-              <div>
-                <Label htmlFor="puesto" className="text-stone-700 dark:text-stone-300">
-                  Puesto
-                </Label>
-                <div className="relative mt-1.5">
-                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
-                  <Input
-                    id="puesto"
-                    {...register('puesto')}
-                    placeholder="Director General"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
-                  />
-                </div>
-              </div>
-
-              <div className="col-span-2">
-                <Label htmlFor="sitioWeb" className="text-stone-700 dark:text-stone-300">
-                  Sitio Web
-                </Label>
-                <div className="relative mt-1.5">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
-                  <Input
-                    id="sitioWeb"
                     {...register('sitioWeb')}
                     placeholder="https://www.ejemplo.com"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="pl-9 bg-input border-border text-foreground"
                   />
                 </div>
               </div>
@@ -289,7 +224,7 @@ export function ClienteFormDialog({
               <MapPin className="h-4 w-4" />
               Ubicación
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
                 <Label htmlFor="direccion" className="text-muted-foreground text-sm">
@@ -297,7 +232,7 @@ export function ClienteFormDialog({
                 </Label>
                 <Input
                   id="direccion"
-                  {...register("direccion")}
+                  {...register('direccion')}
                   placeholder="Av. Reforma 123"
                   className="mt-1.5 bg-input border-border text-foreground"
                 />
@@ -309,7 +244,7 @@ export function ClienteFormDialog({
                 </Label>
                 <Input
                   id="ciudad"
-                  {...register("ciudad")}
+                  {...register('ciudad')}
                   placeholder="Ciudad de México"
                   className="mt-1.5 bg-input border-border text-foreground"
                 />
@@ -321,35 +256,9 @@ export function ClienteFormDialog({
                 </Label>
                 <Input
                   id="pais"
-                  {...register("pais")}
-                  placeholder="México"
-                  className="mt-1.5 bg-input border-border text-foreground"
-                />
-              </div>
-            </div>
-          </div>
-
-              <div>
-                <Label htmlFor="ciudad" className="text-stone-700 dark:text-stone-300">
-                  Ciudad
-                </Label>
-                <Input
-                  id="ciudad"
-                  {...register('ciudad')}
-                  placeholder="Ciudad de México"
-                  className="mt-1.5 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="pais" className="text-stone-700 dark:text-stone-300">
-                  País
-                </Label>
-                <Input
-                  id="pais"
                   {...register('pais')}
                   placeholder="México"
-                  className="mt-1.5 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                  className="mt-1.5 bg-input border-border text-foreground"
                 />
               </div>
             </div>
@@ -361,11 +270,11 @@ export function ClienteFormDialog({
               <FileText className="h-4 w-4" />
               Notas Adicionales
             </h3>
-            
+
             <div>
               <Textarea
                 id="notas"
-                {...register("notas")}
+                {...register('notas')}
                 placeholder="Agrega notas o comentarios sobre el cliente..."
                 rows={4}
                 className="resize-none bg-input border-border text-foreground"
@@ -380,13 +289,6 @@ export function ClienteFormDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
               className="border-border text-foreground hover:bg-accent"
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               Cancelar
             </Button>

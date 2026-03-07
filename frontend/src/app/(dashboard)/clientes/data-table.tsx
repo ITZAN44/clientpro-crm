@@ -94,16 +94,14 @@ export function DataTable<TData, TValue>({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-border">
-                {headerGroup.headers.map((header) => (
-                  <TableHead 
-                    key={header.id}
-                    className="text-muted-foreground uppercase text-xs tracking-wider font-medium"
-                  >
+              <TableRow
+                key={headerGroup.id}
+                className="hover:bg-transparent border-b border-border"
+              >
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="font-semibold text-stone-700 dark:text-stone-300"
+                    className="text-muted-foreground uppercase text-xs tracking-wider font-medium"
                   >
                     {header.isPlaceholder
                       ? null
@@ -118,7 +116,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                   className="hover:bg-accent/50 transition-colors border-b border-border"
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -146,7 +144,8 @@ export function DataTable<TData, TValue>({
       {pagination && (
         <div className="flex items-center justify-between px-2">
           <div className="text-sm font-mono text-muted-foreground">
-            Mostrando {data.length === 0 ? 0 : ((pagination.page - 1) * 10) + 1} - {Math.min(pagination.page * 10, pagination.total)} de {pagination.total} clientes
+            Mostrando {data.length === 0 ? 0 : (pagination.page - 1) * 10 + 1} -{' '}
+            {Math.min(pagination.page * 10, pagination.total)} de {pagination.total} clientes
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -161,9 +160,7 @@ export function DataTable<TData, TValue>({
             </Button>
             <div className="flex items-center gap-1 text-sm">
               <span className="text-muted-foreground">Página</span>
-              <span className="font-mono font-semibold text-foreground">
-                {pagination.page}
-              </span>
+              <span className="font-mono font-semibold text-foreground">{pagination.page}</span>
               <span className="text-muted-foreground">de</span>
               <span className="font-mono font-semibold text-foreground">
                 {pagination.totalPages}
@@ -175,26 +172,6 @@ export function DataTable<TData, TValue>({
               onClick={() => pagination.onPageChange(pagination.page + 1)}
               disabled={pagination.page >= pagination.totalPages}
               className="gap-1 border-border text-foreground hover:bg-accent"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Anterior
-            </Button>
-            <div className="flex items-center gap-1 text-sm">
-              <span className="text-stone-600 dark:text-stone-400">Página</span>
-              <span className="font-semibold text-stone-900 dark:text-stone-100">
-                {pagination.page}
-              </span>
-              <span className="text-stone-600 dark:text-stone-400">de</span>
-              <span className="font-semibold text-stone-900 dark:text-stone-100">
-                {pagination.totalPages}
-              </span>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => pagination.onPageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages}
-              className="gap-1 border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800"
             >
               Siguiente
               <ChevronRight className="h-4 w-4" />

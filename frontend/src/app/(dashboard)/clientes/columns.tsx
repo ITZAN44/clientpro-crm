@@ -50,10 +50,12 @@ export const getColumns = (userRol?: RolUsuario): ColumnDef<Cliente>[] => [
     },
   },
   {
-    accessorKey: "puesto",
-    header: () => <span className="text-muted-foreground uppercase text-xs tracking-wider">Puesto</span>,
+    accessorKey: 'puesto',
+    header: () => (
+      <span className="text-muted-foreground uppercase text-xs tracking-wider">Puesto</span>
+    ),
     cell: ({ row }) => {
-      const puesto = row.getValue("puesto") as string | undefined;
+      const puesto = row.getValue('puesto') as string | undefined;
       return puesto ? (
         <span className="text-sm text-foreground">{puesto}</span>
       ) : (
@@ -62,10 +64,12 @@ export const getColumns = (userRol?: RolUsuario): ColumnDef<Cliente>[] => [
     },
   },
   {
-    accessorKey: "telefono",
-    header: () => <span className="text-muted-foreground uppercase text-xs tracking-wider">Teléfono</span>,
+    accessorKey: 'telefono',
+    header: () => (
+      <span className="text-muted-foreground uppercase text-xs tracking-wider">Teléfono</span>
+    ),
     cell: ({ row }) => {
-      const telefono = row.getValue("telefono") as string | undefined;
+      const telefono = row.getValue('telefono') as string | undefined;
       return telefono ? (
         <div className="flex items-center gap-1.5 font-mono text-sm">
           <Phone className="h-3.5 w-3.5 text-muted-foreground" />
@@ -77,106 +81,60 @@ export const getColumns = (userRol?: RolUsuario): ColumnDef<Cliente>[] => [
     },
   },
   {
-    accessorKey: "ciudad",
-    header: () => <span className="text-muted-foreground uppercase text-xs tracking-wider">Ubicación</span>,
+    accessorKey: 'ciudad',
+    header: () => (
+      <span className="text-muted-foreground uppercase text-xs tracking-wider">Ubicación</span>
+    ),
     cell: ({ row }) => {
       const ciudad = row.original.ciudad;
       const pais = row.original.pais;
-      
+
       if (!ciudad && !pais) {
         return <span className="text-sm text-muted-foreground/50">-</span>;
       }
-      
+
       return (
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <MapPin className="h-3.5 w-3.5" />
-          <span>{[ciudad, pais].filter(Boolean).join(", ")}</span>
-        </div>
-      );
-    },
-  },
-  },
-  {
-    accessorKey: 'telefono',
-    header: 'Teléfono',
-    cell: ({ row }) => {
-      const telefono = row.getValue('telefono') as string | undefined;
-      return telefono ? (
-        <div className="flex items-center gap-1.5 text-sm text-stone-600 dark:text-stone-300">
-          <Phone className="h-3.5 w-3.5 text-stone-400 dark:text-stone-500" />
-          {telefono}
-        </div>
-      ) : (
-        <span className="text-sm text-stone-400 dark:text-stone-500">-</span>
-      );
-    },
-  },
-  {
-    accessorKey: 'ciudad',
-    header: 'Ubicación',
-    cell: ({ row }) => {
-      const ciudad = row.original.ciudad;
-      const pais = row.original.pais;
-
-      if (!ciudad && !pais) {
-        return <span className="text-sm text-stone-400 dark:text-stone-500">-</span>;
-      }
-
-      return (
-        <div className="flex items-center gap-1.5 text-sm text-stone-600 dark:text-stone-300">
-          <MapPin className="h-3.5 w-3.5 text-stone-400 dark:text-stone-500" />
           <span>{[ciudad, pais].filter(Boolean).join(', ')}</span>
         </div>
       );
     },
   },
   {
-    accessorKey: "propietario",
-    header: () => <span className="text-muted-foreground uppercase text-xs tracking-wider">Propietario</span>,
+    accessorKey: 'propietario',
+    header: () => (
+      <span className="text-muted-foreground uppercase text-xs tracking-wider">Propietario</span>
+    ),
     cell: ({ row }) => {
       const propietario = row.original.propietario;
-      
+
       return (
         <div className="flex items-center gap-2">
           <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-medium">
-            {propietario.nombre.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            {propietario.nombre
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .slice(0, 2)}
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-foreground">
-              {propietario.nombre}
-            </span>
-            <span className="font-mono text-xs text-muted-foreground">
-              {propietario.email}
-            </span>
+            <span className="text-sm font-medium text-foreground">{propietario.nombre}</span>
+            <span className="font-mono text-xs text-muted-foreground">{propietario.email}</span>
           </div>
         </div>
       );
     },
   },
   {
-    accessorKey: "creadoEn",
-    header: () => <span className="text-muted-foreground uppercase text-xs tracking-wider">Fecha Creación</span>,
-    cell: ({ row }) => {
-      const fecha = new Date(row.getValue("creadoEn"));
-      return (
-        <span className="font-mono text-sm text-muted-foreground">
-          {fecha.toLocaleDateString('es-MX', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric'
-          })}
-        </span>
-      );
-    },
-  },
-  },
-  {
     accessorKey: 'creadoEn',
-    header: 'Fecha Creación',
+    header: () => (
+      <span className="text-muted-foreground uppercase text-xs tracking-wider">Fecha Creación</span>
+    ),
     cell: ({ row }) => {
       const fecha = new Date(row.getValue('creadoEn'));
       return (
-        <span className="text-sm text-stone-600 dark:text-stone-300">
+        <span className="font-mono text-sm text-muted-foreground">
           {fecha.toLocaleDateString('es-MX', {
             day: '2-digit',
             month: 'short',
