@@ -3,7 +3,10 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { ActividadesService } from './actividades.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TipoActividad } from './dto/create-actividad.dto';
-import { createMockPrismaService, MockPrismaService } from '../testing/prisma.mock';
+import {
+  createMockPrismaService,
+  MockPrismaService,
+} from '../testing/prisma.mock';
 
 describe('ActividadesService', () => {
   let service: ActividadesService;
@@ -125,8 +128,11 @@ describe('ActividadesService', () => {
     it('debe asignar usuario actual cuando no se proporciona asignadoA', async () => {
       // Arrange
       const userId = 'user-2';
-      const dtoSinAsignado = { ...mockCreateActividadDto };
-      delete dtoSinAsignado.asignadoA;
+      const dtoSinAsignado = { ...mockCreateActividadDto } as Omit<
+        typeof mockCreateActividadDto,
+        'asignadoA'
+      > & { asignadoA?: string };
+      dtoSinAsignado.asignadoA = undefined;
 
       prisma.negocio.findUnique.mockResolvedValue(mockNegocio as any);
       prisma.cliente.findUnique.mockResolvedValue(mockCliente as any);
@@ -157,10 +163,12 @@ describe('ActividadesService', () => {
       };
 
       // Act & Assert
-      await expect(service.create(dtoSinRelacion as any, userId)).rejects.toThrow(
-        BadRequestException,
-      );
-      await expect(service.create(dtoSinRelacion as any, userId)).rejects.toThrow(
+      await expect(
+        service.create(dtoSinRelacion as any, userId),
+      ).rejects.toThrow(BadRequestException);
+      await expect(
+        service.create(dtoSinRelacion as any, userId),
+      ).rejects.toThrow(
         'La actividad debe estar asociada a un negocio o a un cliente',
       );
     });
@@ -171,10 +179,12 @@ describe('ActividadesService', () => {
       prisma.negocio.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.create(mockCreateActividadDto, userId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.create(mockCreateActividadDto, userId)).rejects.toThrow(
+      await expect(
+        service.create(mockCreateActividadDto, userId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.create(mockCreateActividadDto, userId),
+      ).rejects.toThrow(
         `Negocio con ID ${mockCreateActividadDto.negocioId} no encontrado`,
       );
     });
@@ -186,10 +196,12 @@ describe('ActividadesService', () => {
       prisma.cliente.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.create(mockCreateActividadDto, userId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.create(mockCreateActividadDto, userId)).rejects.toThrow(
+      await expect(
+        service.create(mockCreateActividadDto, userId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.create(mockCreateActividadDto, userId),
+      ).rejects.toThrow(
         `Cliente con ID ${mockCreateActividadDto.clienteId} no encontrado`,
       );
     });
@@ -202,10 +214,12 @@ describe('ActividadesService', () => {
       prisma.usuario.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.create(mockCreateActividadDto, userId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.create(mockCreateActividadDto, userId)).rejects.toThrow(
+      await expect(
+        service.create(mockCreateActividadDto, userId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.create(mockCreateActividadDto, userId),
+      ).rejects.toThrow(
         `Usuario con ID ${mockCreateActividadDto.asignadoA} no encontrado`,
       );
     });
@@ -216,7 +230,10 @@ describe('ActividadesService', () => {
       // Arrange
       const userId = 'user-1';
       const query = { page: 1, limit: 10 };
-      const actividades = [mockActividad, { ...mockActividad, id: 'actividad-2' }];
+      const actividades = [
+        mockActividad,
+        { ...mockActividad, id: 'actividad-2' },
+      ];
       prisma.actividad.findMany.mockResolvedValue(actividades as any);
       prisma.actividad.count.mockResolvedValue(2);
 
@@ -228,10 +245,7 @@ describe('ActividadesService', () => {
         where: {},
         skip: 0,
         take: 10,
-        orderBy: [
-          { completada: 'asc' },
-          { fechaVencimiento: 'asc' },
-        ],
+        orderBy: [{ completada: 'asc' }, { fechaVencimiento: 'asc' }],
         include: expect.any(Object),
       });
       expect(result.data).toHaveLength(2);
@@ -350,7 +364,9 @@ describe('ActividadesService', () => {
       prisma.actividad.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.findOne(actividadId)).rejects.toThrow(NotFoundException);
+      await expect(service.findOne(actividadId)).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.findOne(actividadId)).rejects.toThrow(
         `Actividad con ID ${actividadId} no encontrada`,
       );
@@ -369,7 +385,11 @@ describe('ActividadesService', () => {
       } as any);
 
       // Act
-      const result = await service.update(actividadId, mockUpdateActividadDto, userId);
+      const result = await service.update(
+        actividadId,
+        mockUpdateActividadDto,
+        userId,
+      );
 
       // Assert
       expect(prisma.actividad.findUnique).toHaveBeenCalledWith({
@@ -398,12 +418,12 @@ describe('ActividadesService', () => {
       prisma.negocio.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.update(actividadId, updateDto, userId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.update(actividadId, updateDto, userId)).rejects.toThrow(
-        `Negocio con ID ${updateDto.negocioId} no encontrado`,
-      );
+      await expect(
+        service.update(actividadId, updateDto, userId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update(actividadId, updateDto, userId),
+      ).rejects.toThrow(`Negocio con ID ${updateDto.negocioId} no encontrado`);
     });
 
     it('debe validar cliente existente al actualizar clienteId', async () => {
@@ -416,12 +436,12 @@ describe('ActividadesService', () => {
       prisma.cliente.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.update(actividadId, updateDto, userId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.update(actividadId, updateDto, userId)).rejects.toThrow(
-        `Cliente con ID ${updateDto.clienteId} no encontrado`,
-      );
+      await expect(
+        service.update(actividadId, updateDto, userId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update(actividadId, updateDto, userId),
+      ).rejects.toThrow(`Cliente con ID ${updateDto.clienteId} no encontrado`);
     });
 
     it('debe validar usuario existente al actualizar asignadoA', async () => {
@@ -434,12 +454,12 @@ describe('ActividadesService', () => {
       prisma.usuario.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.update(actividadId, updateDto, userId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.update(actividadId, updateDto, userId)).rejects.toThrow(
-        `Usuario con ID ${updateDto.asignadoA} no encontrado`,
-      );
+      await expect(
+        service.update(actividadId, updateDto, userId),
+      ).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update(actividadId, updateDto, userId),
+      ).rejects.toThrow(`Usuario con ID ${updateDto.asignadoA} no encontrado`);
     });
   });
 
@@ -478,7 +498,9 @@ describe('ActividadesService', () => {
       prisma.actividad.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.marcarCompletada(actividadId)).rejects.toThrow(NotFoundException);
+      await expect(service.marcarCompletada(actividadId)).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.marcarCompletada(actividadId)).rejects.toThrow(
         `Actividad con ID ${actividadId} no encontrada`,
       );
@@ -513,7 +535,9 @@ describe('ActividadesService', () => {
       prisma.actividad.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.remove(actividadId)).rejects.toThrow(NotFoundException);
+      await expect(service.remove(actividadId)).rejects.toThrow(
+        NotFoundException,
+      );
       await expect(service.remove(actividadId)).rejects.toThrow(
         `Actividad con ID ${actividadId} no encontrada`,
       );

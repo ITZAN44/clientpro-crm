@@ -1,21 +1,26 @@
 # Funcionalidades Completadas
 
 > **Propósito**: Registro histórico de todas las funcionalidades implementadas y completadas
-> **Última actualización**: 23 de febrero de 2026
-> **Versión actual**: v0.7.1
+> **Última actualización**: 05 de marzo de 2026
+> **Versión actual**: v0.7.6
 
 ---
 
 ## 🎉 Resumen Ejecutivo
 
-**Estado**: MVP 98% completo + Fase 6 iniciada (Subfase 6.1 completada)  
-**Fases completadas**: 5.6 de 6 + Subfase 6.1  
+**Estado**: MVP 98% completo + Fase 6 en progreso (Subfases 6.1, 6.2, 6.3, 6.4, 6.5 y 6.6 completadas)  
+**Fases completadas**: 5.6 de 6 + Subfases 6.1, 6.2, 6.3, 6.4, 6.5 y 6.6  
 **Módulos backend**: 8 completos (agregado UsuariosModule)  
 **Páginas frontend**: 7 funcionales (agregado /admin/usuarios)  
 **Endpoints**: 36 operativos (31 REST + 5 WebSocket)  
 **Testing**: Backend 96/96, Frontend 144/144 pasando  
 **Mejoras UX**: Skeleton loaders, atajos de teclado, animaciones implementadas  
-**Git**: Repositorio en GitHub con Git Flow, hooks automatizados ✨ NUEVO
+**Git**: Repositorio en GitHub con Git Flow, hooks automatizados ✨  
+**Docker**: Containerización completa con docker-compose (postgres, redis, backend, frontend) ✨  
+**CI/CD**: GitHub Actions con 3 workflows (test, lint, build) + Dependabot ✨  
+**Redis Caching**: RedisCacheService custom con ioredis, ETags, compresión Gzip ✨  
+**Nginx**: Reverse proxy, gzip, rate limiting, security headers (5to servicio Docker) ✨  
+**Security & Observability**: Helmet + Throttler + Input Sanitization + Health Check + Winston + Metrics ✨ NUEVO
 
 ---
 
@@ -1223,7 +1228,1405 @@ docs/guides/git/
 
 ---
 
-## 📊 Estadísticas Finales (Fase 1-5.6)
+## ✅ Subfase 6.2: Containerization (Docker) (COMPLETADA)
+
+**Fecha**: 24 de febrero de 2026  
+**Sesión**: SESION_24_FEBRERO_2026.md (pendiente)  
+**Tiempo invertido**: ~1 día  
+**Impacto en Score**: Containerization 0% → 85% (+85% 🚀), Score General Fase 6 48% → 56% (+8%)
+
+### **Objetivo**
+
+Containerizar toda la aplicación ClientPro CRM con Docker, configurar docker-compose para desarrollo y producción, y migrar datos de la base de datos local.
+
+### **Tareas Completadas**
+
+#### **1. Dockerfiles Multi-stage** ✅
+
+**Backend Dockerfile** (`backend/Dockerfile`):
+
+- Multi-stage build con 3 etapas: `deps`, `builder`, `runner`
+- Node.js 20 Alpine para imagen optimizada
+- Prisma Client generado en stage de build
+- Healthcheck configurado en puerto 4000
+- Usuario no-root (nodejs) para seguridad
+- Migración de base de datos ejecutada automáticamente (`npm run db:migrate:deploy`)
+
+**Frontend Dockerfile** (`frontend/Dockerfile`):
+
+- Multi-stage build con 3 etapas: `deps`, `builder`, `runner`
+- Next.js standalone output habilitado
+- Node.js 20 Alpine
+- Usuario no-root (nextjs:nodejs) con permisos correctos
+- Archivos estáticos optimizados (.next/static, public)
+- Imagen final < 200MB
+
+**Archivos .dockerignore creados**:
+
+- `backend/.dockerignore` - Excluye node_modules, dist, logs, .env
+- `frontend/.dockerignore` - Excluye node_modules, .next, out
+
+---
+
+#### **2. docker-compose.yml** ✅
+
+**Alcance**:
+
+- 4 servicios configurados: `postgres`, `redis`, `backend`, `frontend`
+- Networks personalizados para comunicación interna
+- Volumes para persistencia de datos (PostgreSQL, Redis)
+- Variables de entorno desde `.env.docker`
+- Healthchecks para todos los servicios
+- Restart policies: `unless-stopped`
+- Depends_on con condiciones de healthcheck
+
+**Configuración de Servicios**:
+
+1. **PostgreSQL** (postgres:16-alpine):
+   - Puerto 5432 expuesto
+   - Volumen persistente: `postgres_data`
+   - Healthcheck cada 10s
+   - Base de datos: `clientpro_crm`
+
+2. **Redis** (redis:7-alpine):
+   - Puerto 6379 expuesto
+   - Volumen persistente: `redis_data`
+   - Healthcheck cada 10s
+   - Cache habilitado
+
+3. **Backend** (NestJS):
+   - Puerto 4000 expuesto
+   - Conecta a postgres y redis por nombre de servicio
+   - Migración automática de Prisma al iniciar
+   - Healthcheck cada 30s
+   - Variables: DATABASE_URL, JWT_SECRET, REDIS_URL
+
+4. **Frontend** (Next.js):
+   - Puerto 3000 expuesto
+   - Conecta a backend por nombre de servicio
+   - Variable crítica: `API_URL=http://backend:4000`
+   - Depends_on backend (healthcheck)
+
+**Archivo creado**: `docker-compose.yml` (135 líneas)
+
+---
+
+#### **3. Configuración de Next.js para Docker** ✅
+
+**Problema**: Next.js por defecto no genera output standalone, necesario para Docker
+
+**Solución**: Modificar `frontend/next.config.ts`
+
+```typescript
+const nextConfig: NextConfig = {
+  output: 'standalone', // ✅ Agregado para Docker
+  // ... resto de configuración
+};
+```
+
+**Impacto**: Permite que Next.js genere un bundle optimizado en `.next/standalone/` que puede ejecutarse directamente con `node server.js`
+
+---
+
+#### **4. Migración de Base de Datos** ✅
+
+**Desafío**: Base de datos en Docker estaba vacía, necesitaba migraciones y datos
+
+**Solución Implementada**:
+
+1. **Crear Migración Inicial**:
+   - Ejecutado `npx prisma migrate dev --name init` en backend local
+   - Generada migración SQL en `backend/prisma/migrations/20260224205713_init/`
+   - Incluye creación de todas las tablas, enums, relaciones e índices
+
+2. **Integrar Migración en Docker**:
+   - Backend Dockerfile ejecuta `npm run db:migrate:deploy` al iniciar
+   - Script agregado en `backend/package.json`: `"db:migrate:deploy": "prisma migrate deploy"`
+   - Migración se aplica automáticamente en cada `docker-compose up`
+
+3. **Migración de Datos**:
+   - Exportados datos de base local (8 usuarios, 10 clientes, 8 negocios)
+   - Conectado a PostgreSQL en Docker: `docker exec -it <container> psql -U postgres -d clientpro_crm`
+   - Importados datos exitosamente
+   - Verificado con queries SQL
+
+**Evidencia**: Base de datos Docker contiene todos los datos migrados correctamente
+
+---
+
+#### **5. Configuración de Variables de Entorno** ✅
+
+**Archivo creado**: `.env.docker` (template)
+
+```env
+# Database
+POSTGRES_PASSWORD=your_secure_password_here
+DATABASE_URL=postgresql://postgres:your_secure_password_here@postgres:5432/clientpro_crm
+
+# JWT
+JWT_SECRET=your_jwt_secret_here
+
+# Redis
+REDIS_URL=redis://redis:6379
+
+# Frontend (CRÍTICO para Docker)
+API_URL=http://backend:4000
+NEXT_PUBLIC_API_URL=http://localhost:4000
+```
+
+**Variable Crítica Agregada**:
+
+- **Problema**: Frontend en Docker no podía conectarse al backend
+- **Solución**: Agregada variable `API_URL=http://backend:4000` en docker-compose.yml
+- **Razón**: Docker Compose usa nombres de servicio para resolución DNS interna
+- **Modificado**: `frontend/src/app/api/auth/[...nextauth]/route.ts` usa `API_URL` en lugar de localhost
+
+---
+
+#### **6. Documentación Docker** ✅
+
+**Archivo creado**: `docs/guides/docker/DOCKER.md` (guía completa)
+
+**Contenido**:
+
+- Introducción y arquitectura de contenedores
+- Prerrequisitos (Docker Desktop, Docker Compose)
+- Comandos básicos (build, up, down, logs)
+- Comandos avanzados (exec, inspect, prune)
+- Troubleshooting común (15+ problemas con soluciones)
+- Diferencias desarrollo vs producción
+- Variables de entorno explicadas
+- Optimización de imágenes
+- Backup y restore de datos
+- Migración de base de datos
+- Workflows comunes (desarrollo, debugging, deploy)
+
+**Tamaño**: ~400 líneas
+
+---
+
+### **Archivos Totales Creados/Modificados**
+
+**Nuevos archivos (8)**:
+
+```
+backend/
+├── Dockerfile (multi-stage, 60 líneas)
+├── .dockerignore
+└── prisma/migrations/20260224205713_init/
+    └── migration.sql (schema completo)
+
+frontend/
+├── Dockerfile (multi-stage, 55 líneas)
+└── .dockerignore
+
+.env.docker (template, 15 líneas)
+docker-compose.yml (135 líneas)
+
+docs/guides/docker/
+└── DOCKER.md (guía completa, ~400 líneas)
+```
+
+**Archivos modificados (3)**:
+
+```
+frontend/next.config.ts
+  - Agregado: output: 'standalone'
+
+frontend/src/app/api/auth/[...nextauth]/route.ts
+  - Modificado: usa process.env.API_URL || 'http://localhost:4000'
+
+backend/package.json
+  - Agregado script: "db:migrate:deploy": "prisma migrate deploy"
+```
+
+---
+
+### **Problemas Resueltos**
+
+#### **1. Base de Datos Vacía**
+
+**Problema**: PostgreSQL en Docker no tenía tablas ni datos  
+**Solución**:
+
+1. Crear migración de Prisma: `npx prisma migrate dev --name init`
+2. Integrar migración en Dockerfile: `RUN npm run db:migrate:deploy`
+3. Migrar datos manualmente desde base local
+
+**Evidencia**: Base de datos Docker tiene 8 usuarios, 10 clientes, 8 negocios
+
+---
+
+#### **2. Frontend No Conecta al Backend**
+
+**Problema**: Frontend en contenedor usaba `localhost:4000` pero backend está en contenedor separado  
+**Solución**:
+
+1. Agregada variable de entorno `API_URL=http://backend:4000` en docker-compose.yml
+2. Modificado `route.ts` de NextAuth para usar `API_URL` en lugar de hardcoded localhost
+3. Docker Compose resuelve `backend` a IP interna correcta
+
+**Aprendizaje**: En Docker Compose, usar nombres de servicio en lugar de localhost
+
+---
+
+#### **3. Next.js Output No Optimizado para Docker**
+
+**Problema**: Next.js no generaba bundle standalone por defecto  
+**Solución**: Agregado `output: 'standalone'` en `next.config.ts`  
+**Impacto**: Imagen de Docker reducida significativamente (solo archivos necesarios en `.next/standalone/`)
+
+---
+
+### **Comandos de Verificación Ejecutados**
+
+```bash
+# Build de imágenes
+docker-compose build
+
+# Levantar stack completo
+docker-compose up -d
+
+# Verificar estado de servicios
+docker-compose ps  # Todos "healthy"
+
+# Ver logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Verificar healthchecks
+docker inspect <container_id>
+
+# Detener stack
+docker-compose down
+
+# Detener y eliminar volúmenes
+docker-compose down -v
+```
+
+**Evidencia**: Todos los servicios healthy, aplicación accesible en localhost:3000
+
+---
+
+### **Impacto en Roadmap Backend Developer**
+
+| Categoría                 | Antes | Después | Mejora  |
+| ------------------------- | ----- | ------- | ------- |
+| Containerization (Docker) | 0%    | 85%     | +85% 🚀 |
+| **Score General Fase 6**  | 48%   | 56%     | +8% ✅  |
+
+**Progreso hacia Senior Backend**: 56% → Meta 75-80% (faltan 19-24%)
+
+---
+
+### **Próximas Subfases Recomendadas**
+
+**Opción A: Subfase 6.3 - CI/CD Pipeline (GitHub Actions)** - RECOMENDADO
+
+- Workflows automáticos de testing, linting, build
+- Build y push de imágenes Docker a GitHub Container Registry
+- Despliegue automático a staging
+- Tiempo estimado: 3 días
+
+**Opción B: Subfase 6.4 - Caching (Redis)** - ALTA PRIORIDAD
+
+- Redis ya está en docker-compose ✅
+- Implementar cache en backend (clientes, negocios, estadísticas)
+- Invalidación automática de cache
+- Tiempo estimado: 1 semana
+
+**Opción C: Subfase 6.5 - Web Servers (Nginx)** - ALTA PRIORIDAD
+
+- Reverse proxy para backend y frontend
+- SSL/TLS ready
+- Rate limiting
+- Compresión Gzip
+- Tiempo estimado: 2 días
+
+---
+
+### **Documentación Relacionada**
+
+**Documentación Técnica**:
+
+- [docs/guides/docker/DOCKER.md](../guides/docker/DOCKER.md) - Guía completa de Docker
+- [backend/Dockerfile](../../backend/Dockerfile) - Dockerfile backend
+- [frontend/Dockerfile](../../frontend/Dockerfile) - Dockerfile frontend
+- [docker-compose.yml](../../docker-compose.yml) - Orquestación de servicios
+
+**ADRs**:
+
+- ADR-007: Docker para containerización (pendiente)
+
+**Sesión de Desarrollo**:
+
+- SESION_24_FEBRERO_2026.md - Detalles completos (pendiente)
+
+**Roadmap**:
+
+- [BACKLOG.md](./BACKLOG.md) - Subfase 6.2 marcada como completada
+- [CURRENT.md](./CURRENT.md) - Estado actualizado a Subfase 6.3
+
+---
+
+**Fin de Subfase 6.2** | Containerization (Docker) ✅ COMPLETADA (24 Feb 2026)
+
+---
+
+## ✅ Subfase 6.3: CI/CD Pipeline (GitHub Actions) - COMPLETADA
+
+**Fecha**: 24 de febrero de 2026  
+**Sesión**: SESION_24_FEBRERO_2026.md  
+**Versión**: v0.7.3  
+**Score**: DevOps 56% → **71%** (+15% 🚀)
+
+### **Objetivo**
+
+Implementar pipeline completo de CI/CD con GitHub Actions para automatizar testing, linting, builds y despliegues.
+
+### **Workflows Implementados**
+
+#### **1. Workflow de Testing** (`.github/workflows/test.yml`)
+
+**Ejecución**:
+
+- ✅ Push a `master` o `develop`
+- ✅ Pull Requests a `master` o `develop`
+
+**Jobs Paralelos**:
+
+**Backend Tests**:
+
+- ✅ Matrix strategy con Node 20.x
+- ✅ Cache de node_modules
+- ✅ `npm ci` para instalación reproducible
+- ✅ `npx prisma generate` (genera Prisma Client)
+- ✅ `npm run test:cov` (96 tests, coverage completo)
+- ✅ Validación de coverage threshold (≥85%)
+- ✅ Upload de coverage como artifact (7 días retención)
+
+**Frontend Tests**:
+
+- ✅ Matrix strategy con Node 20.x
+- ✅ Cache de node_modules
+- ✅ `npm ci` para instalación reproducible
+- ✅ `npm run test:coverage` (144 tests, coverage completo)
+- ✅ Validación de coverage threshold (≥85%)
+- ✅ Upload de coverage como artifact (7 días retención)
+
+**Características**:
+
+- Ejecución en paralelo (backend + frontend simultáneos)
+- Fallo del job si coverage < 85%
+- Output con emojis (📊 Coverage, ✅ Success, ❌ Error)
+- Utiliza `jq` para parsear coverage-summary.json
+
+**Archivos Creados**:
+
+```
+.github/workflows/test.yml (104 líneas)
+```
+
+---
+
+#### **2. Workflow de Linting** (`.github/workflows/lint.yml`)
+
+**Ejecución**:
+
+- ✅ Push a `master` o `develop`
+- ✅ Pull Requests a `master` o `develop`
+
+**Jobs Paralelos**:
+
+**Backend Linting**:
+
+- ✅ Node 20.x
+- ✅ Cache de node_modules
+- ✅ `npx prisma generate`
+- ✅ `npm run lint` (ESLint con auto-fix)
+- ✅ `npx prettier --check` (Prettier formatting)
+- ✅ `npx tsc --noEmit` (TypeScript type checking)
+
+**Frontend Linting**:
+
+- ✅ Node 20.x
+- ✅ Cache de node_modules
+- ✅ `npm run lint` (ESLint Next.js)
+- ✅ `npx tsc --noEmit` (TypeScript type checking)
+
+**Características**:
+
+- Ejecución en paralelo
+- Fallo si hay errores de ESLint, Prettier o TypeScript
+- Sin Prettier check en frontend (Next.js tiene su propio formatter)
+
+**Archivos Creados**:
+
+```
+.github/workflows/lint.yml (68 líneas)
+```
+
+---
+
+#### **3. Workflow de Build** (`.github/workflows/build.yml`)
+
+**Ejecución**:
+
+- ✅ Push a `master` o `develop`
+- ✅ Pull Requests a `master` o `develop`
+
+**Jobs Secuenciales**:
+
+**Backend Build**:
+
+- ✅ Node 20.x
+- ✅ Cache de node_modules
+- ✅ `npx prisma generate`
+- ✅ `npm run build` (NestJS production build)
+- ✅ Upload de `dist/` como artifact (7 días)
+
+**Frontend Build**:
+
+- ✅ Node 20.x
+- ✅ Cache de node_modules
+- ✅ `npm run build` (Next.js standalone build)
+- ✅ Variable `NEXT_PUBLIC_API_URL=http://localhost:4000`
+- ✅ Upload de `.next/` y `out/` como artifacts (7 días)
+
+**Docker Build** (después de builds exitosos):
+
+- ✅ Requiere: `build-backend` y `build-frontend` completados
+- ✅ Setup Docker Buildx
+- ✅ Build de `clientpro-backend:latest` (sin push)
+- ✅ Build de `clientpro-frontend:latest` (sin push)
+- ✅ GitHub Actions cache (type=gha, mode=max)
+- ✅ Validación de `docker-compose.yml` con `docker compose config`
+
+**Características**:
+
+- Jobs paralelos para backend/frontend build
+- Job de Docker solo si builds pasan
+- Cache de Docker layers (mejora velocidad)
+- No push a registry (solo validación)
+
+**Archivos Creados**:
+
+```
+.github/workflows/build.yml (108 líneas)
+```
+
+---
+
+#### **4. Dependabot** (`.github/dependabot.yml`)
+
+**Configuración**:
+
+**Backend npm** (`/backend`):
+
+- ✅ Chequeo semanal (Lunes 9:00 AM)
+- ✅ Límite: 10 PRs abiertos simultáneos
+- ✅ Commit message: `chore(deps): ...`
+- ✅ Labels: `dependencies`, `backend`
+- ✅ Reviewer/Assignee: `ITZAN44`
+- ✅ Grupos agrupados:
+  - `nestjs`: @nestjs/\* (minor + patch)
+  - `prisma`: @prisma/\*, prisma (minor + patch)
+  - `testing`: jest, supertest, @types/\* (minor + patch)
+
+**Frontend npm** (`/frontend`):
+
+- ✅ Chequeo semanal (Lunes 9:00 AM)
+- ✅ Límite: 10 PRs abiertos simultáneos
+- ✅ Commit message: `chore(deps): ...`
+- ✅ Labels: `dependencies`, `frontend`
+- ✅ Reviewer/Assignee: `ITZAN44`
+- ✅ Grupos agrupados:
+  - `nextjs`: next, react, react-dom (minor + patch)
+  - `radix-ui`: @radix-ui/\* (minor + patch)
+  - `tanstack`: @tanstack/\* (minor + patch)
+
+**GitHub Actions** (`/`):
+
+- ✅ Chequeo semanal (Lunes 9:00 AM)
+- ✅ Commit message: `chore(ci): ...`
+- ✅ Labels: `ci/cd`, `github-actions`
+- ✅ Reviewer: `ITZAN44`
+
+**Características**:
+
+- Actualizaciones agrupadas (evita spam de PRs)
+- Solo minor/patch versions (major requiere revisión manual)
+- Conventional Commits format
+- Auto-assignment para revisión
+
+**Archivos Creados**:
+
+```
+.github/dependabot.yml (94 líneas)
+```
+
+---
+
+### **Badges de CI/CD en README**
+
+**README.md actualizado** con badges de estado:
+
+```markdown
+[![Tests](https://github.com/ITZAN44/clientpro-crm/actions/workflows/test.yml/badge.svg)](...)
+[![Linting](https://github.com/ITZAN44/clientpro-crm/actions/workflows/lint.yml/badge.svg)](...)
+[![Build](https://github.com/ITZAN44/clientpro-crm/actions/workflows/build.yml/badge.svg)](...)
+```
+
+**Beneficios**:
+
+- ✅ Visibilidad inmediata del estado del proyecto
+- ✅ Links directos a GitHub Actions
+- ✅ Auto-actualización en cada workflow run
+
+---
+
+### **Quality Gates (GitHub Branch Protection)**
+
+**Configuración Recomendada** (manual en GitHub):
+
+**Branch `master`**:
+
+- ✅ Require PR reviews (al menos 1)
+- ✅ Require status checks: `test-backend`, `test-frontend`, `lint-backend`, `lint-frontend`, `build-backend`, `build-frontend`
+- ✅ Require branches to be up to date
+- ✅ Enforce admins
+- ✅ Restrict pushes (solo vía PR)
+
+**Branch `develop`**:
+
+- ✅ Require status checks: `test-backend`, `test-frontend`, `lint-backend`, `lint-frontend`
+- ✅ Require branches to be up to date
+
+**Beneficios**:
+
+- No merge sin tests pasando
+- No merge sin linting correcto
+- No merge sin build exitoso
+- Código siempre funcional en `master` y `develop`
+
+---
+
+### **Resumen de Archivos**
+
+**Archivos CREADOS** (4 archivos, 374 líneas):
+
+```
+.github/
+├── workflows/
+│   ├── test.yml         (104 líneas) - Testing backend + frontend
+│   ├── lint.yml         (68 líneas)  - Linting + type checking
+│   └── build.yml        (108 líneas) - Builds + Docker
+└── dependabot.yml       (94 líneas)  - Dependency updates
+```
+
+**Archivos MODIFICADOS** (1 archivo):
+
+```
+README.md - Agregados 3 badges de CI/CD (líneas 3-5)
+```
+
+---
+
+### **Integración con Docker (Subfase 6.2)**
+
+El workflow de Build (`build.yml`) integra perfectamente con la infraestructura Docker:
+
+**Jobs de Build**:
+
+1. ✅ `build-backend` → Genera `dist/` (usado por Dockerfile)
+2. ✅ `build-frontend` → Genera `.next/` standalone (usado por Dockerfile)
+3. ✅ `build-docker` → Valida Dockerfiles y docker-compose.yml
+
+**Validaciones Docker**:
+
+- ✅ `docker build` de backend exitoso
+- ✅ `docker build` de frontend exitoso
+- ✅ `docker compose config` sin errores
+- ✅ Cache de layers para builds rápidos
+
+**Preparado para futura Subfase 6.4** (Container Registry):
+
+- Estructura lista para `docker push` a GHCR
+- Tags versionados (`latest`, `v0.7.3`, `sha-abc123`)
+- Multi-platform builds (amd64, arm64)
+
+---
+
+### **Impacto en el Proyecto**
+
+#### **Antes de Subfase 6.3**:
+
+- ❌ Tests se ejecutaban solo localmente
+- ❌ No validación automática de PRs
+- ❌ Posibilidad de merge con código roto
+- ❌ Dependencias desactualizadas sin avisos
+- ❌ Sin visibilidad del estado del proyecto
+
+#### **Después de Subfase 6.3**:
+
+- ✅ Tests automáticos en cada push/PR
+- ✅ Linting y type checking automático
+- ✅ Builds validados antes de merge
+- ✅ Coverage threshold enforced (≥85%)
+- ✅ Dependencias actualizadas semanalmente
+- ✅ Badges de estado visibles
+- ✅ Docker builds validados
+- ✅ Conventional Commits enforced
+
+---
+
+### **Workflows en Acción**
+
+**Trigger típico** (ejemplo: `git push origin feature/new-feature`):
+
+```
+1. GitHub recibe el push
+2. Se ejecutan en PARALELO:
+   - test.yml → test-backend (3-5 min)
+   - test.yml → test-frontend (2-4 min)
+   - lint.yml → lint-backend (1-2 min)
+   - lint.yml → lint-frontend (1-2 min)
+3. Si todos pasan:
+   - build.yml → build-backend (2-3 min)
+   - build.yml → build-frontend (2-3 min)
+4. Si builds pasan:
+   - build.yml → build-docker (3-5 min)
+5. Total: ~10-15 minutos (con cache)
+6. Badge en README se actualiza (verde ✅)
+```
+
+---
+
+### **Mejores Prácticas Implementadas**
+
+**1. Cache Agresivo**:
+
+```yaml
+cache: 'npm'
+cache-dependency-path: backend/package-lock.json
+```
+
+- Reduce tiempo de instalación de 2 min → 30 seg
+
+**2. Jobs Paralelos**:
+
+```yaml
+jobs:
+  test-backend: # Corre simultáneo
+  test-frontend: # Corre simultáneo
+```
+
+- Reduce tiempo total de 10 min → 5 min
+
+**3. Fail Fast**:
+
+```yaml
+run: |
+  if (( $(echo "$COVERAGE < 85" | bc -l) )); then
+    exit 1
+  fi
+```
+
+- Falla inmediatamente si coverage < threshold
+
+**4. Artifacts**:
+
+```yaml
+uses: actions/upload-artifact@v4
+retention-days: 7
+```
+
+- Permite descargar coverage reports
+- Permite descargar builds para debugging
+
+**5. Dependency Grouping** (Dependabot):
+
+```yaml
+groups:
+  nestjs:
+    patterns: ['@nestjs/*']
+```
+
+- Evita 10 PRs separados para @nestjs/\*
+- Crea 1 PR con todos los updates
+
+---
+
+### **Métricas de CI/CD**
+
+| Métrica                   | Valor      | Objetivo    |
+| ------------------------- | ---------- | ----------- |
+| **Workflows**             | 3          | ✅ 3 mínimo |
+| **Jobs totales**          | 7          | ✅ 5+       |
+| **Coverage threshold**    | 85%        | ✅ 80%+     |
+| **Dependabot updates**    | Semanal    | ✅ Semanal  |
+| **Tiempo promedio build** | ~10-15 min | ✅ <20 min  |
+| **Cache hit rate**        | ~80%       | ✅ 70%+     |
+| **Parallel execution**    | Sí         | ✅ Sí       |
+
+---
+
+### **Próximos Pasos Sugeridos**
+
+**Subfase 6.4 - Container Registry & Deployment** (opcional):
+
+1. **GitHub Container Registry (GHCR)**:
+   - Push de imágenes a `ghcr.io/ITZAN44/clientpro-*`
+   - Tagging automático (`latest`, `v0.7.3`, `sha-abc123`)
+   - Multi-platform builds (amd64, arm64)
+
+2. **Deployment a Producción**:
+   - Workflow `deploy.yml` para deploy automático
+   - Secrets de producción en GitHub Actions
+   - Rollback automático si deploy falla
+   - Blue-Green deployment strategy
+
+3. **Monitoring & Alerts**:
+   - Slack/Discord notifications en fallos
+   - Sentry integration para error tracking
+   - Uptime monitoring (UptimeRobot)
+
+---
+
+### **Documentación Relacionada**
+
+**Workflows**:
+
+- [.github/workflows/test.yml](../../.github/workflows/test.yml) - Testing workflow
+- [.github/workflows/lint.yml](../../.github/workflows/lint.yml) - Linting workflow
+- [.github/workflows/build.yml](../../.github/workflows/build.yml) - Build workflow
+- [.github/dependabot.yml](../../.github/dependabot.yml) - Dependabot config
+
+**Documentación Técnica**:
+
+- README.md - Badges agregados (líneas 3-5)
+
+**Sesión de Desarrollo**:
+
+- SESION_24_FEBRERO_2026.md - Detalles completos (pendiente actualización)
+
+**Roadmap**:
+
+- [BACKLOG.md](./BACKLOG.md) - Subfase 6.3 marcada como completada
+- [CURRENT.md](./CURRENT.md) - Estado actualizado a v0.7.3
+
+---
+
+**Fin de Subfase 6.3** | CI/CD Pipeline (GitHub Actions) ✅ COMPLETADA (24 Feb 2026)
+
+---
+
+## ✅ Subfase 6.4: Redis Caching - COMPLETADA
+
+**Fecha**: 27 de febrero de 2026  
+**Sesión**: SESION_27_FEBRERO_2026.md  
+**Versión**: v0.7.4  
+**Score**: DevOps 71% → **79%** (+8% 🚀)
+
+### **Objetivo**
+
+Implementar caching con Redis para mejorar el rendimiento de la aplicación, reducir carga en la base de datos y optimizar tiempos de respuesta.
+
+### **Contexto Crítico: Problema con cache-manager v7**
+
+**Problema detectado**: `@nestjs/cache-manager@3.1.0` depende de `cache-manager@7.2.8`, que NO soporta stores personalizados de Redis de manera funcional. La documentación oficial está desactualizada (referencias a v5).
+
+**Síntoma**: El cache parecía funcionar en logs pero Redis tenía 0 keys (todo en memoria local).
+
+**5 Intentos Fallidos**:
+
+1. ❌ `cache-manager-redis-yet` - Solo compatible con v5, no v7
+2. ❌ `cache-manager-redis-store` - Obsoleto/deprecated
+3. ❌ Custom store (`redis-store.ts`) - Cache-manager lo ignoraba
+4. ❌ Downgrade a cache-manager v5 - Rompe compatibilidad con NestJS 11
+5. ❌ `CacheModule.registerAsync()` - Store no se delegaba correctamente
+
+**Solución Final**: Bypass completo de `@nestjs/cache-manager`, implementación directa con `ioredis`.
+
+---
+
+### **Implementación Completada**
+
+#### **1. RedisCacheService Custom** ✅
+
+**Archivo creado**: `backend/src/redis/redis-cache.service.ts` (145 líneas)
+
+**Características**:
+
+- ✅ Client `ioredis` directo (sin cache-manager)
+- ✅ Métodos genéricos con TypeScript: `get<T>()`, `set<T>()`
+- ✅ Invalidación por patrón: `delPattern('clientes:*')`
+- ✅ Reset completo: `reset()`
+- ✅ Estadísticas: `getStats()` retorna keys count, memory usage
+- ✅ Manejo de errores graceful (fallback a BD si Redis falla)
+- ✅ Serialización JSON automática
+
+**Métodos Implementados**:
+
+```typescript
+async get<T>(key: string): Promise<T | null>
+async set<T>(key: string, value: T, ttl?: number): Promise<void>
+async del(key: string): Promise<void>
+async delPattern(pattern: string): Promise<void>
+async reset(): Promise<void>
+async getStats(): Promise<CacheStats>
+```
+
+**Configuración**:
+
+- Redis URL: `redis://localhost:6379` (Docker) o `REDIS_URL` env var
+- Reconnect automático con estrategia exponential backoff
+- Logs detallados de conexión/desconexión
+
+---
+
+#### **2. RedisModule como @Global()** ✅
+
+**Archivo modificado**: `backend/src/redis/redis.module.ts`
+
+**Cambios**:
+
+- ✅ Decorador `@Global()` agregado
+- ✅ Exporta `RedisCacheService` para inyección en cualquier módulo
+- ✅ No requiere importar RedisModule en cada módulo consumidor
+
+```typescript
+@Global()
+@Module({
+  providers: [RedisCacheService],
+  exports: [RedisCacheService],
+})
+export class RedisModule {}
+```
+
+---
+
+#### **3. Cache Integrado en Services** ✅
+
+**ClientesService** (`backend/src/clientes/clientes.service.ts`):
+
+- ✅ Cache key pattern: `clientes:all:${JSON.stringify(query)}`
+- ✅ TTL: 300 segundos (5 minutos)
+- ✅ Invalidación en: `create()`, `update()`, `remove()`
+- ✅ Método: `delPattern('clientes:*')`
+- ✅ Performance: 118ms → 70ms (**41% más rápido**)
+
+**NegociosService** (`backend/src/negocios/negocios.service.ts`):
+
+- ✅ Cache key pattern: `negocios:all:${JSON.stringify(query)}`
+- ✅ TTL: 300 segundos (5 minutos)
+- ✅ Invalidación en: `create()`, `update()`, `updateEtapa()`, `remove()`
+- ✅ Invalidación adicional en `updateEtapa()` (Kanban drag & drop)
+- ✅ Performance: 72ms → 59ms (**18% más rápido**)
+
+**StatsService** (`backend/src/stats/stats.service.ts`):
+
+- ✅ Cache key: `stats:general`
+- ✅ TTL: 120 segundos (2 minutos)
+- ✅ Invalidación manual: requiere llamar endpoint o esperar TTL
+- ✅ Performance: 115ms → 68ms (**41% más rápido**)
+
+---
+
+#### **4. HTTP Caching con ETags** ✅
+
+**Archivo creado**: `backend/src/common/interceptors/cache-control.interceptor.ts` (55 líneas)
+
+**Características**:
+
+- ✅ `Cache-Control: public, max-age=300` en GET requests
+- ✅ ETags generados con hash MD5 del response body
+- ✅ Soporte `If-None-Match` (retorna 304 Not Modified si ETag coincide)
+- ✅ Reduce ancho de banda en requests repetidos
+- ✅ Aplicado globalmente en `main.ts`
+
+**Headers agregados**:
+
+```http
+Cache-Control: public, max-age=300
+ETag: "5d41402abc4b2a76b9719d911017c592"
+```
+
+**Beneficios**:
+
+- Cliente (navegador) cachea response por 5 minutos
+- Si datos no cambiaron, servidor retorna 304 (sin body)
+- Reduce ancho de banda ~70% en requests repetidos
+
+---
+
+#### **5. Compresión Gzip** ✅
+
+**Archivo modificado**: `backend/src/main.ts`
+
+**Características**:
+
+- ✅ Compression middleware habilitado
+- ✅ Reduce tamaño de responses JSON ~60-70%
+- ✅ Configuración: threshold 1KB (no comprime responses pequeños)
+- ✅ Header: `Content-Encoding: gzip`
+
+```typescript
+import * as compression from 'compression';
+app.use(compression({ threshold: 1024 }));
+```
+
+**Beneficios**:
+
+- Response de 100KB → ~30KB comprimido
+- Mejora tiempo de carga en conexiones lentas
+- Reduce costos de bandwidth
+
+---
+
+#### **6. Endpoint de Estadísticas de Cache** ✅
+
+**Endpoint creado**: `GET /redis/stats` (público para monitoreo)
+
+**Response**:
+
+```json
+{
+  "totalKeys": 45,
+  "memoryUsage": "2.3 MB",
+  "memoryUsageBytes": 2411520
+}
+```
+
+**Uso**:
+
+- Monitoreo de salud de Redis
+- Debugging de problemas de cache
+- Validación de limpieza de cache
+
+---
+
+### **Archivos Totales Creados/Modificados**
+
+**Nuevos archivos (2)**:
+
+```
+backend/src/
+├── redis/redis-cache.service.ts (145 líneas) ✨ NUEVO
+└── common/interceptors/
+    └── cache-control.interceptor.ts (55 líneas) ✨ NUEVO
+```
+
+**Archivos modificados (6)**:
+
+```
+backend/src/
+├── redis/redis.module.ts - Agregado @Global()
+├── clientes/clientes.service.ts - Cache integrado (TTL 300s)
+├── negocios/negocios.service.ts - Cache integrado (TTL 300s)
+├── stats/stats.service.ts - Cache integrado (TTL 120s)
+└── main.ts - Agregado compression + CacheControlInterceptor
+
+backend/package.json - Agregado compression
+```
+
+**Archivos ELIMINADOS (2 - cleanup)**:
+
+```
+backend/src/redis/redis-store.ts (intento fallido con cache-manager v7)
+backend/test-redis.js (script temporal de testing)
+```
+
+---
+
+### **Métricas de Performance**
+
+**Antes vs Después** (medido con Postman):
+
+| Endpoint             | Sin Cache | Con Cache | Mejora                |
+| -------------------- | --------- | --------- | --------------------- |
+| GET `/clientes/:id`  | 118ms     | 70ms      | **41% más rápido** ✅ |
+| GET `/negocios`      | 72ms      | 59ms      | **18% más rápido** ✅ |
+| GET `/stats/general` | 115ms     | 68ms      | **41% más rápido** ✅ |
+
+**Primera llamada**: Hit a base de datos (tiempo normal)  
+**Segunda+ llamada**: Hit a Redis (tiempo reducido)  
+**Invalidación**: Automática en mutations (create/update/delete)
+
+---
+
+### **Configuración de TTLs**
+
+| Service  | Cache Key Pattern      | TTL          | Razón                    |
+| -------- | ---------------------- | ------------ | ------------------------ |
+| Clientes | `clientes:all:{query}` | 300s (5 min) | Datos cambian poco       |
+| Negocios | `negocios:all:{query}` | 300s (5 min) | Drag & drop invalida     |
+| Stats    | `stats:general`        | 120s (2 min) | Dashboard en tiempo real |
+
+**Estrategia de Invalidación**:
+
+- `create()` → `delPattern('entity:*')` (limpia todo el cache de esa entidad)
+- `update()` → `delPattern('entity:*')` (limpia todo)
+- `remove()` → `delPattern('entity:*')` (limpia todo)
+- Invalidación granular NO implementada (complejidad vs beneficio)
+
+---
+
+### **Problemas Resueltos**
+
+#### **1. cache-manager v7 No Funciona con Redis**
+
+**Problema**: Después de 5 intentos fallidos con diferentes stores, cache-manager v7 simplemente no delega al store personalizado de Redis.
+
+**Síntoma**:
+
+```bash
+redis-cli KEYS '*'  # Retorna: (empty array)
+```
+
+Pero logs de NestJS mostraban: "Cache hit for key: clientes:all"
+
+**Solución**: Bypass completo de `@nestjs/cache-manager`, usar `ioredis` directamente.
+
+**Aprendizaje**: Documentación de NestJS cache está desactualizada (referencias a cache-manager v5). Para Redis en producción, usar client directo.
+
+---
+
+#### **2. Redis No Persistía Datos**
+
+**Problema**: Redis en Docker reiniciaba y perdía toda la data.
+
+**Solución**: Configurado volumen persistente en `docker-compose.yml`:
+
+```yaml
+services:
+  redis:
+    volumes:
+      - redis_data:/data
+```
+
+**Evidencia**: Redis sobrevive a `docker-compose down && docker-compose up`.
+
+---
+
+#### **3. Invalidación de Cache en Kanban**
+
+**Problema**: Arrastrar negocios en Kanban no invalidaba cache, mostraba data stale.
+
+**Solución**: Agregado `delPattern('negocios:*')` en `updateEtapa()`:
+
+```typescript
+async updateEtapa(id: number, dto: UpdateEtapaDto): Promise<NegocioResponseDto> {
+  const negocio = await this.prisma.negocio.update({ ... });
+  await this.cache.delPattern('negocios:*'); // ✅ Invalidación crítica
+  return negocio;
+}
+```
+
+---
+
+### **Impacto en Roadmap Backend Developer**
+
+| Categoría                | Antes | Después | Mejora     |
+| ------------------------ | ----- | ------- | ---------- |
+| Caching                  | 10%   | 70%     | +60% 🚀    |
+| **Score General Fase 6** | 71%   | **79%** | **+8%** ✅ |
+
+**Progreso hacia Senior Backend**: 79% → Meta 75-80% (**LOGRADO** ✅)
+
+---
+
+### **Documentación Creada**
+
+**Guía completa**: `docs/guides/CACHING.md` (775 líneas)
+
+**Contenido**:
+
+- Introducción al caching (tipos, beneficios)
+- Arquitectura de caching en ClientPro CRM
+- RedisCacheService API completa
+- Estrategias de invalidación
+- HTTP Caching con ETags
+- Compresión Gzip
+- Troubleshooting (15+ problemas comunes)
+- Performance benchmarks
+- Best practices
+- Próximos pasos (cache distribuido, cache warming)
+
+---
+
+### **Próximos Pasos Sugeridos**
+
+**Subfase 6.5 - Web Servers (Nginx)** - RECOMENDADO:
+
+- Reverse proxy para backend/frontend
+- SSL/TLS ready
+- Rate limiting
+- Compresión adicional
+- Static file serving optimizado
+- Tiempo estimado: 2 días
+
+**Subfase 6.6 - Observability** - ALTERNATIVA:
+
+- Health check endpoints (@nestjs/terminus)
+- Structured logging (Winston)
+- Metrics endpoint (basic)
+- Sentry integration (preparado)
+- Tiempo estimado: 1 semana
+
+---
+
+### **Documentación Relacionada**
+
+**Guías Técnicas**:
+
+- [docs/guides/CACHING.md](../guides/CACHING.md) - Guía completa de caching (775 líneas)
+- [docs/guides/docker/DOCKER.md](../guides/docker/DOCKER.md) - Docker con Redis
+
+**Sesión de Desarrollo**:
+
+- [docs/sessions/2026/02-FEBRERO/SESION_27_FEBRERO_2026.md](../sessions/2026/02-FEBRERO/SESION_27_FEBRERO_2026.md) - Detalles completos
+
+**Roadmap**:
+
+- [BACKLOG.md](./BACKLOG.md) - Subfase 6.4 marcada como completada
+- [CURRENT.md](./CURRENT.md) - Estado actualizado a v0.7.4
+
+---
+
+**Fin de Subfase 6.4** | Redis Caching ✅ COMPLETADA (27 Feb 2026)
+
+---
+
+## ✅ Subfase 6.5: Web Servers (Nginx) - COMPLETADA
+
+**Fecha**: 04 de marzo de 2026  
+**Tiempo real**: 1 sesión  
+**Versión**: v0.7.5  
+**Score impacto**: Web Servers 30% → 75% (+45% 🚀)
+
+### **Objetivo**
+
+Agregar Nginx como reverse proxy en el stack Docker para centralizar el tráfico en el puerto 80, habilitar compresión gzip, rate limiting, security headers y preparar la infraestructura para SSL/TLS futuro.
+
+### **Tareas Completadas**
+
+- [x] Crear `nginx/nginx.conf` (reverse proxy, gzip, rate limiting, security headers, SSL-ready) ✅
+- [x] Crear `nginx/Dockerfile` (nginx:1.25-alpine) ✅
+- [x] Agregar nginx a `docker-compose.yml` como 5to servicio (puerto 80) ✅
+- [x] Modificar `frontend/Dockerfile` para bakear `NEXT_PUBLIC_*` vars en build time ✅
+- [x] Modificar `frontend/src/lib/socket.ts` para usar `NEXT_PUBLIC_SOCKET_URL` ✅
+- [x] Actualizar `.env.docker` y `.env` con nuevas variables ✅
+
+### **Arquitectura de Routing**
+
+```
+Cliente (puerto 80)
+        │
+    [Nginx]
+    ┌────┴────┐
+    │         │
+location /   location /api/    location /socket.io/
+    │             │                    │
+[frontend:3000] [backend:4000]  [backend:4000]
+                (strip /api/)   (WebSocket upgrade)
+```
+
+| Ruta           | Destino         | Notas                     |
+| -------------- | --------------- | ------------------------- |
+| `/`            | `frontend:3000` | Next.js App Router        |
+| `/api/*`       | `backend:4000`  | Strip `/api/` prefix      |
+| `/socket.io/*` | `backend:4000`  | WebSocket upgrade headers |
+
+### **Problema Crítico Resuelto: NEXT*PUBLIC*\* vars bakeadas en build time**
+
+**Contexto**: Este fue el punto no obvio que requirió investigación extra.
+
+**Problema**: Las variables `NEXT_PUBLIC_*` de Next.js son evaluadas en **build time**, no en runtime. Al pasar `NEXT_PUBLIC_SOCKET_URL` como variable de entorno en `docker-compose.yml`, Next.js la ignoraba en producción porque el bundle ya estaba compilado.
+
+**Síntoma**: Socket.io conectaba a `localhost:4000` desde el browser en vez de usar la URL configurada, rompiendo la conexión WebSocket en Docker.
+
+**Solución**: Modificar `frontend/Dockerfile` para recibir el argumento de build y bakear la variable:
+
+```dockerfile
+ARG NEXT_PUBLIC_SOCKET_URL
+ENV NEXT_PUBLIC_SOCKET_URL=$NEXT_PUBLIC_SOCKET_URL
+RUN npm run build  # build time → variable queda bakeada en el bundle
+```
+
+Y en `docker-compose.yml`:
+
+```yaml
+frontend:
+  build:
+    args:
+      - NEXT_PUBLIC_SOCKET_URL=${NEXT_PUBLIC_SOCKET_URL}
+```
+
+**Aprendizaje**: Cualquier variable `NEXT_PUBLIC_*` de Next.js debe pasarse como `build arg`, no como `environment`.
+
+### **Archivos Creados/Modificados**
+
+**Nuevos archivos (2)**:
+
+```
+nginx/
+├── nginx.conf      (reverse proxy, gzip, rate limiting, security headers)
+└── Dockerfile      (nginx:1.25-alpine)
+```
+
+**Archivos modificados (4)**:
+
+```
+docker-compose.yml
+  - Agregado: servicio nginx (5to servicio, puerto 80)
+  - Agregado: build args para frontend NEXT_PUBLIC_*
+
+frontend/Dockerfile
+  - Agregado: ARG/ENV para NEXT_PUBLIC_SOCKET_URL bakeado en build
+
+frontend/src/lib/socket.ts
+  - Modificado: usa process.env.NEXT_PUBLIC_SOCKET_URL
+
+.env.docker / .env
+  - Agregadas: NEXT_PUBLIC_SOCKET_URL y vars relacionadas
+```
+
+### **Evidencia de Completitud**
+
+- ✅ GET / vía nginx puerto 80 → 200 OK, frontend responde
+- ✅ Content-Encoding: gzip → gzip activo en responses
+- ✅ GET /api/clientes sin token → 401 (nginx proxea a backend correctamente, strip `/api/`)
+- ✅ GET /api/auth/session → 200 (NextAuth en frontend, no rompió)
+- ✅ Rate limiting: 30 req paralelos → 429 activado
+- ✅ Security headers presentes en responses
+
+### **Impacto en Score**
+
+| Categoría    | Antes | Después | Mejora      |
+| ------------ | ----- | ------- | ----------- |
+| Web Servers  | 30%   | 75%     | +45% 🚀     |
+| Docker Stack | 4 svc | 5 svc   | +1 servicio |
+
+### **Documentación Relacionada**
+
+- [BACKLOG.md](./BACKLOG.md) - Subfase 6.5 marcada como completada
+- [docker-compose.yml](../../docker-compose.yml) - Servicio nginx agregado
+- [nginx/nginx.conf](../../nginx/nginx.conf) - Configuración completa
+
+---
+
+**Fin de Subfase 6.5** | Web Servers (Nginx) ✅ COMPLETADA (04 Mar 2026)
+
+---
+
+## ✅ Subfase 6.6: Security & Observability (COMPLETADA)
+
+**Fecha**: 05 de marzo de 2026  
+**Sesión**: SESION_5_MARZO_2026.md  
+**Tiempo invertido**: ~1 sesión  
+**Impacto en Score**: Building For Scale 15% → 60% (+45%), Score General 82% → 87%
+
+### Objetivo
+
+Implementar seguridad HTTP, rate limiting, input sanitization, health checks, structured logging y basic metrics para alcanzar nivel Senior Backend Developer en "Building For Scale".
+
+### Tareas Completadas
+
+#### 1. Helmet.js — HTTP Security Headers ✅
+
+- `app.use(helmet())` en `main.ts`
+- Headers activos: Content-Security-Policy, HSTS, X-Frame-Options, Referrer-Policy, X-Content-Type-Options
+
+#### 2. Rate Limiting (@nestjs/throttler v6) ✅
+
+- ThrottlerModule con `name: 'default'` (crítico en v6)
+- ThrottlerGuard como APP_GUARD global
+- `@Throttle({ default: { limit: 5, ttl: 60000 } })` en POST /auth/login
+- Verificado: HTTP 429 en 6to intento de login
+
+#### 3. Input Sanitization (@Transform) ✅
+
+- 13 campos sanitizados en 3 DTOs:
+  - create-cliente.dto.ts (9 campos: nombre, email, telefono, empresa, cargo, sitioWeb, direccion, ciudad, pais)
+  - create-negocio.dto.ts (2 campos: titulo, descripcion)
+  - create-actividad.dto.ts (2 campos: titulo, descripcion)
+- Usando @Transform de class-transformer (ya instalado, sin deps nuevas)
+
+#### 4. Health Check (@nestjs/terminus) ✅
+
+- Nuevo módulo: `backend/src/health/`
+- GET `/health` → HTTP 200 con status de DB + Redis + Memory (heap < 150MB)
+- Accesible vía nginx en `http://localhost/health`
+
+#### 5. Winston Logging (nest-winston) ✅
+
+- JSON estructurado con campos: timestamp, context, level, message
+- Reemplaza NestJS Logger default
+- Configurado en `main.ts` y `app.module.ts`
+
+#### 6. Basic Metrics (MetricsInterceptor) ✅
+
+- Nuevo módulo: `backend/src/metrics/`
+- Singleton metricsStore con contadores globales
+- GET `/metrics` → totalRequests, errors, avgResponseTimeMs
+- Accesible vía nginx en `http://localhost/metrics`
+
+### Archivos Creados (5 nuevos)
+
+```
+backend/src/health/health.controller.ts
+backend/src/health/health.module.ts
+backend/src/metrics/metrics.controller.ts
+backend/src/metrics/metrics.module.ts
+backend/src/common/interceptors/metrics.interceptor.ts
+```
+
+### Archivos Modificados
+
+```
+backend/src/main.ts                      — Helmet + Winston logger
+backend/src/app.module.ts                — ThrottlerModule + ThrottlerGuard + WinstonModule + HealthModule + MetricsModule + APP_INTERCEPTOR
+backend/src/auth/auth.controller.ts      — @Throttle en login
+backend/src/clientes/dto/create-cliente.dto.ts    — @Transform en 9 campos
+backend/src/negocios/dto/create-negocio.dto.ts    — @Transform en 2 campos
+backend/src/actividades/dto/create-actividad.dto.ts — @Transform en 2 campos
+nginx/nginx.conf                         — location /health y /metrics → backend
+backend/package.json + package-lock.json — nuevas deps + @prisma/client 7.4.2
+```
+
+### Problemas Críticos Resueltos
+
+**1. Prisma version mismatch (CRÍTICO)**
+
+- npm audit fix desalineó prisma@7.4.2 vs @prisma/client@7.2.0
+- Rompía `npx prisma generate` en Docker build
+- Fix: `npm install @prisma/client@7.4.2`
+
+**2. ThrottlerGuard no registrado como APP_GUARD**
+
+- ThrottlerModule.forRoot() sin APP_GUARD → ThrottlerGuard en providers
+- Decoradores @Throttle no tenían efecto sin el guard
+- Fix: agregar `{ provide: APP_GUARD, useClass: ThrottlerGuard }` en providers
+
+**3. Throttler sin nombre explícito en v6**
+
+- En @nestjs/throttler v6 sin `name` en forRoot, el throttler se llama `throttler-0`
+- `@Throttle({ default: ... })` no hacía match
+- Fix: `ThrottlerModule.forRoot([{ name: 'default', ttl: 60000, limit: 100 }])`
+
+### Impacto en Roadmap
+
+| Categoría            | Antes | Después | Mejora  |
+| -------------------- | ----- | ------- | ------- |
+| Building For Scale   | 15%   | 60%     | +45% 🚀 |
+| Score General Fase 6 | ~82%  | ~87%    | +5% ✅  |
+
+---
+
+**Fin de Subfase 6.6** | Security & Observability ✅ COMPLETADA (05 Mar 2026)
+
+---
 
 ### **Backend**
 
@@ -1371,7 +2774,7 @@ docs/guides/git/
 
 ## ✅ Resumen
 
-**5.6 Fases Completadas** (Enero-Febrero 2026):
+**5.6 Fases + Subfases 6.1-6.6 Completadas** (Enero-Marzo 2026):
 
 - Fase 1: Configuración y Autenticación ✅
 - Fase 2: Módulos CRUD ✅
@@ -1381,12 +2784,17 @@ docs/guides/git/
 - Fase 5: Testing Backend y Frontend UI Básicos ✅
 - Fase 5.5: Dark Mode UI ✅
 - Fase 5.6: Mejoras UI/UX ✅
-- **Subfase 6.1: Version Control Systems ✅** ✨ NUEVO
+- **Subfase 6.1: Version Control Systems ✅**
+- **Subfase 6.2: Containerization (Docker) ✅**
+- **Subfase 6.3: CI/CD Pipeline (GitHub Actions) ✅**
+- **Subfase 6.4: Redis Caching ✅**
+- **Subfase 6.5: Web Servers (Nginx) ✅**
+- **Subfase 6.6: Security & Observability ✅** ✨ NUEVO
 
-**MVP 98% completo** - Testing completo, UX profesional, Git Flow configurado
+**MVP 98% completo** - Testing completo, UX profesional, stack de producción con Nginx + Docker + Security & Observability
 
-**Próximo paso**: Subfase 6.2 - Containerization (Docker) o 6.3 - CI/CD Pipeline
+**Próximo paso**: Subfase 6.7 - Documentación y Finalización (Swagger, README, ADRs)
 
 ---
 
-**Fin de roadmap/COMPLETED.md** | ~900 líneas | Registro completo de funcionalidades implementadas
+**Fin de roadmap/COMPLETED.md** | ~1100 líneas | Registro completo de funcionalidades implementadas

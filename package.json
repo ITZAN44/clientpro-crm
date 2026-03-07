@@ -40,17 +40,5 @@
     "prisma"
   ],
   "author": "",
-  "license": "MIT",
-  "lint-staged": {
-    "backend/**/*.{ts,js}": [
-      "cd backend && npm run lint --fix",
-      "cd backend && npm run format"
-    ],
-    "frontend/**/*.{ts,tsx,js,jsx}": [
-      "cd frontend && npm run lint --fix"
-    ],
-    "*.md": [
-      "prettier --write"
-    ]
-  }
+  "license": "MIT"
 }

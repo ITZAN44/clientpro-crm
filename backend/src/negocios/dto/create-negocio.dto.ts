@@ -1,11 +1,28 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsEnum, IsDateString, Min, Max, IsDecimal } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsDateString,
+  Min,
+  Max,
+  IsDecimal,
+} from 'class-validator';
+import { Transform } from 'class-transformer';
 import { EtapaNegocio, TipoMoneda } from '@prisma/client';
 
 export class CreateNegocioDto {
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : value,
+  )
   @IsString({ message: 'El título debe ser un texto' })
   @IsNotEmpty({ message: 'El título es requerido' })
   titulo: string;
 
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.replace(/<[^>]*>/g, '').trim() : value,
+  )
   @IsString({ message: 'La descripción debe ser un texto' })
   @IsOptional()
   descripcion?: string;

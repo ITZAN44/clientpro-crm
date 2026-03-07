@@ -5,22 +5,25 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   private pool: Pool;
 
   constructor(private configService: ConfigService) {
     const databaseUrl = configService.get<string>('DATABASE_URL');
-    
-    const pool = new Pool({ 
+
+    const pool = new Pool({
       connectionString: databaseUrl,
       ssl: false,
       max: 10,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000,
     });
-    
+
     const adapter = new PrismaPg(pool);
-    
+
     super({
       adapter,
       log: ['error'],

@@ -150,5 +150,5 @@ Esta carpeta contiene toda la información contextual del proyecto dividida en d
 
 ---
 
-**Última actualización**: 30 Enero 2026  
-**Versión**: 0.4.0
+**Última actualización**: 24 Febrero 2026  
+**Versión**: 0.7.3

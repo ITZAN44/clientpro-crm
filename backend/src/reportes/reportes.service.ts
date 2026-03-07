@@ -41,7 +41,7 @@ export class ReportesService {
 
     // Calcular total y tasas de conversión
     const total = Object.values(etapas).reduce((sum, count) => sum + count, 0);
-    
+
     const conversion = [
       {
         etapa: 'PROSPECTO',
@@ -51,33 +51,39 @@ export class ReportesService {
       {
         etapa: 'CONTACTO_REALIZADO',
         cantidad: etapas.CONTACTO_REALIZADO,
-        porcentaje: etapas.PROSPECTO > 0 
-          ? (etapas.CONTACTO_REALIZADO / etapas.PROSPECTO) * 100 
-          : 0,
-        conversionDesdeInicio: total > 0 ? (etapas.CONTACTO_REALIZADO / total) * 100 : 0,
+        porcentaje:
+          etapas.PROSPECTO > 0
+            ? (etapas.CONTACTO_REALIZADO / etapas.PROSPECTO) * 100
+            : 0,
+        conversionDesdeInicio:
+          total > 0 ? (etapas.CONTACTO_REALIZADO / total) * 100 : 0,
       },
       {
         etapa: 'PROPUESTA',
         cantidad: etapas.PROPUESTA,
-        porcentaje: etapas.CONTACTO_REALIZADO > 0 
-          ? (etapas.PROPUESTA / etapas.CONTACTO_REALIZADO) * 100 
-          : 0,
+        porcentaje:
+          etapas.CONTACTO_REALIZADO > 0
+            ? (etapas.PROPUESTA / etapas.CONTACTO_REALIZADO) * 100
+            : 0,
         conversionDesdeInicio: total > 0 ? (etapas.PROPUESTA / total) * 100 : 0,
       },
       {
         etapa: 'NEGOCIACION',
         cantidad: etapas.NEGOCIACION,
-        porcentaje: etapas.PROPUESTA > 0 
-          ? (etapas.NEGOCIACION / etapas.PROPUESTA) * 100 
-          : 0,
-        conversionDesdeInicio: total > 0 ? (etapas.NEGOCIACION / total) * 100 : 0,
+        porcentaje:
+          etapas.PROPUESTA > 0
+            ? (etapas.NEGOCIACION / etapas.PROPUESTA) * 100
+            : 0,
+        conversionDesdeInicio:
+          total > 0 ? (etapas.NEGOCIACION / total) * 100 : 0,
       },
       {
         etapa: 'GANADO',
         cantidad: etapas.GANADO,
-        porcentaje: etapas.NEGOCIACION > 0 
-          ? (etapas.GANADO / etapas.NEGOCIACION) * 100 
-          : 0,
+        porcentaje:
+          etapas.NEGOCIACION > 0
+            ? (etapas.GANADO / etapas.NEGOCIACION) * 100
+            : 0,
         conversionDesdeInicio: total > 0 ? (etapas.GANADO / total) * 100 : 0,
       },
       {
@@ -88,9 +94,8 @@ export class ReportesService {
     ];
 
     // Tasa de cierre general (PROSPECTO -> GANADO)
-    const tasaCierre = etapas.PROSPECTO > 0 
-      ? (etapas.GANADO / etapas.PROSPECTO) * 100 
-      : 0;
+    const tasaCierre =
+      etapas.PROSPECTO > 0 ? (etapas.GANADO / etapas.PROSPECTO) * 100 : 0;
 
     return {
       total,
@@ -108,14 +113,32 @@ export class ReportesService {
    */
   async getComparativas() {
     const hoy = new Date();
-    
+
     // Mes actual
     const inicioMesActual = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-    const finMesActual = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0, 23, 59, 59);
-    
+    const finMesActual = new Date(
+      hoy.getFullYear(),
+      hoy.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+    );
+
     // Mes anterior
-    const inicioMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
-    const finMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0, 23, 59, 59);
+    const inicioMesAnterior = new Date(
+      hoy.getFullYear(),
+      hoy.getMonth() - 1,
+      1,
+    );
+    const finMesAnterior = new Date(
+      hoy.getFullYear(),
+      hoy.getMonth(),
+      0,
+      23,
+      59,
+      59,
+    );
 
     // Métricas mes actual
     const [
@@ -263,7 +286,11 @@ export class ReportesService {
    */
   async getRendimientoUsuarios(query: ReporteQueryDto) {
     const { fechaInicio, fechaFin } = query;
-    const filtroFechas = this.construirFiltroFechas(fechaInicio, fechaFin, 'cerradoEn');
+    const filtroFechas = this.construirFiltroFechas(
+      fechaInicio,
+      fechaFin,
+      'cerradoEn',
+    );
 
     // Obtener usuarios activos
     const usuarios = await this.prisma.usuario.findMany({
@@ -317,12 +344,13 @@ export class ReportesService {
             where: {
               asignadoA: usuario.id,
               completada: true,
-              completadaEn: fechaInicio || fechaFin 
-                ? {
-                    ...(fechaInicio && { gte: new Date(fechaInicio) }),
-                    ...(fechaFin && { lte: new Date(fechaFin) }),
-                  }
-                : undefined,
+              completadaEn:
+                fechaInicio || fechaFin
+                  ? {
+                      ...(fechaInicio && { gte: new Date(fechaInicio) }),
+                      ...(fechaFin && { lte: new Date(fechaFin) }),
+                    }
+                  : undefined,
             },
           }),
           // Total de negocios
@@ -335,9 +363,8 @@ export class ReportesService {
         ]);
 
         // Calcular tasa de conversión
-        const tasaConversion = totalNegocios > 0 
-          ? (negociosGanados / totalNegocios) * 100 
-          : 0;
+        const tasaConversion =
+          totalNegocios > 0 ? (negociosGanados / totalNegocios) * 100 : 0;
 
         return {
           usuario: {
@@ -359,8 +386,8 @@ export class ReportesService {
     );
 
     // Ordenar por valor generado (mayor a menor)
-    rendimiento.sort((a, b) => 
-      b.metricas.valorGenerado - a.metricas.valorGenerado
+    rendimiento.sort(
+      (a, b) => b.metricas.valorGenerado - a.metricas.valorGenerado,
     );
 
     return {
@@ -385,7 +412,7 @@ export class ReportesService {
     }
 
     const filtro: any = {};
-    
+
     if (fechaInicio || fechaFin) {
       filtro[campo] = {};
       if (fechaInicio) {

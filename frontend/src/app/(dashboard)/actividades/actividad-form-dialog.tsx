@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useForm } from "react-hook-form";
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
 import {
   Dialog,
   DialogContent,
@@ -9,30 +9,31 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { CalendarIcon, Phone, Mail, Users, CheckSquare, FileText } from "lucide-react";
-import type { Actividad, CreateActividadDto, UpdateActividadDto, TipoActividad } from "@/types/actividad";
-import { TIPO_ACTIVIDAD_LABELS } from "@/types/actividad";
+} from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { CalendarIcon, Phone, Mail, Users, CheckSquare, FileText } from 'lucide-react';
+import type {
+  Actividad,
+  CreateActividadDto,
+  UpdateActividadDto,
+  TipoActividad,
+} from '@/types/actividad';
+import { TIPO_ACTIVIDAD_LABELS } from '@/types/actividad';
 
 interface ActividadFormDialogProps {
   open: boolean;
@@ -134,37 +135,39 @@ export function ActividadFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-popover border-border">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-stone-900 dark:text-stone-100">
-            {actividad ? "Editar Actividad" : "Nueva Actividad"}
+          <DialogTitle className="font-serif text-2xl text-foreground">
+            {actividad ? 'Editar Actividad' : 'Nueva Actividad'}
           </DialogTitle>
-          <DialogDescription className="text-stone-600 dark:text-stone-400">
+          <DialogDescription className="text-muted-foreground">
             {actividad
-              ? "Modifica los datos de la actividad"
-              : "Completa los datos para crear una nueva actividad"}
+              ? 'Modifica los datos de la actividad'
+              : 'Completa los datos para crear una nueva actividad'}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           {/* Tipo de actividad */}
           <div className="space-y-2">
-            <Label className="text-stone-700 dark:text-stone-300 font-semibold">
-              Tipo de Actividad *
-            </Label>
+            <Label className="text-foreground font-medium">Tipo de Actividad *</Label>
             <Select
               value={tipo}
               onValueChange={(value) => setValue('tipo', value as TipoActividad)}
             >
-              <SelectTrigger className="bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100">
+              <SelectTrigger className="bg-input border-border text-foreground">
                 <div className="flex items-center gap-2">
                   {getTipoIcon(tipo)}
                   <SelectValue placeholder="Seleccionar tipo" />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700">
+              <SelectContent className="bg-popover border-border">
                 {Object.entries(TIPO_ACTIVIDAD_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value} className="text-stone-900 dark:text-stone-100">
+                  <SelectItem
+                    key={value}
+                    value={value}
+                    className="text-foreground focus:bg-accent focus:text-accent-foreground"
+                  >
                     <div className="flex items-center gap-2">
                       {getTipoIcon(value as TipoActividad)}
                       <span>{label}</span>
@@ -177,50 +180,46 @@ export function ActividadFormDialog({
 
           {/* Título */}
           <div className="space-y-2">
-            <Label className="text-stone-700 dark:text-stone-300 font-semibold">Título *</Label>
+            <Label className="text-foreground font-medium">Título *</Label>
             <Input
-              {...register("titulo", { required: "El título es obligatorio" })}
+              {...register('titulo', { required: 'El título es obligatorio' })}
               placeholder="Ej: Llamada de seguimiento"
-              className="bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+              className="bg-input border-border text-foreground placeholder:text-muted-foreground"
             />
-            {errors.titulo && (
-              <p className="text-sm text-red-600">{errors.titulo.message}</p>
-            )}
+            {errors.titulo && <p className="text-sm text-destructive">{errors.titulo.message}</p>}
           </div>
 
           {/* Descripción */}
           <div className="space-y-2">
-            <Label className="text-stone-700 dark:text-stone-300 font-semibold">Descripción</Label>
+            <Label className="text-foreground font-medium">Descripción</Label>
             <Textarea
-              {...register("descripcion")}
+              {...register('descripcion')}
               placeholder="Detalles adicionales sobre la actividad..."
-              className="min-h-[100px] bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+              className="min-h-[100px] bg-input border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           {/* Fecha de vencimiento */}
           <div className="space-y-2">
-            <Label className="text-stone-700 dark:text-stone-300 font-semibold">
-              Fecha de Vencimiento
-            </Label>
+            <Label className="text-foreground font-medium">Fecha de Vencimiento</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal bg-white dark:bg-stone-800 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100",
-                    !fechaVencimiento && "text-stone-500 dark:text-stone-400"
+                    'w-full justify-start text-left font-normal bg-input border-border text-foreground',
+                    !fechaVencimiento && 'text-muted-foreground'
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {fechaVencimiento ? (
-                    format(fechaVencimiento, "PPP", { locale: es })
+                    format(fechaVencimiento, 'PPP', { locale: es })
                   ) : (
                     <span>Seleccionar fecha</span>
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700" align="start">
+              <PopoverContent className="w-auto p-0 bg-popover border-border" align="start">
                 <Calendar
                   mode="single"
                   selected={fechaVencimiento}
@@ -234,46 +233,48 @@ export function ActividadFormDialog({
 
           {/* Cliente */}
           <div className="space-y-2">
-            <Label className="text-stone-700 dark:text-stone-300 font-semibold">
-              Cliente {!negocioId && "*"}
-            </Label>
+            <Label className="text-foreground font-medium">Cliente {!negocioId && '*'}</Label>
             <Select
-              value={clienteId || ""}
+              value={clienteId || ''}
               onValueChange={(value) => setValue('clienteId', value || undefined)}
             >
-              <SelectTrigger className="bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100">
+              <SelectTrigger className="bg-input border-border text-foreground">
                 <SelectValue placeholder="Seleccionar cliente" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700">
+              <SelectContent className="bg-popover border-border">
                 {clientes.map((cliente) => (
-                  <SelectItem key={cliente.id} value={cliente.id} className="text-stone-900 dark:text-stone-100">
+                  <SelectItem
+                    key={cliente.id}
+                    value={cliente.id}
+                    className="text-foreground focus:bg-accent focus:text-accent-foreground"
+                  >
                     {cliente.nombre} {cliente.empresa && `- ${cliente.empresa}`}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {!clienteId && !negocioId && (
-              <p className="text-sm text-amber-600 dark:text-amber-400">
-                Debe seleccionar un cliente o un negocio
-              </p>
+              <p className="text-sm text-amber-400">Debe seleccionar un cliente o un negocio</p>
             )}
           </div>
 
           {/* Negocio */}
           <div className="space-y-2">
-            <Label className="text-stone-700 dark:text-stone-300 font-semibold">
-              Negocio (Opcional)
-            </Label>
+            <Label className="text-foreground font-medium">Negocio (Opcional)</Label>
             <Select
-              value={negocioId || ""}
+              value={negocioId || ''}
               onValueChange={(value) => setValue('negocioId', value || undefined)}
             >
-              <SelectTrigger className="bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100">
+              <SelectTrigger className="bg-input border-border text-foreground">
                 <SelectValue placeholder="Seleccionar negocio" />
               </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700">
+              <SelectContent className="bg-popover border-border">
                 {negocios.map((negocio) => (
-                  <SelectItem key={negocio.id} value={negocio.id} className="text-stone-900 dark:text-stone-100">
+                  <SelectItem
+                    key={negocio.id}
+                    value={negocio.id}
+                    className="text-foreground focus:bg-accent focus:text-accent-foreground"
+                  >
                     {negocio.titulo}
                   </SelectItem>
                 ))}
@@ -292,10 +293,10 @@ export function ActividadFormDialog({
             </Button>
             <Button
               type="submit"
-              className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={isLoading}
             >
-              {isLoading ? "Guardando..." : actividad ? "Actualizar" : "Crear"}
+              {isLoading ? 'Guardando...' : actividad ? 'Actualizar' : 'Crear'}
             </Button>
           </DialogFooter>
         </form>

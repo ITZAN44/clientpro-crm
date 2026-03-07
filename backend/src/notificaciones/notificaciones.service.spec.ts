@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificacionesService } from './notificaciones.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TipoNotificacion } from '@prisma/client';
-import { createMockPrismaService, MockPrismaService } from '../testing/prisma.mock';
+import {
+  createMockPrismaService,
+  MockPrismaService,
+} from '../testing/prisma.mock';
 
 describe('NotificacionesService', () => {
   let service: NotificacionesService;
@@ -44,7 +47,7 @@ describe('NotificacionesService', () => {
   };
 
   const mockCreateNotificacionDto = {
-    tipo: TipoNotificacion.NUEVO_CLIENTE,
+    tipo: TipoNotificacion.CLIENTE_NUEVO,
     titulo: 'Nuevo cliente registrado',
     mensaje: 'Se ha registrado un nuevo cliente',
     usuarioId: 'user-1',
@@ -399,13 +402,15 @@ describe('NotificacionesService', () => {
       const result = await service.limpiarAntiguas(dias);
 
       // Assert
-      const call = (prisma.notificacion.deleteMany as jest.Mock).mock.calls[0][0];
+      const call = prisma.notificacion.deleteMany.mock.calls[0][0];
       const fechaLimite = call.where.creadoEn.lt as Date;
       const haceXDias = new Date();
       haceXDias.setDate(haceXDias.getDate() - dias);
 
       // Verificar que la fecha límite es aproximadamente hace 60 días (tolerancia de 1 minuto)
-      expect(Math.abs(fechaLimite.getTime() - haceXDias.getTime())).toBeLessThan(60000);
+      expect(
+        Math.abs(fechaLimite.getTime() - haceXDias.getTime()),
+      ).toBeLessThan(60000);
       expect(result.eliminado).toBe(15);
     });
 

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
@@ -21,14 +21,9 @@ interface NegocioCardProps {
 
 // Memoized component to prevent unnecessary re-renders
 function NegocioCard({ negocio, onEdit, onDelete }: NegocioCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: negocio.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: negocio.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -57,52 +52,53 @@ function NegocioCard({ negocio, onEdit, onDelete }: NegocioCardProps) {
       style={style}
       className={`
         relative
-        bg-white/90 dark:bg-slate-900/90 
+        bg-card
         backdrop-blur-sm
-        rounded-xl 
-        border border-slate-200 dark:border-slate-700 
-        p-4 
-        shadow-md 
-        hover:shadow-lg 
-        hover:-translate-y-1 
-        transition-all 
+        rounded-xl
+        border border-border
+        hover:border-primary/20
+        p-4
+        shadow-md shadow-black/40
+        hover:shadow-lg hover:shadow-black/50
+        hover:-translate-y-1
+        transition-all
         duration-300
         group
         ${isDragging ? 'opacity-50 rotate-2 scale-105 shadow-2xl' : 'cursor-grab active:cursor-grabbing'}
       `}
     >
-      {/* Drag indicator - 3 líneas horizontales en top */}
-      <div 
+      {/* Drag handle — 3 horizontal lines at top */}
+      <div
         {...attributes}
         {...listeners}
         className="absolute top-2 left-1/2 -translate-x-1/2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
       >
-        <div className="w-8 h-0.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
-        <div className="w-8 h-0.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
-        <div className="w-8 h-0.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
+        <div className="w-8 h-0.5 bg-muted-foreground/40 hover:bg-foreground/60 rounded-full transition-colors"></div>
+        <div className="w-8 h-0.5 bg-muted-foreground/40 hover:bg-foreground/60 rounded-full transition-colors"></div>
+        <div className="w-8 h-0.5 bg-muted-foreground/40 hover:bg-foreground/60 rounded-full transition-colors"></div>
       </div>
 
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-3 mt-2">
-        <h4 className="font-semibold text-lg text-slate-900 dark:text-slate-100 line-clamp-2 flex-1 leading-tight">
+        <h4 className="font-medium text-lg text-foreground line-clamp-2 flex-1 leading-tight">
           {negocio.titulo}
         </h4>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+              className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-muted rounded-lg"
               onClick={(e) => e.stopPropagation()}
             >
-              <MoreVertical className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+              <MoreVertical className="h-4 w-4 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+          <DropdownMenuContent align="end" className="bg-popover border-border">
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(negocio);
               }}
-              className="text-slate-700 dark:text-slate-200 focus:bg-slate-100 dark:focus:bg-slate-700 cursor-pointer"
+              className="text-foreground focus:bg-muted cursor-pointer"
             >
               <Edit className="h-4 w-4 mr-2" />
               Editar
@@ -112,7 +108,7 @@ function NegocioCard({ negocio, onEdit, onDelete }: NegocioCardProps) {
                 e.stopPropagation();
                 onDelete(negocio);
               }}
-              className="text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-900/20 cursor-pointer"
+              className="text-destructive focus:bg-destructive/10 cursor-pointer"
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Eliminar
@@ -121,43 +117,46 @@ function NegocioCard({ negocio, onEdit, onDelete }: NegocioCardProps) {
         </DropdownMenu>
       </div>
 
-      {/* Valor con gradiente verde */}
+      {/* Valor monetario — amber mono highlight */}
       <div className="mb-4">
-        <p className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+        <p className="font-mono text-2xl font-semibold text-primary">
           {formatCurrency(negocio.valor, negocio.moneda)}
         </p>
       </div>
 
       {/* Cliente */}
       {negocio.cliente && (
-        <div className="flex items-start gap-2 mb-3 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-          <Building2 className="h-4 w-4 text-slate-400 dark:text-slate-500 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-slate-600 dark:text-slate-300 min-w-0">
+        <div className="flex items-start gap-2 mb-3 p-2 rounded-lg bg-muted/50">
+          <Building2 className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-foreground min-w-0">
             <p className="font-medium truncate">{negocio.cliente.nombre}</p>
             {negocio.cliente.empresa && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{negocio.cliente.empresa}</p>
+              <p className="text-xs text-muted-foreground truncate">{negocio.cliente.empresa}</p>
             )}
           </div>
         </div>
       )}
 
-      {/* Badge de probabilidad con estado */}
+      {/* Badge de probabilidad */}
       <div className="flex items-center gap-2 mb-3">
-        <Badge 
+        <Badge
           className={`
-            ${negocio.probabilidad >= 75 ? 'bg-green-500' : ''}
-            ${negocio.probabilidad >= 50 && negocio.probabilidad < 75 ? 'bg-yellow-500' : ''}
-            ${negocio.probabilidad < 50 ? 'bg-orange-500' : ''}
-            text-white font-semibold
+            ${negocio.probabilidad >= 75 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : ''}
+            ${negocio.probabilidad >= 50 && negocio.probabilidad < 75 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : ''}
+            ${negocio.probabilidad < 50 ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' : ''}
+            font-mono font-semibold border
           `}
         >
           <TrendingUp className="h-3 w-3 mr-1" />
           {negocio.probabilidad}%
         </Badge>
-        
+
         {/* Fecha de cierre esperada */}
         {negocio.fechaCierreEsperada && (
-          <Badge variant="outline" className="border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300">
+          <Badge
+            variant="outline"
+            className="border-border text-muted-foreground font-mono text-xs"
+          >
             <Calendar className="h-3 w-3 mr-1" />
             {formatDate(negocio.fechaCierreEsperada)}
           </Badge>
@@ -166,8 +165,8 @@ function NegocioCard({ negocio, onEdit, onDelete }: NegocioCardProps) {
 
       {/* Propietario */}
       {negocio.propietario && (
-        <div className="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-700">
-          <div className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white shadow-md">
+        <div className="flex items-center gap-2 pt-3 border-t border-border">
+          <div className="h-6 w-6 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-[10px] font-bold text-primary">
             {negocio.propietario.nombre
               .split(' ')
               .map((n) => n[0])
@@ -175,7 +174,7 @@ function NegocioCard({ negocio, onEdit, onDelete }: NegocioCardProps) {
               .toUpperCase()
               .slice(0, 2)}
           </div>
-          <span className="text-xs text-slate-600 dark:text-slate-300 truncate font-medium">
+          <span className="text-xs text-muted-foreground truncate font-medium">
             {negocio.propietario.nombre}
           </span>
         </div>
@@ -186,8 +185,10 @@ function NegocioCard({ negocio, onEdit, onDelete }: NegocioCardProps) {
 
 // Export memoized version - only re-render if negocio.id changes
 export default memo(NegocioCard, (prevProps, nextProps) => {
-  return prevProps.negocio.id === nextProps.negocio.id &&
-         prevProps.negocio.titulo === nextProps.negocio.titulo &&
-         prevProps.negocio.etapa === nextProps.negocio.etapa &&
-         prevProps.negocio.valor === nextProps.negocio.valor;
+  return (
+    prevProps.negocio.id === nextProps.negocio.id &&
+    prevProps.negocio.titulo === nextProps.negocio.titulo &&
+    prevProps.negocio.etapa === nextProps.negocio.etapa &&
+    prevProps.negocio.valor === nextProps.negocio.valor
+  );
 });

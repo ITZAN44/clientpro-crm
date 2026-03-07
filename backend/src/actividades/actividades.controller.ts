@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  Query,
+} from '@nestjs/common';
 import { ActividadesService } from './actividades.service';
 import { CreateActividadDto } from './dto/create-actividad.dto';
 import { UpdateActividadDto } from './dto/update-actividad.dto';
@@ -25,8 +36,16 @@ export class ActividadesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateActividadDto: UpdateActividadDto, @Request() req) {
-    return this.actividadesService.update(id, updateActividadDto, req.user.userId);
+  update(
+    @Param('id') id: string,
+    @Body() updateActividadDto: UpdateActividadDto,
+    @Request() req,
+  ) {
+    return this.actividadesService.update(
+      id,
+      updateActividadDto,
+      req.user.userId,
+    );
   }
 
   @Patch(':id/completar')

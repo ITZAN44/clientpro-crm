@@ -2,7 +2,7 @@
 
 > **Estructura de archivos y organización del código**
 
-**Última actualización**: 4 Febrero 2026
+**Última actualización**: 24 Febrero 2026
 
 ---
 
@@ -289,6 +289,172 @@ backend/
 
 ---
 
+## 🐳 Infraestructura y Containerización
+
+### **Arquitectura Containerizada**
+
+El proyecto utiliza **Docker Compose** para orquestar 4 servicios containerizados que se comunican a través de una red interna privada (`clientpro-network`). Esta arquitectura permite:
+
+- **Aislamiento**: Cada servicio corre en su propio contenedor
+- **Reproducibilidad**: Entorno consistente en desarrollo y producción
+- **Escalabilidad**: Fácil escalado horizontal de servicios
+- **Portabilidad**: Deploy independiente de la plataforma host
+
+### **Diagrama de Servicios**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    clientpro-network (bridge)                │
+│                                                               │
+│  ┌──────────────┐      ┌──────────────┐      ┌────────────┐ │
+│  │   Frontend   │─────▶│   Backend    │─────▶│ PostgreSQL │ │
+│  │  (Next.js)   │      │  (NestJS)    │      │     16     │ │
+│  │  Port: 3000  │      │  Port: 4000  │      │ Port: 5432 │ │
+│  └──────────────┘      └──────┬───────┘      └────────────┘ │
+│                               │                               │
+│                               │                               │
+│                               ▼                               │
+│                        ┌──────────────┐                       │
+│                        │    Redis     │                       │
+│                        │      7       │                       │
+│                        │  Port: 6379  │                       │
+│                        └──────────────┘                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### **Comunicación entre Contenedores**
+
+**Frontend → Backend**:
+- Navegador (externo): `http://localhost:4000` (NEXT_PUBLIC_API_URL)
+- Server-side (interno): `http://backend:4000` (API_URL)
+
+**Backend → PostgreSQL**:
+- URL de conexión: `postgresql://postgres:postgres@postgres:5432/clientpro_crm`
+- Healthcheck requerido antes de iniciar backend
+
+**Backend → Redis**:
+- Host: `redis` (nombre de servicio Docker)
+- Puerto: `6379` (puerto interno del contenedor)
+
+### **Dependencias de Servicios**
+
+```yaml
+postgres (sin dependencias)
+  ↓
+redis (sin dependencias)
+  ↓
+backend (depends_on: postgres[healthy], redis[healthy])
+  ↓
+frontend (depends_on: backend[healthy])
+```
+
+### **Healthchecks**
+
+Cada servicio implementa healthchecks para garantizar disponibilidad:
+
+- **postgres**: `pg_isready -U postgres` (cada 10s, 5 retries)
+- **redis**: `redis-cli ping` (cada 10s, 3 retries)
+- **backend**: `curl -f http://localhost:4000` (cada 30s, 3 retries)
+- **frontend**: Sin healthcheck (depende de backend healthy)
+
+### **Volúmenes y Persistencia**
+
+Los datos persisten fuera de los contenedores usando volúmenes Docker:
+
+- **postgres_data**: Base de datos PostgreSQL (`/var/lib/postgresql/data`)
+- **redis_data**: Cache Redis (`/data`)
+
+**Ventaja**: Los datos sobreviven a reinicios de contenedores y reconstrucciones de imágenes.
+
+### **Variables de Entorno**
+
+Configuradas en `.env` (raíz del proyecto):
+
+```bash
+# PostgreSQL
+POSTGRES_DB=clientpro_crm
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_PORT=5432
+
+# Redis
+REDIS_PORT=6379
+
+# Backend
+BACKEND_PORT=4000
+NODE_ENV=production
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+JWT_EXPIRES_IN=7d
+
+# Frontend
+FRONTEND_PORT=3000
+NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-super-secret-nextauth-key-change-in-production
+```
+
+### **Comandos de Gestión**
+
+```bash
+# Iniciar todos los servicios
+docker-compose up -d
+
+# Ver logs en tiempo real
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f backend
+
+# Detener servicios (mantiene volúmenes)
+docker-compose down
+
+# Detener y eliminar volúmenes (⚠️ pierde datos)
+docker-compose down -v
+
+# Reconstruir imágenes
+docker-compose build --no-cache
+
+# Ver estado de servicios
+docker-compose ps
+
+# Ejecutar comando en contenedor
+docker-compose exec backend npx prisma migrate deploy
+docker-compose exec backend npx prisma studio
+
+# Reiniciar un servicio
+docker-compose restart backend
+```
+
+### **Dockerfile - Backend**
+
+```dockerfile
+# backend/Dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npx prisma generate
+EXPOSE 4000
+CMD ["npm", "run", "start:prod"]
+```
+
+### **Dockerfile - Frontend**
+
+```dockerfile
+# frontend/Dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+---
+
 ## 🗄️ Base de Datos
 
 ### **Archivos**
@@ -409,7 +575,11 @@ docs/
 ```
 .github/
 ├── pull_request_template.md     # Template para PRs
-└── workflows/                   # GitHub Actions (futuro)
+└── workflows/                    # GitHub Actions ✨ NUEVO
+    ├── test.yml                  # Testing automático (Node 18, 20, 22)
+    ├── lint.yml                  # Linting y type checking
+    ├── build.yml                 # Build de producción
+    └── dependabot.yml            # Actualizaciones automáticas
 ```
 
 **Git Flow**:
@@ -498,5 +668,5 @@ import { getClientes } from '@/lib/api/clientes';
 
 ---
 
-**Última revisión**: 5 Febrero 2026  
-**Versión**: 0.6.1
+**Última revisión**: 24 Febrero 2026  
+**Versión**: 0.7.3

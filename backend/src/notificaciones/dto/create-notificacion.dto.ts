@@ -1,8 +1,16 @@
-import { IsString, IsNotEmpty, IsOptional, IsUUID, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsUUID,
+  IsEnum,
+} from 'class-validator';
 import { TipoNotificacion } from '@prisma/client';
 
 export class CreateNotificacionDto {
-  @IsEnum(TipoNotificacion, { message: 'El tipo de notificación debe ser válido' })
+  @IsEnum(TipoNotificacion, {
+    message: 'El tipo de notificación debe ser válido',
+  })
   tipo: TipoNotificacion;
 
   @IsString({ message: 'El título debe ser una cadena de texto' })
