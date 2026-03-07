@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 import {
   ColumnDef,
   flexRender,
@@ -8,7 +8,7 @@ import {
   useReactTable,
   ColumnFiltersState,
   getFilteredRowModel,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
 import {
   Table,
@@ -17,10 +17,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+} from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -40,8 +40,8 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  searchPlaceholder = "Buscar...",
-  searchValue = "",
+  searchPlaceholder = 'Buscar...',
+  searchValue = '',
   onSearch,
   pagination,
   meta,
@@ -78,34 +78,36 @@ export function DataTable<TData, TValue>({
       {/* Barra de búsqueda */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={searchPlaceholder}
             value={searchValue}
             onChange={(e) => handleSearchChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:border-orange-500 dark:focus:border-orange-500 focus:ring-orange-500/20"
+            className="pl-9 bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20"
           />
         </div>
       </div>
 
       {/* Tabla */}
-      <div className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 overflow-hidden shadow-sm">
+      <div className="rounded-lg border border-border overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-stone-50 dark:bg-stone-900/50 hover:bg-stone-50 dark:hover:bg-stone-900/50 border-b border-stone-200 dark:border-stone-700">
+              <TableRow key={headerGroup.id} className="hover:bg-transparent border-b border-border">
                 {headerGroup.headers.map((header) => (
                   <TableHead 
+                    key={header.id}
+                    className="text-muted-foreground uppercase text-xs tracking-wider font-medium"
+                  >
+                {headerGroup.headers.map((header) => (
+                  <TableHead
                     key={header.id}
                     className="font-semibold text-stone-700 dark:text-stone-300"
                   >
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -117,10 +119,10 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-orange-50/30 dark:hover:bg-orange-900/10 transition-colors border-b border-stone-200 dark:border-stone-700"
+                  className="hover:bg-accent/50 transition-colors border-b border-border"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-stone-900 dark:text-stone-100">
+                    <TableCell key={cell.id} className="text-foreground">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -129,8 +131,8 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  <div className="flex flex-col items-center justify-center gap-2 text-stone-500 dark:text-stone-400">
-                    <Search className="h-8 w-8 text-stone-300 dark:text-stone-600" />
+                  <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <Search className="h-8 w-8 text-muted-foreground/40" />
                     <p>No se encontraron resultados</p>
                   </div>
                 </TableCell>
@@ -143,7 +145,7 @@ export function DataTable<TData, TValue>({
       {/* Paginación */}
       {pagination && (
         <div className="flex items-center justify-between px-2">
-          <div className="text-sm text-stone-600 dark:text-stone-400">
+          <div className="text-sm font-mono text-muted-foreground">
             Mostrando {data.length === 0 ? 0 : ((pagination.page - 1) * 10) + 1} - {Math.min(pagination.page * 10, pagination.total)} de {pagination.total} clientes
           </div>
           <div className="flex items-center gap-2">
@@ -152,7 +154,27 @@ export function DataTable<TData, TValue>({
               size="sm"
               onClick={() => pagination.onPageChange(pagination.page - 1)}
               disabled={pagination.page === 1}
-              className="gap-1 border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800"
+              className="gap-1 border-border text-foreground hover:bg-accent"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Anterior
+            </Button>
+            <div className="flex items-center gap-1 text-sm">
+              <span className="text-muted-foreground">Página</span>
+              <span className="font-mono font-semibold text-foreground">
+                {pagination.page}
+              </span>
+              <span className="text-muted-foreground">de</span>
+              <span className="font-mono font-semibold text-foreground">
+                {pagination.totalPages}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => pagination.onPageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages}
+              className="gap-1 border-border text-foreground hover:bg-accent"
             >
               <ChevronLeft className="h-4 w-4" />
               Anterior

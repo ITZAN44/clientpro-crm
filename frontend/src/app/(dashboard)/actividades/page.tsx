@@ -1,28 +1,27 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import * as React from 'react';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +31,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   CheckCircle2,
   Circle,
@@ -51,54 +50,46 @@ import {
   Building2,
   Briefcase,
   User,
-} from "lucide-react";
-import Link from "next/link";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { ActividadFormDialog } from "./actividad-form-dialog";
+} from 'lucide-react';
+import Link from 'next/link';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { ActividadFormDialog } from './actividad-form-dialog';
 import {
   getActividades,
   createActividad,
   updateActividad,
   deleteActividad,
   marcarActividadCompletada,
-} from "@/lib/api/actividades";
-import { getClientes } from "@/lib/api/clientes";
-import { getNegocios } from "@/lib/api/negocios";
-import type { Actividad, CreateActividadDto, UpdateActividadDto, TipoActividad } from "@/types/actividad";
-import { TIPO_ACTIVIDAD_CONFIG, TIPO_ACTIVIDAD_LABELS } from "@/types/actividad";
-
-// Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
+} from '@/lib/api/actividades';
+import { getClientes } from '@/lib/api/clientes';
+import { getNegocios } from '@/lib/api/negocios';
+import type {
+  Actividad,
+  CreateActividadDto,
+  UpdateActividadDto,
+  TipoActividad,
+} from '@/types/actividad';
+import { TIPO_ACTIVIDAD_CONFIG, TIPO_ACTIVIDAD_LABELS } from '@/types/actividad';
+import { fadeInUp, staggerContainer } from '@/lib/motion';
 
 export default function ActividadesPage() {
   const { data: session, status } = useSession();
   const queryClient = useQueryClient();
 
   const [page, setPage] = React.useState(1);
-  const [search, setSearch] = React.useState("");
-  const [debouncedSearch, setDebouncedSearch] = React.useState("");
-  const [tipoFiltro, setTipoFiltro] = React.useState<string>("TODOS");
-  const [completadaFiltro, setCompletadaFiltro] = React.useState<string>("TODOS");
+  const [search, setSearch] = React.useState('');
+  const [debouncedSearch, setDebouncedSearch] = React.useState('');
+  const [tipoFiltro, setTipoFiltro] = React.useState<string>('TODOS');
+  const [completadaFiltro, setCompletadaFiltro] = React.useState<string>('TODOS');
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [editingActividad, setEditingActividad] = React.useState<Actividad | undefined>();
   const [deletingActividad, setDeletingActividad] = React.useState<Actividad | undefined>();
 
   // Redirect si no está autenticado
-  if (status === "unauthenticated") {
-    redirect("/login");
+  if (status === 'unauthenticated') {
+    redirect('/login');
   }
 
   // Debounce del search
@@ -246,19 +237,17 @@ export default function ActividadesPage() {
   };
 
   const getTipoIcon = (tipo: TipoActividad) => {
-    const iconProps = { className: "h-5 w-5" };
-    
     switch (tipo) {
       case 'LLAMADA':
-        return <Phone {...iconProps} className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
+        return <Phone className="h-5 w-5 text-blue-400" />;
       case 'EMAIL':
-        return <Mail {...iconProps} className="h-5 w-5 text-green-600 dark:text-green-400" />;
+        return <Mail className="h-5 w-5 text-emerald-400" />;
       case 'REUNION':
-        return <Users {...iconProps} className="h-5 w-5 text-purple-600 dark:text-purple-400" />;
+        return <Users className="h-5 w-5 text-violet-400" />;
       case 'TAREA':
-        return <CheckSquare {...iconProps} className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />;
+        return <CheckSquare className="h-5 w-5 text-amber-400" />;
       case 'NOTA':
-        return <FileText {...iconProps} className="h-5 w-5 text-slate-600 dark:text-slate-400" />;
+        return <FileText className="h-5 w-5 text-slate-400" />;
     }
   };
 
@@ -266,27 +255,25 @@ export default function ActividadesPage() {
   const totalPages = actividadesData?.meta?.totalPages || 1;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      {/* Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/50 dark:border-slate-700/50 shadow-lg">
+    <div className="min-h-screen bg-background">
+      {/* Header sticky */}
+      <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-xl border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="hover:bg-slate-100 dark:hover:bg-slate-800">
+                <Button variant="ghost" size="sm">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Volver
                 </Button>
               </Link>
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-lg">
-                  <CheckSquare className="h-6 w-6 text-white" />
+                <div className="p-2 bg-primary/10 border border-primary/20 rounded-lg">
+                  <CheckSquare className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Actividades
-                  </h1>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <h1 className="text-2xl font-serif text-foreground">Actividades</h1>
+                  <p className="font-mono text-xs text-muted-foreground">
                     {actividadesData?.meta?.total || 0} actividades en total
                   </p>
                 </div>
@@ -297,7 +284,7 @@ export default function ActividadesPage() {
                 setEditingActividad(undefined);
                 setIsFormOpen(true);
               }}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Plus className="h-4 w-4 mr-2" />
               Nueva Actividad
@@ -311,82 +298,90 @@ export default function ActividadesPage() {
         <div className="mb-8 space-y-4">
           {/* Búsqueda */}
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Buscar actividades..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 h-12 backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="pl-10 bg-input border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           {/* Filtros por Tipo */}
           <div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Filtrar por tipo:</p>
+            <p className="text-xs font-mono text-muted-foreground mb-3 uppercase tracking-wider">
+              Filtrar por tipo:
+            </p>
             <div className="flex flex-wrap gap-2">
+              {/* Todos */}
               <button
                 onClick={() => setTipoFiltro('TODOS')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border ${
                   tipoFiltro === 'TODOS'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                    ? 'bg-primary/10 text-primary border-primary/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
                 Todos
               </button>
+              {/* Llamada */}
               <button
                 onClick={() => setTipoFiltro('LLAMADA')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border flex items-center gap-2 ${
                   tipoFiltro === 'LLAMADA'
-                    ? 'bg-blue-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-700 border border-blue-200 dark:border-blue-900'
+                    ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
-                <Phone className="h-4 w-4" />
+                <Phone className="h-3.5 w-3.5" />
                 Llamadas
               </button>
+              {/* Reunión */}
               <button
                 onClick={() => setTipoFiltro('REUNION')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border flex items-center gap-2 ${
                   tipoFiltro === 'REUNION'
-                    ? 'bg-purple-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-purple-600 hover:bg-purple-50 dark:hover:bg-slate-700 border border-purple-200 dark:border-purple-900'
+                    ? 'bg-violet-500/10 text-violet-400 border-violet-500/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
-                <Users className="h-4 w-4" />
+                <Users className="h-3.5 w-3.5" />
                 Reuniones
               </button>
+              {/* Email */}
               <button
                 onClick={() => setTipoFiltro('EMAIL')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border flex items-center gap-2 ${
                   tipoFiltro === 'EMAIL'
-                    ? 'bg-green-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-green-600 hover:bg-green-50 dark:hover:bg-slate-700 border border-green-200 dark:border-green-900'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
-                <Mail className="h-4 w-4" />
+                <Mail className="h-3.5 w-3.5" />
                 Emails
               </button>
+              {/* Tarea */}
               <button
                 onClick={() => setTipoFiltro('TAREA')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border flex items-center gap-2 ${
                   tipoFiltro === 'TAREA'
-                    ? 'bg-yellow-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-slate-700 border border-yellow-200 dark:border-yellow-900'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
-                <CheckSquare className="h-4 w-4" />
+                <CheckSquare className="h-3.5 w-3.5" />
                 Tareas
               </button>
+              {/* Nota */}
               <button
                 onClick={() => setTipoFiltro('NOTA')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border flex items-center gap-2 ${
                   tipoFiltro === 'NOTA'
-                    ? 'bg-slate-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                    ? 'bg-slate-500/10 text-slate-400 border-slate-500/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
-                <FileText className="h-4 w-4" />
+                <FileText className="h-3.5 w-3.5" />
                 Notas
               </button>
             </div>
@@ -394,34 +389,36 @@ export default function ActividadesPage() {
 
           {/* Filtros por Estado */}
           <div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Filtrar por estado:</p>
+            <p className="text-xs font-mono text-muted-foreground mb-3 uppercase tracking-wider">
+              Filtrar por estado:
+            </p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setCompletadaFiltro('TODOS')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border ${
                   completadaFiltro === 'TODOS'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                    ? 'bg-primary/10 text-primary border-primary/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
                 Todos
               </button>
               <button
                 onClick={() => setCompletadaFiltro('false')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border ${
                   completadaFiltro === 'false'
-                    ? 'bg-orange-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-orange-600 hover:bg-orange-50 dark:hover:bg-slate-700 border border-orange-200 dark:border-orange-900'
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
                 Pendientes
               </button>
               <button
                 onClick={() => setCompletadaFiltro('true')}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-150 border ${
                   completadaFiltro === 'true'
-                    ? 'bg-green-600 text-white shadow-lg scale-105'
-                    : 'bg-white dark:bg-slate-800 text-green-600 hover:bg-green-50 dark:hover:bg-slate-700 border border-green-200 dark:border-green-900'
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : 'bg-muted text-muted-foreground border-transparent hover:border-border'
                 }`}
               >
                 Completadas
@@ -432,71 +429,72 @@ export default function ActividadesPage() {
 
         {/* Timeline de Actividades */}
         {isLoading ? (
-          <Card className="p-12 text-center backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 shadow-lg">
+          <Card className="p-12 text-center bg-card border-border">
             <div className="animate-pulse">
-              <div className="h-12 w-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mx-auto mb-4 opacity-50"></div>
-              <p className="text-slate-600 dark:text-slate-400">Cargando actividades...</p>
+              <div className="h-12 w-12 bg-primary/20 rounded-full mx-auto mb-4"></div>
+              <p className="text-muted-foreground font-mono text-sm">Cargando actividades...</p>
             </div>
           </Card>
         ) : actividades.length === 0 ? (
-          <Card className="p-12 text-center backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 shadow-lg">
-            <CheckSquare className="h-16 w-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
-              No hay actividades
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 mb-4">
+          <Card className="p-12 text-center bg-card border-border">
+            <CheckSquare className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="text-xl font-serif text-foreground mb-2">No hay actividades</h3>
+            <p className="text-muted-foreground text-sm">
               {search || tipoFiltro !== 'TODOS' || completadaFiltro !== 'TODOS'
                 ? 'No se encontraron actividades con los filtros aplicados'
                 : 'Crea tu primera actividad para comenzar'}
             </p>
           </Card>
         ) : (
-          <motion.div 
+          <motion.div
             className="relative"
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
           >
             {/* Línea vertical del timeline */}
-            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 via-purple-300 to-blue-300 dark:from-blue-700 dark:via-purple-700 dark:to-blue-700"></div>
+            <div className="absolute left-6 top-0 bottom-0 w-px bg-border"></div>
 
             {/* Lista de actividades */}
             <div className="space-y-6">
               {actividades.map((actividad, index) => {
                 const config = TIPO_ACTIVIDAD_CONFIG[actividad.tipo];
-                const vencida = actividad.fechaVencimiento && 
-                  new Date(actividad.fechaVencimiento) < new Date() && 
+                const vencida =
+                  actividad.fechaVencimiento &&
+                  new Date(actividad.fechaVencimiento) < new Date() &&
                   !actividad.completada;
 
-                // Determinar color del borde según tipo
-                let borderColor = '';
+                // Determinar clases de color semántico según tipo
+                let nodeBorderClass = '';
+                let cardBorderClass = '';
                 switch (actividad.tipo) {
                   case 'LLAMADA':
-                    borderColor = 'border-blue-600';
+                    nodeBorderClass = 'border-blue-500';
+                    cardBorderClass = 'border-l-blue-500';
                     break;
                   case 'REUNION':
-                    borderColor = 'border-purple-600';
+                    nodeBorderClass = 'border-violet-500';
+                    cardBorderClass = 'border-l-violet-500';
                     break;
                   case 'EMAIL':
-                    borderColor = 'border-green-600';
+                    nodeBorderClass = 'border-emerald-500';
+                    cardBorderClass = 'border-l-emerald-500';
                     break;
                   case 'TAREA':
-                    borderColor = 'border-yellow-600';
+                    nodeBorderClass = 'border-amber-500';
+                    cardBorderClass = 'border-l-amber-500';
                     break;
                   case 'NOTA':
-                    borderColor = 'border-slate-600';
+                    nodeBorderClass = 'border-slate-500';
+                    cardBorderClass = 'border-l-slate-500';
                     break;
                 }
 
                 return (
-                  <motion.div 
-                    key={actividad.id} 
-                    className="relative pl-16"
-                    variants={fadeInUp}
-                  >
+                  <motion.div key={actividad.id} className="relative pl-16" variants={fadeInUp}>
                     {/* Ícono circular en la línea del timeline */}
                     <div
-                      className={`absolute -left-1 top-6 bg-white dark:bg-slate-900 border-2 ${borderColor} rounded-full p-2 shadow-lg z-10`}
+                      className={`absolute top-6 bg-card border-2 ${nodeBorderClass} rounded-full p-2 z-10`}
                       style={{ left: '0.875rem' }}
                     >
                       {getTipoIcon(actividad.tipo)}
@@ -504,12 +502,10 @@ export default function ActividadesPage() {
 
                     {/* Card de la actividad */}
                     <Card
-                      className={`backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 
-                                  border-l-4 ${borderColor}
-                                  border-t border-r border-b border-slate-200 dark:border-slate-700
-                                  hover:shadow-xl hover:-translate-y-1 
-                                  transition-all duration-300
-                                  ${actividad.completada ? 'opacity-75' : ''}`}
+                      className={`bg-card border border-border border-l-4 ${cardBorderClass}
+                                  hover:border-primary/20 hover:shadow-[0_4px_24px_0_rgba(0,0,0,0.3)]
+                                  transition-all duration-200
+                                  ${actividad.completada ? 'opacity-60' : ''}`}
                     >
                       <div className="p-6">
                         <div className="flex items-start gap-4">
@@ -520,9 +516,9 @@ export default function ActividadesPage() {
                             className="mt-1 flex-shrink-0 transition-transform hover:scale-110"
                           >
                             {actividad.completada ? (
-                              <CheckCircle2 className="h-6 w-6 text-green-600" />
+                              <CheckCircle2 className="h-6 w-6 text-emerald-400" />
                             ) : (
-                              <Circle className="h-6 w-6 text-slate-300 hover:text-blue-500" />
+                              <Circle className="h-6 w-6 text-border hover:text-primary" />
                             )}
                           </button>
 
@@ -534,14 +530,14 @@ export default function ActividadesPage() {
                                   <h3
                                     className={`font-semibold text-lg ${
                                       actividad.completada
-                                        ? 'text-slate-500 dark:text-slate-500 line-through'
-                                        : 'text-slate-900 dark:text-slate-100'
+                                        ? 'text-muted-foreground line-through'
+                                        : 'text-foreground'
                                     }`}
                                   >
                                     {actividad.titulo}
                                   </h3>
                                   <Badge
-                                    className="text-xs font-semibold"
+                                    className="text-xs font-mono"
                                     style={{
                                       backgroundColor: config.bgColor,
                                       color: config.color,
@@ -552,7 +548,7 @@ export default function ActividadesPage() {
                                   </Badge>
                                 </div>
                                 {actividad.descripcion && (
-                                  <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+                                  <p className="text-muted-foreground text-sm leading-relaxed">
                                     {actividad.descripcion}
                                   </p>
                                 )}
@@ -560,24 +556,27 @@ export default function ActividadesPage() {
 
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="hover:bg-slate-100 dark:hover:bg-slate-800">
+                                  <Button variant="ghost" size="sm">
                                     <MoreVertical className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border-slate-200 dark:border-slate-700">
-                                  <DropdownMenuItem onClick={() => handleEdit(actividad)} className="dark:hover:bg-slate-800 dark:text-slate-100">
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="bg-popover border-border"
+                                >
+                                  <DropdownMenuItem onClick={() => handleEdit(actividad)}>
                                     <Pencil className="h-4 w-4 mr-2" />
                                     Editar
                                   </DropdownMenuItem>
                                   {!actividad.completada && (
-                                    <DropdownMenuItem onClick={() => handleCompletar(actividad)} className="dark:hover:bg-slate-800 dark:text-slate-100">
+                                    <DropdownMenuItem onClick={() => handleCompletar(actividad)}>
                                       <CheckCircle2 className="h-4 w-4 mr-2" />
                                       Marcar completada
                                     </DropdownMenuItem>
                                   )}
                                   <DropdownMenuItem
                                     onClick={() => handleDelete(actividad)}
-                                    className="text-red-600 dark:text-red-400 dark:hover:bg-slate-800"
+                                    className="text-destructive focus:text-destructive"
                                   >
                                     <Trash2 className="h-4 w-4 mr-2" />
                                     Eliminar
@@ -586,46 +585,52 @@ export default function ActividadesPage() {
                               </DropdownMenu>
                             </div>
 
-                            {/* Meta información con íconos mejorados */}
-                            <div className="flex flex-wrap items-center gap-4 text-sm">
+                            {/* Meta información — chips font-mono */}
+                            <div className="flex flex-wrap items-center gap-2 text-sm">
                               {actividad.fechaVencimiento && (
-                                <div className={`flex items-center gap-1.5 ${vencida ? 'text-red-600 font-semibold' : 'text-slate-600 dark:text-slate-400'}`}>
-                                  <Calendar className="h-4 w-4" />
-                                  <span>
-                                    {format(new Date(actividad.fechaVencimiento), "d 'de' MMM, yyyy", { locale: es })}
-                                    {vencida && ' • Vencida'}
-                                  </span>
-                                </div>
+                                <span
+                                  className={`inline-flex items-center gap-1.5 font-mono text-xs rounded-full px-2 py-0.5 ${
+                                    vencida
+                                      ? 'bg-destructive/10 text-destructive'
+                                      : 'bg-muted/50 text-muted-foreground'
+                                  }`}
+                                >
+                                  <Calendar className="h-3 w-3" />
+                                  {format(
+                                    new Date(actividad.fechaVencimiento),
+                                    "d 'de' MMM, yyyy",
+                                    { locale: es }
+                                  )}
+                                  {vencida && ' · Vencida'}
+                                </span>
                               )}
 
                               {actividad.cliente && (
-                                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
-                                  <Building2 className="h-3.5 w-3.5" />
-                                  <span className="text-xs font-medium">{actividad.cliente.nombre}</span>
-                                </div>
+                                <span className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground font-mono text-xs rounded-full px-2 py-0.5">
+                                  <Building2 className="h-3 w-3" />
+                                  {actividad.cliente.nombre}
+                                </span>
                               )}
 
                               {actividad.negocio && (
-                                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
-                                  <Briefcase className="h-3.5 w-3.5" />
-                                  <span className="text-xs font-medium">{actividad.negocio.titulo}</span>
-                                </div>
+                                <span className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground font-mono text-xs rounded-full px-2 py-0.5">
+                                  <Briefcase className="h-3 w-3" />
+                                  {actividad.negocio.titulo}
+                                </span>
                               )}
 
                               {actividad.asignado && (
-                                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
-                                  <User className="h-3.5 w-3.5" />
-                                  <span className="text-xs font-medium">{actividad.asignado.nombre}</span>
-                                </div>
+                                <span className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground font-mono text-xs rounded-full px-2 py-0.5">
+                                  <User className="h-3 w-3" />
+                                  {actividad.asignado.nombre}
+                                </span>
                               )}
 
                               {actividad.completada && actividad.completadaEn && (
-                                <div className="flex items-center gap-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2.5 py-1 rounded-full">
-                                  <CheckCircle2 className="h-3.5 w-3.5" />
-                                  <span className="text-xs font-medium">
-                                    Completada {format(new Date(actividad.completadaEn), "d/MM/yy")}
-                                  </span>
-                                </div>
+                                <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 font-mono text-xs rounded-full px-2 py-0.5">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Completada {format(new Date(actividad.completadaEn), 'd/MM/yy')}
+                                </span>
                               )}
                             </div>
                           </div>
@@ -642,24 +647,18 @@ export default function ActividadesPage() {
         {/* Paginación */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-3 mt-8">
-            <Button
-              variant="outline"
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-              className="backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
-            >
+            <Button variant="outline" onClick={() => setPage(page - 1)} disabled={page === 1}>
               Anterior
             </Button>
-            <div className="flex items-center px-6 backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 rounded-lg">
-              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Página {page} de {totalPages}
+            <div className="flex items-center px-6 bg-card border border-border rounded-lg">
+              <span className="font-mono text-xs text-muted-foreground">
+                {page} / {totalPages}
               </span>
             </div>
             <Button
               variant="outline"
               onClick={() => setPage(page + 1)}
               disabled={page === totalPages}
-              className="backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
             >
               Siguiente
             </Button>
@@ -682,26 +681,21 @@ export default function ActividadesPage() {
       />
 
       {/* Diálogo eliminar */}
-      <AlertDialog
-        open={!!deletingActividad}
-        onOpenChange={() => setDeletingActividad(undefined)}
-      >
-        <AlertDialogContent className="backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border-slate-200 dark:border-slate-700">
+      <AlertDialog open={!!deletingActividad} onOpenChange={() => setDeletingActividad(undefined)}>
+        <AlertDialogContent className="bg-popover border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-slate-900 dark:text-slate-100 text-xl font-bold">
+            <AlertDialogTitle className="font-serif text-foreground text-xl">
               ¿Eliminar actividad?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-600 dark:text-slate-400">
+            <AlertDialogDescription className="text-muted-foreground">
               Esta acción no se puede deshacer. La actividad será eliminada permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="hover:bg-slate-100 dark:hover:bg-slate-800">
-              Cancelar
-            </AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deletingActividad && deleteMutation.mutate(deletingActividad.id)}
-              className="bg-red-600 hover:bg-red-700 shadow-lg"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Eliminar
             </AlertDialogAction>
