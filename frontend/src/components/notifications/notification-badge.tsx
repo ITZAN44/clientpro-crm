@@ -20,7 +20,7 @@ export function NotificationBadge({ onClick }: NotificationBadgeProps) {
       aria-label={`Notificaciones${contadorNoLeidas > 0 ? ` (${contadorNoLeidas} sin leer)` : ''}`}
     >
       <Bell className="h-5 w-5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" />
-      
+
       {contadorNoLeidas > 0 && (
         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
           <span className="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping"></span>
@@ -32,7 +32,7 @@ export function NotificationBadge({ onClick }: NotificationBadgeProps) {
 
       {/* Indicador de conexión WebSocket */}
       {isConnected && (
-        <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 ring-2 ring-white dark:ring-slate-900" />
+        <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-lime-500 ring-2 ring-background" />
       )}
     </Button>
   );

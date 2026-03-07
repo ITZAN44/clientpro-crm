@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useForm } from "react-hook-form";
-import { Cliente, CreateClienteDto, UpdateClienteDto } from "@/types/cliente";
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
+import { Cliente, CreateClienteDto, UpdateClienteDto } from '@/types/cliente';
 import {
   Dialog,
   DialogContent,
@@ -10,12 +10,22 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, User, Mail, Phone, Building2, Briefcase, MapPin, Globe, FileText } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Loader2,
+  User,
+  Mail,
+  Phone,
+  Building2,
+  Briefcase,
+  MapPin,
+  Globe,
+  FileText,
+} from 'lucide-react';
 
 interface ClienteFormDialogProps {
   open: boolean;
@@ -60,15 +70,15 @@ export function ClienteFormDialog({
     if (open && cliente) {
       reset({
         nombre: cliente.nombre,
-        email: cliente.email || "",
-        telefono: cliente.telefono || "",
-        empresa: cliente.empresa || "",
-        puesto: cliente.puesto || "",
-        direccion: cliente.direccion || "",
-        ciudad: cliente.ciudad || "",
-        pais: cliente.pais || "",
-        sitioWeb: cliente.sitioWeb || "",
-        notas: cliente.notas || "",
+        email: cliente.email || '',
+        telefono: cliente.telefono || '',
+        empresa: cliente.empresa || '',
+        puesto: cliente.puesto || '',
+        direccion: cliente.direccion || '',
+        ciudad: cliente.ciudad || '',
+        pais: cliente.pais || '',
+        sitioWeb: cliente.sitioWeb || '',
+        notas: cliente.notas || '',
       });
     } else if (open && !cliente) {
       reset({});
@@ -81,75 +91,75 @@ export function ClienteFormDialog({
       reset();
       onOpenChange(false);
     } catch (error) {
-      console.error("Error al guardar cliente:", error);
+      console.error('Error al guardar cliente:', error);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-popover border border-border">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-stone-900 dark:text-stone-100">
-            {isEditing ? "Editar Cliente" : "Nuevo Cliente"}
+          <DialogTitle className="text-2xl font-serif font-bold text-foreground">
+            {isEditing ? 'Editar Cliente' : 'Nuevo Cliente'}
           </DialogTitle>
-          <DialogDescription className="text-stone-600 dark:text-stone-400">
+          <DialogDescription className="text-muted-foreground">
             {isEditing
-              ? "Actualiza la información del cliente"
-              : "Completa el formulario para agregar un nuevo cliente"}
+              ? 'Actualiza la información del cliente'
+              : 'Completa el formulario para agregar un nuevo cliente'}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
           {/* Información Básica */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <User className="h-4 w-4" />
               Información Personal
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <Label htmlFor="nombre" className="text-stone-700 dark:text-stone-300">
-                  Nombre Completo <span className="text-red-500">*</span>
+                <Label htmlFor="nombre" className="text-muted-foreground text-sm">
+                  Nombre Completo <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="nombre"
-                  {...register("nombre", { required: "El nombre es requerido" })}
+                  {...register('nombre', { required: 'El nombre es requerido' })}
                   placeholder="Juan Pérez"
-                  className="mt-1.5 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                  className="mt-1.5 bg-input border-border text-foreground"
                 />
                 {errors.nombre && (
-                  <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.nombre.message}</p>
+                  <p className="text-sm text-destructive mt-1">{errors.nombre.message}</p>
                 )}
               </div>
 
               <div>
-                <Label htmlFor="email" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="email" className="text-muted-foreground text-sm">
                   Email
                 </Label>
                 <div className="relative mt-1.5">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
-                    {...register("email")}
+                    {...register('email')}
                     placeholder="juan@empresa.com"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="pl-9 bg-input border-border text-foreground"
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="telefono" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="telefono" className="text-muted-foreground text-sm">
                   Teléfono
                 </Label>
                 <div className="relative mt-1.5">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="telefono"
-                    {...register("telefono")}
+                    {...register('telefono')}
                     placeholder="+52 55 1234 5678"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="pl-9 bg-input border-border text-foreground"
                   />
                 </div>
               </div>
@@ -158,50 +168,50 @@ export function ClienteFormDialog({
 
           {/* Información Empresarial */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               Información Empresarial
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="empresa" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="empresa" className="text-muted-foreground text-sm">
                   Empresa
                 </Label>
                 <Input
                   id="empresa"
-                  {...register("empresa")}
+                  {...register('empresa')}
                   placeholder="Acme Corporation"
-                  className="mt-1.5 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                  className="mt-1.5 bg-input border-border text-foreground"
                 />
               </div>
 
               <div>
-                <Label htmlFor="puesto" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="puesto" className="text-muted-foreground text-sm">
                   Puesto
                 </Label>
                 <div className="relative mt-1.5">
-                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
+                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="puesto"
-                    {...register("puesto")}
+                    {...register('puesto')}
                     placeholder="Director General"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="pl-9 bg-input border-border text-foreground"
                   />
                 </div>
               </div>
 
               <div className="col-span-2">
-                <Label htmlFor="sitioWeb" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="sitioWeb" className="text-muted-foreground text-sm">
                   Sitio Web
                 </Label>
                 <div className="relative mt-1.5">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 dark:text-stone-500" />
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="sitioWeb"
-                    {...register("sitioWeb")}
+                    {...register('sitioWeb')}
                     placeholder="https://www.ejemplo.com"
-                    className="pl-9 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="pl-9 bg-input border-border text-foreground"
                   />
                 </div>
               </div>
@@ -210,45 +220,45 @@ export function ClienteFormDialog({
 
           {/* Ubicación */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <MapPin className="h-4 w-4" />
               Ubicación
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <Label htmlFor="direccion" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="direccion" className="text-muted-foreground text-sm">
                   Dirección
                 </Label>
                 <Input
                   id="direccion"
-                  {...register("direccion")}
+                  {...register('direccion')}
                   placeholder="Av. Reforma 123"
-                  className="mt-1.5 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                  className="mt-1.5 bg-input border-border text-foreground"
                 />
               </div>
 
               <div>
-                <Label htmlFor="ciudad" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="ciudad" className="text-muted-foreground text-sm">
                   Ciudad
                 </Label>
                 <Input
                   id="ciudad"
-                  {...register("ciudad")}
+                  {...register('ciudad')}
                   placeholder="Ciudad de México"
-                  className="mt-1.5 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                  className="mt-1.5 bg-input border-border text-foreground"
                 />
               </div>
 
               <div>
-                <Label htmlFor="pais" className="text-stone-700 dark:text-stone-300">
+                <Label htmlFor="pais" className="text-muted-foreground text-sm">
                   País
                 </Label>
                 <Input
                   id="pais"
-                  {...register("pais")}
+                  {...register('pais')}
                   placeholder="México"
-                  className="mt-1.5 bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                  className="mt-1.5 bg-input border-border text-foreground"
                 />
               </div>
             </div>
@@ -256,18 +266,18 @@ export function ClienteFormDialog({
 
           {/* Notas */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Notas Adicionales
             </h3>
-            
+
             <div>
               <Textarea
                 id="notas"
-                {...register("notas")}
+                {...register('notas')}
                 placeholder="Agrega notas o comentarios sobre el cliente..."
                 rows={4}
-                className="resize-none bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                className="resize-none bg-input border-border text-foreground"
               />
             </div>
           </div>
@@ -278,6 +288,7 @@ export function ClienteFormDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
+              className="border-border text-foreground hover:bg-accent"
             >
               Cancelar
             </Button>
@@ -292,9 +303,9 @@ export function ClienteFormDialog({
                   Guardando...
                 </>
               ) : isEditing ? (
-                "Actualizar Cliente"
+                'Actualizar Cliente'
               ) : (
-                "Crear Cliente"
+                'Crear Cliente'
               )}
             </Button>
           </DialogFooter>

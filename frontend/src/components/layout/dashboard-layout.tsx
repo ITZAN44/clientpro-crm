@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   LayoutDashboard,
   Users,
@@ -17,15 +17,15 @@ import {
   Shield,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
-import { KeyboardShortcutsHelp } from "@/components/keyboard-shortcuts-help";
-import { cn } from "@/lib/utils";
-import { RolUsuario } from "@/types/rol";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { NotificationDropdown } from '@/components/notifications/notification-dropdown';
+import { KeyboardShortcutsHelp } from '@/components/keyboard-shortcuts-help';
+import { cn } from '@/lib/utils';
+import { RolUsuario } from '@/types/rol';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -33,28 +33,28 @@ interface DashboardLayoutProps {
 
 const navigation = [
   {
-    name: "Dashboard",
-    href: "/dashboard",
+    name: 'Dashboard',
+    href: '/dashboard',
     icon: LayoutDashboard,
   },
   {
-    name: "Clientes",
-    href: "/clientes",
+    name: 'Clientes',
+    href: '/clientes',
     icon: Users,
   },
   {
-    name: "Negocios",
-    href: "/negocios",
+    name: 'Negocios',
+    href: '/negocios',
     icon: Briefcase,
   },
   {
-    name: "Actividades",
-    href: "/actividades",
+    name: 'Actividades',
+    href: '/actividades',
     icon: Calendar,
   },
   {
-    name: "Reportes",
-    href: "/reportes",
+    name: 'Reportes',
+    href: '/reportes',
     icon: BarChart3,
   },
 ];
@@ -68,9 +68,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const getInitials = (name: string) => {
     return name
-      .split(" ")
+      .split(' ')
       .map((n) => n[0])
-      .join("")
+      .join('')
       .toUpperCase()
       .slice(0, 2);
   };
@@ -78,62 +78,62 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const getRoleBadgeVariant = (rol?: string) => {
     switch (rol) {
       case RolUsuario.ADMIN:
-        return "default";
+        return 'default';
       case RolUsuario.MANAGER:
-        return "secondary";
+        return 'secondary';
       default:
-        return "outline";
+        return 'outline';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-purple-50/10 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-background">
       {/* Sidebar - Desktop */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen transition-all duration-300 ease-in-out hidden lg:block",
-          sidebarCollapsed ? "w-20" : "w-64"
+          'fixed left-0 top-0 z-40 h-screen transition-all duration-300 ease-in-out hidden lg:block',
+          sidebarCollapsed ? 'w-20' : 'w-64'
         )}
       >
-        <div className="h-full backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-r border-white/20 dark:border-slate-700/50 shadow-xl">
+        <div className="h-full bg-sidebar border-r border-sidebar-border flex flex-col">
           {/* Logo */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-white/20 dark:border-slate-700/50">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border shrink-0">
             {!sidebarCollapsed && (
               <Link href="/dashboard" className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <LayoutDashboard className="h-5 w-5 text-white" strokeWidth={2.5} />
+                <div className="h-10 w-10 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center">
+                  <LayoutDashboard className="h-5 w-5 text-primary" strokeWidth={2.5} />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <h1 className="text-lg font-bold font-serif text-primary tracking-tight">
                     ClientPro CRM
                   </h1>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Professional</p>
+                  <p className="text-xs text-muted-foreground">Professional</p>
                 </div>
               </Link>
             )}
             {sidebarCollapsed && (
               <Link href="/dashboard" className="w-full flex justify-center">
-                <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <LayoutDashboard className="h-5 w-5 text-white" strokeWidth={2.5} />
+                <div className="h-10 w-10 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center">
+                  <LayoutDashboard className="h-5 w-5 text-primary" strokeWidth={2.5} />
                 </div>
               </Link>
             )}
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-1">
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200",
+                    'flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200',
                     isActive
-                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-l-4 border-blue-600"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100",
-                    sidebarCollapsed && "justify-center"
+                      ? 'bg-primary/10 text-primary border-l-2 border-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent',
+                    sidebarCollapsed && 'justify-center'
                   )}
                   title={sidebarCollapsed ? item.name : undefined}
                 >
@@ -145,16 +145,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
 
           {/* User Section */}
-          <div className="p-4 border-t border-white/20 dark:border-slate-700/50">
+          <div className="p-4 border-t border-sidebar-border shrink-0">
             {!sidebarCollapsed ? (
               <div className="flex items-center gap-3 mb-3">
-                <Avatar className="h-10 w-10 ring-2 ring-blue-600/20">
-                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-sm">
-                    {session?.user?.name ? getInitials(session.user.name) : "U"}
+                <Avatar className="h-10 w-10 ring-2 ring-primary/30">
+                  <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+                    {session?.user?.name ? getInitials(session.user.name) : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                  <p className="text-sm font-semibold text-foreground truncate">
                     {session?.user?.name}
                   </p>
                   <div className="flex items-center gap-1">
@@ -167,22 +167,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
             ) : (
               <div className="flex justify-center mb-3">
-                <Avatar className="h-10 w-10 ring-2 ring-blue-600/20">
-                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-sm">
-                    {session?.user?.name ? getInitials(session.user.name) : "U"}
+                <Avatar className="h-10 w-10 ring-2 ring-primary/30">
+                  <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+                    {session?.user?.name ? getInitials(session.user.name) : 'U'}
                   </AvatarFallback>
                 </Avatar>
               </div>
             )}
 
-            <div className={cn("space-y-1", sidebarCollapsed && "flex flex-col items-center")}>
+            <div className={cn('space-y-1', sidebarCollapsed && 'flex flex-col items-center')}>
               {!sidebarCollapsed ? (
                 <>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
-                    onClick={() => router.push("/settings")}
+                    className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-accent"
+                    onClick={() => router.push('/settings')}
                   >
                     <Settings className="h-4 w-4 mr-2" />
                     Configuración
@@ -190,8 +190,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full justify-start text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => signOut({ callbackUrl: '/login' })}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Cerrar Sesión
@@ -202,8 +202,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-slate-600 dark:text-slate-400"
-                    onClick={() => router.push("/settings")}
+                    className="text-muted-foreground hover:text-foreground hover:bg-accent"
+                    onClick={() => router.push('/settings')}
                     title="Configuración"
                   >
                     <Settings className="h-4 w-4" />
@@ -211,8 +211,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-red-600 dark:text-red-400"
-                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => signOut({ callbackUrl: '/login' })}
                     title="Cerrar Sesión"
                   >
                     <LogOut className="h-4 w-4" />
@@ -225,7 +225,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="w-full mt-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              className="w-full mt-2 text-muted-foreground hover:text-foreground hover:bg-accent"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             >
               {sidebarCollapsed ? (
@@ -244,7 +244,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -252,27 +252,32 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Mobile Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-64 transform transition-transform duration-300 ease-in-out lg:hidden",
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          'fixed left-0 top-0 z-50 h-screen w-64 transform transition-transform duration-300 ease-in-out lg:hidden',
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="h-full backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border-r border-white/20 dark:border-slate-700/50 shadow-2xl">
+        <div className="h-full bg-sidebar border-r border-sidebar-border flex flex-col">
           {/* Mobile Logo & Close */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-white/20 dark:border-slate-700/50">
-            <Link href="/dashboard" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
-              <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <LayoutDashboard className="h-5 w-5 text-white" strokeWidth={2.5} />
+          <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border shrink-0">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-3"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <div className="h-10 w-10 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center">
+                <LayoutDashboard className="h-5 w-5 text-primary" strokeWidth={2.5} />
               </div>
               <div>
-                <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-lg font-bold font-serif text-primary tracking-tight">
                   ClientPro CRM
                 </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Professional</p>
+                <p className="text-xs text-muted-foreground">Professional</p>
               </div>
             </Link>
             <Button
               variant="ghost"
               size="icon"
+              className="text-muted-foreground hover:text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               <X className="h-5 w-5" />
@@ -280,19 +285,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
 
           {/* Mobile Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-1">
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200",
+                    'flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200',
                     isActive
-                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-l-4 border-blue-600"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? 'bg-primary/10 text-primary border-l-2 border-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -303,25 +308,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </nav>
 
           {/* Mobile User Section */}
-          <div className="p-4 border-t border-white/20 dark:border-slate-700/50">
+          <div className="p-4 border-t border-sidebar-border shrink-0">
             <div className="flex items-center gap-3 mb-3">
-              <Avatar className="h-10 w-10 ring-2 ring-blue-600/20">
-                <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-sm">
-                  {session?.user?.name ? getInitials(session.user.name) : "U"}
+              <Avatar className="h-10 w-10 ring-2 ring-primary/30">
+                <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
+                  {session?.user?.name ? getInitials(session.user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">
                   {session?.user?.name}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{session?.user?.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={() => signOut({ callbackUrl: '/login' })}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Cerrar Sesión
@@ -333,18 +338,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content Area */}
       <div
         className={cn(
-          "transition-all duration-300 ease-in-out",
-          sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"
+          'transition-all duration-300 ease-in-out',
+          sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'
         )}
       >
         {/* Top Navbar */}
-        <header className="sticky top-0 z-30 h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm">
+        <header className="sticky top-0 z-30 h-16 border-b border-border bg-background/80 backdrop-blur-xl">
           <div className="h-full px-4 flex items-center justify-between gap-4">
             {/* Mobile Menu Toggle */}
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden text-muted-foreground hover:text-foreground"
               onClick={() => setMobileMenuOpen(true)}
             >
               <Menu className="h-5 w-5" />
@@ -360,21 +365,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <KeyboardShortcutsHelp />
               <NotificationDropdown />
               <ThemeToggle />
-              
+
               {/* Desktop User Info */}
-              <div className="hidden lg:flex items-center gap-3 ml-2 pl-3 border-l border-slate-200 dark:border-slate-700">
-                <Avatar className="h-9 w-9 ring-2 ring-blue-600/20">
-                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-xs">
-                    {session?.user?.name ? getInitials(session.user.name) : "U"}
+              <div className="hidden lg:flex items-center gap-3 ml-2 pl-3 border-l border-border">
+                <Avatar className="h-9 w-9 ring-2 ring-primary/30">
+                  <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+                    {session?.user?.name ? getInitials(session.user.name) : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                    {session?.user?.name}
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {session?.user?.email}
-                  </p>
+                  <p className="text-sm font-semibold text-foreground">{session?.user?.name}</p>
+                  <p className="text-xs text-muted-foreground">{session?.user?.email}</p>
                 </div>
               </div>
             </div>
