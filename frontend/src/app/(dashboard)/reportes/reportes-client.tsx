@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { fadeInUp, scaleIn } from '@/lib/motion';
 import {
   FileText,
   TrendingUp,
@@ -49,17 +50,6 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-
-// Animation variants (GPU-optimized: opacity + transform only)
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1 },
-};
 
 // Pipeline stage → CHART_COLORS key mapping
 const PIPELINE_COLORS: Record<string, string> = {

@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { fadeInUp, staggerContainer } from '@/lib/motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Users, Plus, Trash2, AlertCircle } from 'lucide-react';
@@ -25,20 +26,6 @@ import {
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { ClienteListSkeleton } from '@/components/ui/skeleton-loaders';
-
-// Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
 
 export default function ClientesPage() {
   const { data: session } = useSession();

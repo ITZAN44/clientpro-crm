@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
+import { fadeInUp, staggerContainer } from '@/lib/motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -40,20 +41,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
-// Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
 
 const ROL_CONFIG = {
   [RolUsuario.ADMIN]: {
