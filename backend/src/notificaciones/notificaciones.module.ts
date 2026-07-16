@@ -4,12 +4,13 @@ import { NotificacionesController } from './notificaciones.controller';
 import { NotificacionesService } from './notificaciones.service';
 import { NotificacionesGateway } from './notificaciones.gateway';
 import { PrismaModule } from '../prisma/prisma.module';
+import { getJwtSecret } from '../common/get-jwt-secret';
 
 @Module({
   imports: [
     PrismaModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'desarrollo_secret_key_2025',
+      secret: getJwtSecret(process.env.JWT_SECRET),
       signOptions: { expiresIn: '7d' },
     }),
   ],
