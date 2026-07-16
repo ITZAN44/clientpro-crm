@@ -9,6 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger, UseGuards } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { NotificacionesService } from './notificaciones.service';
 import { CreateNotificacionDto } from './dto/create-notificacion.dto';
@@ -25,6 +26,8 @@ import { CreateNotificacionDto } from './dto/create-notificacion.dto';
   },
   namespace: '/notificaciones',
 })
+// El ThrottlerGuard global es HTTP-only; sin esto rompe el contexto WebSocket.
+@SkipThrottle()
 export class NotificacionesGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {

@@ -66,14 +66,14 @@ export function NotificationDropdown() {
         </div>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent 
-        align="end" 
-        className="w-[380px] p-0 backdrop-blur-md bg-white/95 dark:bg-slate-900/95 border-slate-200 dark:border-slate-700 shadow-xl"
+      <DropdownMenuContent
+        align="end"
+        className="w-[380px] p-0 backdrop-blur-md bg-popover border-border shadow-xl"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-          <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <CheckCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+        <div className="flex items-center justify-between p-4 border-b border-border bg-card">
+          <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <CheckCheck className="h-4 w-4 text-primary" />
             Notificaciones
           </h3>
           {hayNoLeidas && (
@@ -81,7 +81,7 @@ export function NotificationDropdown() {
               variant="ghost"
               size="sm"
               onClick={handleMarcarTodasLeidas}
-              className="h-8 text-xs hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors"
+              className="h-8 text-xs hover:bg-muted transition-colors"
             >
               <CheckCheck className="h-4 w-4 mr-1" />
               Marcar todas
@@ -94,8 +94,8 @@ export function NotificationDropdown() {
           {isLoading ? (
             <div className="flex items-center justify-center h-32">
               <div className="relative">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400" />
-                <div className="absolute top-0 left-0 animate-ping rounded-full h-8 w-8 border-b-2 border-blue-400 opacity-20" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                <div className="absolute top-0 left-0 animate-ping rounded-full h-8 w-8 border-b-2 border-primary opacity-20" />
               </div>
             </div>
           ) : hayNotificaciones ? (
@@ -111,8 +111,8 @@ export function NotificationDropdown() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-32 text-center px-4">
-              <Inbox className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-2" />
-              <p className="text-sm text-slate-500 dark:text-slate-400">No tienes notificaciones</p>
+              <Inbox className="h-12 w-12 text-muted-foreground/50 mb-2" />
+              <p className="text-sm text-muted-foreground">No tienes notificaciones</p>
             </div>
           )}
         </ScrollArea>
@@ -120,12 +120,12 @@ export function NotificationDropdown() {
         {/* Footer */}
         {hayNotificaciones && (
           <>
-            <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700" />
+            <DropdownMenuSeparator className="bg-border" />
             <div className="p-2">
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 transition-colors"
+                className="w-full text-xs text-primary hover:text-primary hover:bg-muted transition-colors"
                 onClick={() => {
                   setOpen(false);
                   // TODO: Navegar a página de notificaciones completa

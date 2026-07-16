@@ -66,8 +66,8 @@ export function NotificationItem({ notificacion, onMarcarLeida, onClose }: Notif
       onClick={handleClick}
       className={cn(
         'flex items-start gap-3 p-3 rounded-lg transition-colors cursor-pointer',
-        !notificacion.leida && 'bg-orange-50 hover:bg-orange-100',
-        notificacion.leida && 'hover:bg-gray-50'
+        !notificacion.leida && 'bg-primary/10 hover:bg-primary/15',
+        notificacion.leida && 'hover:bg-muted'
       )}
     >
       {/* Icono */}
@@ -79,31 +79,31 @@ export function NotificationItem({ notificacion, onMarcarLeida, onClose }: Notif
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <h4 className={cn(
-            'text-sm font-medium text-stone-900',
+            'text-sm font-medium text-foreground',
             !notificacion.leida && 'font-semibold'
           )}>
             {notificacion.titulo}
           </h4>
-          
+
           {/* Indicador de no leída */}
           {!notificacion.leida && (
-            <div className="flex-shrink-0 h-2 w-2 rounded-full bg-orange-600 mt-1.5" />
+            <div className="flex-shrink-0 h-2 w-2 rounded-full bg-primary mt-1.5" />
           )}
         </div>
 
         {notificacion.mensaje && (
-          <p className="mt-1 text-xs text-stone-600 line-clamp-2">
+          <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
             {notificacion.mensaje}
           </p>
         )}
 
-        <p className="mt-1 text-xs text-stone-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           {fechaRelativa}
         </p>
 
         {/* Información adicional de relaciones */}
         {notificacion.negocioRelacionado && (
-          <div className="mt-2 flex items-center gap-1 text-xs text-stone-600">
+          <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
             <Briefcase className="h-3 w-3" />
             <span>{notificacion.negocioRelacionado.titulo}</span>
           </div>
