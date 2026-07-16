@@ -121,11 +121,13 @@ export default function NegocioFormDialog({
   }, [negocio, reset, open]);
 
   const handleFormSubmit = (data: CreateNegocioDto | UpdateNegocioDto) => {
-    // Convertir valor a número
+    // Convertir valor a número y omitir la fecha de cierre cuando está vacía
+    // (campo opcional: enviar "" rompe la validación IsDateString del backend).
     const formattedData = {
       ...data,
       valor: Number(data.valor),
       probabilidad: Number(data.probabilidad),
+      fechaCierreEsperada: data.fechaCierreEsperada || undefined,
     };
     onSubmit(formattedData);
   };

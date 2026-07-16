@@ -46,6 +46,9 @@ export class CreateNegocioDto {
   @IsOptional()
   probabilidad?: number;
 
+  // Normalizar cadena vacía a undefined: un campo opcional no debe fallar
+  // la validación IsDateString cuando el cliente envía "".
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsDateString({}, { message: 'Fecha de cierre esperada inválida' })
   @IsOptional()
   fechaCierreEsperada?: string;
