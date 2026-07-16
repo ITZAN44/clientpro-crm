@@ -6,9 +6,13 @@ import {
   HealthIndicatorResult,
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
+import { SkipThrottle } from '@nestjs/throttler';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisCacheService } from '../redis/redis-cache.service';
 
+// Los health checks no deben rate-limitearse: los pollea el orquestador
+// (Docker/LB) a intervalos fijos y un 429 los haría marcar el servicio como caído.
+@SkipThrottle()
 @Controller('health')
 export class HealthController {
   constructor(
