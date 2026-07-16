@@ -170,6 +170,47 @@ export default function ReportesClient() {
           scale: 2,
           useCORS: true,
           logging: false,
+          // Tailwind v4 declara sus colores en oklch/oklab, que html2canvas no
+          // sabe parsear ('unsupported color function'). getComputedStyle en
+          // Chrome devuelve esos valores en el mismo espacio (lab/oklab), así que
+          // no alcanza con copiarlos: los pintamos en un canvas 1x1 y leemos el
+          // píxel ya resuelto a sRGB para forzar rgba en el clon.
+          onclone: (clonedDoc) => {
+            const swatch = document.createElement('canvas');
+            swatch.width = swatch.height = 1;
+            const ctx = swatch.getContext('2d', { willReadFrequently: true });
+            const isModern = (v: string) => /oklab|oklch|\blab\(|\blch\(|color\(/.test(v);
+            const toRgb = (v: string) => {
+              if (!ctx || !isModern(v)) return v;
+              ctx.clearRect(0, 0, 1, 1);
+              ctx.fillStyle = '#000';
+              ctx.fillStyle = v;
+              ctx.fillRect(0, 0, 1, 1);
+              const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+              return `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+            };
+            const colorProps = [
+              'color',
+              'backgroundColor',
+              'borderTopColor',
+              'borderRightColor',
+              'borderBottomColor',
+              'borderLeftColor',
+              'outlineColor',
+              'textDecorationColor',
+            ] as const;
+            clonedDoc.querySelectorAll<HTMLElement>('*').forEach((el) => {
+              const cs = window.getComputedStyle(el);
+              colorProps.forEach((p) => {
+                const v = cs[p];
+                if (isModern(v)) el.style[p] = toRgb(v);
+              });
+              // Gradientes y sombras con stops modernos: se descartan (no aportan
+              // al PDF y romperían el parser).
+              if (isModern(cs.backgroundImage)) el.style.backgroundImage = 'none';
+              if (isModern(cs.boxShadow)) el.style.boxShadow = 'none';
+            });
+          },
         });
 
         const imgData = canvas.toDataURL('image/png');
@@ -544,7 +585,7 @@ export default function ReportesClient() {
                                     Tasa de Cierre
                                   </CardDescription>
                                   <CardTitle className="text-4xl font-mono font-bold text-primary">
-                                    {conversion.tasaCierre}%
+                                    {conversion.tasaCierre.toFixed(1)}%
                                   </CardTitle>
                                 </div>
                               </div>
