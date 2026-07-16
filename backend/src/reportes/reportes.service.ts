@@ -93,9 +93,11 @@ export class ReportesService {
       },
     ];
 
-    // Tasa de cierre general (PROSPECTO -> GANADO)
-    const tasaCierre =
-      etapas.PROSPECTO > 0 ? (etapas.GANADO / etapas.PROSPECTO) * 100 : 0;
+    // Win rate: negocios ganados sobre el total de negocios ya cerrados
+    // (ganados + perdidos). Los negocios aún abiertos en el pipeline no cuentan,
+    // por eso la tasa nunca puede superar el 100%.
+    const cerrados = etapas.GANADO + etapas.PERDIDO;
+    const tasaCierre = cerrados > 0 ? (etapas.GANADO / cerrados) * 100 : 0;
 
     return {
       total,
