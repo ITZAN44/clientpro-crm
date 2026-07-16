@@ -18,11 +18,13 @@ out/
 # Environment
 .env
 .env*.local
+.env.docker
 !.env.example
 
 # Logs
 logs/
 *.log
+logs-backend*.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -34,6 +36,15 @@ lerna-debug.log*
 *.swo
 *~
 Thumbs.db
+*.stackdump
+
+# Local DB dumps / backups
+backup_local_db.sql
+*_backup.sql
+
+# Agent tooling / local caches
+.atl/
+.opencode/
 
 # IDE
 .vscode/
