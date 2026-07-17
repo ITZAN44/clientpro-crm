@@ -32,8 +32,9 @@ RUN apk add --no-cache curl
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm ci --only=production
+# Install only production dependencies.
+# --only=production is deprecated in npm 7+; --omit=dev is the supported flag.
+RUN npm ci --omit=dev
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
