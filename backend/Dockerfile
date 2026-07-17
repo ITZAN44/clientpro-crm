@@ -43,9 +43,14 @@ COPY --from=builder /app/prisma ./prisma
 # Expose port
 EXPOSE 4000
 
+# Run as the non-root 'node' user that the base image already provides.
+# The app writes nothing to disk at runtime (logs go to stdout), and the
+# copied files are world-readable, so no chown is needed.
+USER node
+
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:4000 || exit 1
+  CMD curl -f http://localhost:4000/health || exit 1
 
 # Start the application
 CMD ["node", "dist/src/main.js"]
