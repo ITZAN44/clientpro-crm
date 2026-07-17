@@ -15,10 +15,10 @@ La documentación escrita a mano de este repositorio miente, y no por descuido p
 
 `AGENTS.md` y `docs/context/DATABASE.md` fueron escritos por separado, en momentos distintos, y **ambos declaran exactamente los mismos valores de enum inexistentes**:
 
-| Documento | Afirma | Realidad (`backend/prisma/schema.prisma`) |
-|---|---|---|
+| Documento                                       | Afirma                                                                     | Realidad (`backend/prisma/schema.prisma`)                                          |
+| ----------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | `AGENTS.md`, `docs/context/DATABASE.md:161-166` | `EtapaNegocio` incluye `CALIFICACION`, `CERRADO_GANADO`, `CERRADO_PERDIDO` | `PROSPECTO`, `CONTACTO_REALIZADO`, `PROPUESTA`, `NEGOCIACION`, `GANADO`, `PERDIDO` |
-| `AGENTS.md`, `docs/context/DATABASE.md:200` | `TipoMoneda` incluye `COP` | Solo `MXN`, `USD`, `EUR` |
+| `AGENTS.md`, `docs/context/DATABASE.md:200`     | `TipoMoneda` incluye `COP`                                                 | Solo `MXN`, `USD`, `EUR`                                                           |
 
 Que dos autores independientes produzcan la misma mentira idéntica descarta el error humano como causa. La causa es estructural: **ambos copiaron el schema en vez de apuntar a él**, creando un segundo lugar donde vive la verdad. Cuando hay dos, divergen — el código cambia con un commit, el documento necesita que alguien se acuerde.
 

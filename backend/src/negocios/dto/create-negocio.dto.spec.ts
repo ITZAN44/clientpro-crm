@@ -9,7 +9,10 @@ describe('CreateNegocioDto — fechaCierreEsperada (REM-003)', () => {
   const errorFor = async (payload: Record<string, unknown>) => {
     const dto = plainToInstance(CreateNegocioDto, payload);
     const errors = await validate(dto);
-    return { dto, error: errors.find((e) => e.property === 'fechaCierreEsperada') };
+    return {
+      dto,
+      error: errors.find((e) => e.property === 'fechaCierreEsperada'),
+    };
   };
 
   it('normalizes an empty string to undefined and does not fail validation', async () => {
@@ -19,7 +22,10 @@ describe('CreateNegocioDto — fechaCierreEsperada (REM-003)', () => {
   });
 
   it('accepts a valid ISO date string', async () => {
-    const { error } = await errorFor({ ...base, fechaCierreEsperada: '2026-12-31' });
+    const { error } = await errorFor({
+      ...base,
+      fechaCierreEsperada: '2026-12-31',
+    });
     expect(error).toBeUndefined();
   });
 
@@ -29,7 +35,10 @@ describe('CreateNegocioDto — fechaCierreEsperada (REM-003)', () => {
   });
 
   it('still rejects a malformed date string', async () => {
-    const { error } = await errorFor({ ...base, fechaCierreEsperada: 'not-a-date' });
+    const { error } = await errorFor({
+      ...base,
+      fechaCierreEsperada: 'not-a-date',
+    });
     expect(error).toBeDefined();
   });
 });
