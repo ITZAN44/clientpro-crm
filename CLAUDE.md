@@ -11,8 +11,9 @@ When two sources disagree about what exists, trust them in this exact order:
 
 1. **Committed code** — `git show HEAD:<path>` and the schema/lockfiles
 2. **Runtime** — a container/process you personally rebuilt from the current source
-3. **Uncommitted working tree** — *suspect until proven otherwise*
+3. **Uncommitted working tree** — _suspect until proven otherwise_
 4. **Documentation** (`AGENTS.md`, `docs/**`, plan files) — **lowest**. Treat as a lead, never as evidence.
+5. **What you already believe** — _not a source at all._ See below.
 
 Docs in this repo are **verifiably stale**. As of 2026-07-16, `AGENTS.md` lists enum values
 that do not exist in `backend/prisma/schema.prisma` (`CALIFICACION`, `CERRADO_GANADO`,
@@ -21,6 +22,37 @@ that doc produces code that does not compile against the real schema.
 
 **Never state that something is missing, broken, or unimplemented based on a doc.**
 Verify against committed code first, or say "unverified".
+
+### 0.1 Your own carried-over beliefs rank below everything (MANDATORY)
+
+A claim you arrived with — from a summary, a previous session, or a "project convention" you
+remember — is **not evidence**. It is the weakest thing in the room, because unlike a stale doc
+it cannot even be cited, reviewed, or corrected by anyone else. It has no file and no line.
+
+**Before acting on any belief you did not verify in this session, cite it or drop it.**
+If you cannot answer "which file, which line?", it is not a convention. It is a rumor.
+
+This rule exists because of a real failure on 2026-07-17. Every commit of that session and the
+one before it used `git commit --no-verify`, on a carried-over belief that "husky is broken on
+Windows, so the project convention is `--no-verify`." Nobody checked. The truth was the opposite,
+and it was written down in two places:
+
+- `AGENTS.md:523` — "⚠️ **WARNING**: Only use `--no-verify` in emergencies. Hooks exist for quality control."
+- `lint-staged.config.mjs` — a file that exists _specifically_ to make the hooks work on Windows,
+  with a header comment explaining which Windows bugs it fixes and how.
+
+The hooks worked. They were bypassed for two sessions on a rumor, silently skipping every quality
+gate the project has. Verified by demonstration: a commit run without `--no-verify` passed
+lint-staged, eslint and commit-msg on the first try.
+
+### 0.2 "The doc is stale" is not "the doc is worthless"
+
+The same 2026-07-17 failure has a second half worth naming, because the first half's fix caused it.
+
+`AGENTS.md` is wrong about the enums. It is **right** about the hooks. Demoting the whole file to
+zero and then substituting memory is not a correction — it swaps rank 4 for rank 5 and calls it
+rigor. Staleness is per-claim, not per-file. Verify the claim you are about to use, not the
+reputation of the file it came from.
 
 ---
 
