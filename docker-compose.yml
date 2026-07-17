@@ -57,6 +57,9 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      # Swagger UI at /docs. Off by default because NODE_ENV is production
+      # here even locally; set SWAGGER_ENABLED=true to expose it.
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
     ports:
       - '${BACKEND_PORT:-4000}:4000'
     healthcheck:
